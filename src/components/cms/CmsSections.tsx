@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 import type { CmsSection, CmsFaq, CmsSectionItem } from '../../types/cms'
 import { Button } from '../ui/Button'
@@ -34,7 +34,7 @@ function TrustIcon({ type }: { type: string }) {
 function WhyIcon({ name }: { name: string }) {
   const cls = 'w-10 h-10 text-accent-blue'
   const g = 'w-10 h-10 text-accent-green'
-  const paths: Record<string, JSX.Element> = {
+  const paths: Record<string, ReactElement> = {
     layers: (
       <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -399,13 +399,13 @@ export function CmsSectionView({ section, pageFaqs }: { section: CmsSection; pag
                 )
               })}
             </div>
-            {ct.footerCta && (
+            {Boolean(ct.footerCta) ? (
               <div className="mt-12 text-center">
                 <Button variant="secondary" to={(ct.footerCta as { href: string }).href}>
                   {(ct.footerCta as { label: string }).label}
                 </Button>
               </div>
-            )}
+            ) : null}
           </div>
         </section>
       )
@@ -425,13 +425,13 @@ export function CmsSectionView({ section, pageFaqs }: { section: CmsSection; pag
                 />
               ))}
             </div>
-            {ct.footerCta && (
+            {Boolean(ct.footerCta) ? (
               <div className="mt-12 text-center">
                 <Button variant="secondary" to={(ct.footerCta as { href: string }).href}>
                   {(ct.footerCta as { label: string }).label}
                 </Button>
               </div>
-            )}
+            ) : null}
           </div>
         </section>
       )

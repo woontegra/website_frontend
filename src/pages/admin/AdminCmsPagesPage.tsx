@@ -42,7 +42,8 @@ export function AdminCmsPagesPage() {
       </div>
       {err && <p className="mb-4 text-red-600 text-sm">{err}</p>}
       <p className="text-sm text-slate-500 mb-4">
-        Giriş: <code className="bg-slate-100 px-1 rounded">admin@woontegra.com</code> / Admin123! (panel girişi)
+        Önce <Link to="/admin/giris" className="text-accent-blue font-medium">/admin/giris</Link> ile yönetici girişi yapın (
+        <code className="bg-slate-100 px-1 rounded">info@woontegra.com</code> — seed şifresi)
       </p>
       {loading ? (
         <p className="text-slate-500">Yükleniyor…</p>

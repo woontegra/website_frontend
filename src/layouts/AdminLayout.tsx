@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 const adminNav = [
   { label: 'Genel Bakış', href: '/admin' },
@@ -15,13 +15,24 @@ const adminNav = [
 
 export function AdminLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
   const isActive = (href: string) => location.pathname === href
+
+  const logout = () => {
+    localStorage.removeItem('woontegra_token')
+    navigate('/admin/giris', { replace: true })
+  }
 
   return (
     <div className="min-h-screen bg-surface-50 flex">
       <aside className="w-64 bg-white border-r border-gray-200 shrink-0">
-        <div className="h-16 flex items-center px-4 border-b border-gray-100">
-          <Link to="/admin" className="font-bold text-heading">Woontegra Admin</Link>
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
+          <Link to="/admin" className="font-bold text-heading">
+            Woontegra Admin
+          </Link>
+          <button type="button" onClick={logout} className="text-xs text-slate-500 hover:text-red-600">
+            Çıkış
+          </button>
         </div>
         <nav className="p-4 space-y-1">
           {adminNav.map((item) => (

@@ -19,6 +19,8 @@ import { AdminDashboardPage } from '../pages/admin/AdminDashboardPage'
 import { AdminPlaceholderPage } from '../pages/admin/AdminPlaceholderPage'
 import { AdminCmsPagesPage } from '../pages/admin/AdminCmsPagesPage'
 import { AdminCmsPageEditor } from '../pages/admin/AdminCmsPageEditor'
+import { AdminLoginPage } from '../pages/admin/AdminLoginPage'
+import { RequireAdmin } from '../components/admin/RequireAdmin'
 
 function Page({ slug }: { slug: string }) {
   return <DynamicPage slug={slug} />
@@ -73,12 +75,22 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
     children: [
-      { index: true, element: <AdminDashboardPage /> },
-      { path: 'cms', element: <AdminCmsPagesPage /> },
-      { path: 'cms/:id', element: <AdminCmsPageEditor /> },
-      { path: ':section', element: <AdminPlaceholderPage /> },
+      { path: 'giris', element: <AdminLoginPage /> },
+      {
+        element: <RequireAdmin />,
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <AdminDashboardPage /> },
+              { path: 'cms', element: <AdminCmsPagesPage /> },
+              { path: 'cms/:id', element: <AdminCmsPageEditor /> },
+              { path: ':section', element: <AdminPlaceholderPage /> },
+            ],
+          },
+        ],
+      },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

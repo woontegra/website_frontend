@@ -148,7 +148,6 @@ export function AdminCmsPageEditor() {
               <SectionEditorCard
                 key={s.id}
                 section={s}
-                pageId={page.id}
                 index={i}
                 total={sections.length}
                 onMove={moveSection}
@@ -168,7 +167,6 @@ export function AdminCmsPageEditor() {
 
 function SectionEditorCard({
   section,
-  pageId,
   index,
   total,
   onMove,
@@ -176,7 +174,6 @@ function SectionEditorCard({
   allSections,
 }: {
   section: CmsSection
-  pageId: string
   index: number
   total: number
   onMove: (s: CmsSection[], i: number, d: -1 | 1) => void
