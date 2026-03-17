@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-surface-50: #f8fafc;
+    --color-accent-blue: #2563eb;
+    --color-accent-green: #059669;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-white text-slate-900 antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-light {
+    @apply bg-white/80 backdrop-blur-md border border-gray-200/80;
+  }
+  .card-light {
+    @apply bg-white border border-gray-100 rounded-2xl shadow-card;
+  }
+}
