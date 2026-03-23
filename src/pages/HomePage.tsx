@@ -1,5 +1,5 @@
 import { Button } from '../components/ui/Button'
-import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Users, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef } from 'react'
 
 export function HomePage() {

@@ -1,5 +1,5 @@
 import { Button } from '../components/ui/Button'
-import { ArrowRight, CheckCircle, Gamepad2, Smartphone, Globe, Box, GraduationCap, Sparkles, Code, Zap, Database, Activity } from 'lucide-react'
+import { ArrowRight, CheckCircle, Gamepad2, Smartphone, Globe, Box, GraduationCap, Sparkles, Code, Database, Activity } from 'lucide-react'
 
 export function GameDevelopmentPage() {
   return (

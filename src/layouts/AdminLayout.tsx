@@ -3,13 +3,10 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 const adminNav = [
   { label: 'Dashboard', href: '/admin' },
   { label: 'Sayfalar', href: '/admin/sayfalar' },
-  { label: 'Yazılar', href: '/admin/yazilar' },
-  { label: 'Kategoriler', href: '/admin/kategoriler' },
-  { label: 'Menüler', href: '/admin/menuler' },
-  { label: 'Hizmetler', href: '/admin/hizmetler' },
-  { label: 'Markalar', href: '/admin/markalar' },
-  { label: 'Mesajlar', href: '/admin/mesajlar' },
+  { label: 'Blog', href: '/admin/yazilar' },
   { label: 'Medya', href: '/admin/medya' },
+  { label: 'Teklifler', href: '/admin/teklifler' },
+  { label: 'Mesajlar', href: '/admin/mesajlar' },
   { label: 'Ayarlar', href: '/admin/ayarlar' },
 ]
 

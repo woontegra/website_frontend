@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
-import { Button } from '../../components/ui/Button'
-
-const inputClass =
-  'w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue'
 
 const apiBase = () => import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
 

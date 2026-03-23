@@ -3,7 +3,6 @@ import { Layout } from '../layouts/Layout'
 import { PanelLayout } from '../layouts/PanelLayout'
 import { DynamicPage } from '../pages/DynamicPage'
 import { HomePage } from '../pages/HomePage'
-import { BlogPostPage } from '../pages/BlogPostPage'
 import { LoginPage } from '../pages/panel/LoginPage'
 import { RegisterPage } from '../pages/panel/RegisterPage'
 import { ForgotPasswordPage } from '../pages/panel/ForgotPasswordPage'
@@ -30,6 +29,7 @@ import { AdminServicesPage } from '../pages/admin/AdminServicesPage'
 import { AdminBrandsPage } from '../pages/admin/AdminBrandsPage'
 import { AdminMessagesPage } from '../pages/admin/AdminMessagesPage'
 import { AdminSettingsPage } from '../pages/admin/AdminSettingsPage'
+import { AdminQuotesPage } from '../pages/admin/AdminQuotesPage'
 import { ContactPage } from '../pages/ContactPage'
 import { AboutPage } from '../pages/AboutPage'
 import { SoftwareDevelopmentPage } from '../pages/SoftwareDevelopmentPage'
@@ -42,7 +42,7 @@ import { DigitalConsultingPage } from '../pages/DigitalConsultingPage'
 import { SolutionsPage } from '../pages/SolutionsPage'
 import { BlogPage } from '../pages/BlogPage'
 import { BlogPostDetailPage } from '../pages/BlogPostDetailPage'
-import { FaqPage } from '../pages/FaqPage'
+import { FaqPage } from '../pages/FAQPage'
 import { QuotePage } from '../pages/QuotePage'
 import { TestPage } from '../pages/TestPage'
 import { TestBuilderPage } from '../pages/admin/TestBuilderPage'
@@ -131,6 +131,7 @@ export const router = createBrowserRouter([
               { path: 'hizmetler', element: <AdminServicesPage /> },
               { path: 'markalar', element: <AdminBrandsPage /> },
               { path: 'mesajlar', element: <AdminMessagesPage /> },
+              { path: 'teklifler', element: <AdminQuotesPage /> },
               { path: 'ayarlar', element: <AdminSettingsPage /> },
               { path: 'test-builder', element: <TestBuilderPage /> },
               { path: 'cms', element: <Navigate to="/admin/sayfalar" replace /> },

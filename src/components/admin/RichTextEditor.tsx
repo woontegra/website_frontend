@@ -34,7 +34,7 @@ export function RichTextEditor({ value, onChange, placeholder = 'İçerik yazın
     if (!editor) return
     const cur = editor.getHTML()
     if (value !== cur && (value || '') !== (cur === '<p></p>' ? '' : cur)) {
-      editor.commands.setContent(value || '', false)
+      editor.commands.setContent(value || '')
     }
   }, [value, editor])
 

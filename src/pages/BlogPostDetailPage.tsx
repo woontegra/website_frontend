@@ -39,7 +39,6 @@ const otherPosts = [
 const categories = ['Yazılım', 'E-Ticaret', 'SaaS', 'Marka & Patent', 'Dijital Büyüme']
 
 export function BlogPostDetailPage() {
-  const { slug } = useParams()
 
   return (
     <div className="bg-white">

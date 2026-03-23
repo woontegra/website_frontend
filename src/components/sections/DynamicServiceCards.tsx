@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { servicesApi, type Service } from '../../api/services'
 import { SectionHeader } from '../ui/SectionHeader'
-import { Button } from '../ui/Button'
 import { Code, Smartphone, ShoppingCart, Cloud, Lightbulb, Shield, Package } from 'lucide-react'
 
 const iconMap: Record<string, any> = {
@@ -67,7 +66,6 @@ export function DynamicServiceCards() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {services.map((service, index) => {
             const Icon = iconMap[service.icon] || Package
-            const serviceImage = `/images/service-${(index % 3) + 1}.jpg`
             return (
               <div
                 key={service.id}

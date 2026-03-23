@@ -38,7 +38,6 @@ export function QuotePage() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {}
@@ -90,7 +89,6 @@ export function QuotePage() {
       })
 
       if (response.ok) {
-        setIsSuccess(true)
         setCurrentStep(4)
       } else {
         setErrors({ submit: 'Bir hata oluştu. Lütfen tekrar deneyin.' })
