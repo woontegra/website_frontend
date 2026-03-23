@@ -64,7 +64,7 @@ export function DynamicServiceCards() {
           </p>
         </div>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          {services.map((service, index) => {
+          {services.map((service) => {
             const Icon = iconMap[service.icon] || Package
             return (
               <div

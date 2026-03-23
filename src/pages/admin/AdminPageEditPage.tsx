@@ -138,7 +138,8 @@ export function AdminPageEditPage() {
   console.log('AdminPageEditPage render, pageId:', pageId, 'isNew:', isNew)
 
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [msg, setMsg] = useState('')
+  const [saving, setSaving] = useState(false)
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')

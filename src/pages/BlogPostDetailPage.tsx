@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { ArrowLeft, Share2, Facebook, Twitter, Linkedin } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 
