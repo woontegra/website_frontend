@@ -19,8 +19,8 @@ export function ServiceCard({ title, description, href }: ServiceCardProps) {
   return (
     <Link to={href} className="group block h-full">
       <Card className="p-6 md:p-8 h-full group-hover:border-accent-blue/30 transition-colors duration-250">
-        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        <p className="mt-2 text-slate-600 text-sm leading-relaxed">{description}</p>
+        <h3 className="text-base font-medium text-slate-800">{title}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
         <span className="mt-4 inline-flex items-center text-sm font-medium text-accent-blue">
           Detaylı bilgi
           <ArrowRightIcon />

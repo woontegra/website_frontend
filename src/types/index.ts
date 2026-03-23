@@ -21,6 +21,8 @@ export interface SubBrand {
   name: string
   description: string
   href: string
+  /** Marka logosu — `public/brands/` altına koyun, örn. `/brands/marka.png` */
+  logo: string
   image?: string
 }
 

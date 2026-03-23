@@ -23,9 +23,14 @@ export default {
           blue: '#2563eb',
           'blue-light': '#3b82f6',
           'blue-soft': '#eff6ff',
-          green: '#059669',
+          green: '#22c55e',
           'green-light': '#10b981',
           'green-soft': '#ecfdf5',
+        },
+        navy: {
+          DEFAULT: '#0f172a',
+          light: '#1e293b',
+          dark: '#020617',
         },
         // Başlıklar için koyu lacivert / koyu gri
         heading: {
@@ -38,7 +43,8 @@ export default {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-soft': 'radial-gradient(ellipse 100% 80% at 30% 0%, rgba(37, 99, 235, 0.08), transparent 50%), radial-gradient(ellipse 80% 60% at 70% 100%, rgba(5, 150, 105, 0.06), transparent 50%)',
+        'hero-soft':
+          'radial-gradient(ellipse 100% 80% at 30% 0%, rgba(37, 99, 235, 0.08), transparent 50%), radial-gradient(ellipse 80% 60% at 70% 100%, rgba(5, 150, 105, 0.06), transparent 50%)',
         'gradient-brand': 'linear-gradient(135deg, #2563eb 0%, #059669 100%)',
         'gradient-cta': 'linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%)',
       },

@@ -7,12 +7,12 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, subtitle, centered = true, className = '' }: SectionHeaderProps) {
   return (
-    <div className={`mb-12 ${centered ? 'text-center' : ''} ${className}`}>
-      <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+    <div className={`mb-10 md:mb-11 ${centered ? 'text-center' : ''} ${className}`}>
+      <h2 className="text-xl font-semibold tracking-[0.02em] text-slate-900 md:text-2xl">
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-4 text-lg text-slate-600 max-w-[600px] mx-auto leading-relaxed">
+        <p className="mx-auto mt-3 max-w-lg text-base leading-relaxed text-slate-600 md:text-lg">
           {subtitle}
         </p>
       )}

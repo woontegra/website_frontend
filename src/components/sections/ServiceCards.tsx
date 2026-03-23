@@ -5,13 +5,13 @@ import { Button } from '../ui/Button'
 
 export function ServiceCards() {
   return (
-    <section className="py-24 md:py-28 bg-white animate-fade-up">
+    <section className="animate-fade-up bg-white py-24 md:py-28">
       <div className="container mx-auto px-4">
         <SectionHeader
           title="Hizmetlerimiz"
           subtitle="Yazılımdan marka vekilliğine, e-ticaretten oyun geliştirmeye geniş bir hizmet yelpazesi."
         />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
           {services.map((service) => (
             <ServiceCard
               key={service.id}
@@ -21,7 +21,7 @@ export function ServiceCards() {
             />
           ))}
         </div>
-        <div className="mt-12 text-center">
+        <div className="mt-10 text-center">
           <Button variant="secondary" to="/hizmetler">
             Tüm hizmetleri görüntüle
           </Button>

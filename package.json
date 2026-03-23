@@ -10,7 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@craftjs/core": "^0.2.12",
+    "@tiptap/extension-link": "^3.20.4",
+    "@tiptap/extension-placeholder": "^3.20.4",
+    "@tiptap/pm": "^3.20.4",
+    "@tiptap/react": "^3.20.4",
+    "@tiptap/starter-kit": "^3.20.4",
+    "axios": "^1.13.6",
+    "lucide-react": "^0.577.0",
     "react": "^19.2.4",
+    "react-contenteditable": "^3.3.7",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.1"
   },

@@ -18,9 +18,10 @@ const variantStyles: Record<Variant, string> = {
     'bg-gradient-to-r from-accent-blue to-accent-blue-light text-white shadow-soft hover:opacity-95 focus:ring-2 focus:ring-accent-blue/30 focus:ring-offset-2',
   secondary: 'bg-slate-100 text-slate-900 border border-gray-200 hover:bg-slate-200 hover:border-gray-300',
   ghost: 'text-slate-700 hover:bg-slate-100 hover:text-slate-900',
-  outline: 'border-2 border-accent-blue text-accent-blue bg-transparent hover:bg-accent-blue-soft',
-  green: 'bg-accent-green text-white shadow-soft hover:bg-accent-green-light focus:ring-2 focus:ring-accent-green/30 focus:ring-offset-2',
-  hero: 'bg-gradient-to-r from-accent-blue to-accent-green text-white shadow-lg hover:opacity-95 focus:ring-2 focus:ring-accent-blue/30 focus:ring-offset-2 min-h-[52px]',
+  outline: 'border-2 border-current bg-transparent hover:bg-current/10',
+  green: 'bg-green-500 text-white shadow-lg shadow-green-500/30 hover:bg-green-600 focus:ring-2 focus:ring-green-500/30 focus:ring-offset-2',
+  hero:
+    'bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500 text-white min-h-[52px] shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 hover:shadow-emerald-500/20 hover:scale-[1.02] transition-all duration-300 focus:ring-2 focus:ring-blue-400/40 focus:ring-offset-2',
 }
 
 const sizeStyles: Record<Size, string> = {

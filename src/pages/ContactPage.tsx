@@ -1,73 +1,54 @@
-import { useState } from 'react'
-import { SectionHeader } from '../components/ui/SectionHeader'
-import { Card } from '../components/ui/Card'
-import { Button } from '../components/ui/Button'
+import { ContactForm } from '../components/forms/ContactForm'
+import { Mail, Phone, MapPin } from 'lucide-react'
 
 export function ContactPage() {
-  const [sent, setSent] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSent(true)
-  }
-
-  const inputClass = 'w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-heading placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue'
+  const email = localStorage.getItem('contact_email') || 'info@woontegra.com'
+  const phone = localStorage.getItem('contact_phone') || '0532 317 17 55'
+  const address = localStorage.getItem('contact_address') || 'İskele Mahallesi Bademli Caddesi 43/6 Datça-Muğla'
 
   return (
-    <div className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        <SectionHeader
-          title="İletişim"
-          subtitle="Sorularınız veya proje talepleriniz için bize ulaşın."
-        />
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">İletişim</h1>
+          <p className="text-lg text-gray-600">
+            Projeleriniz için bizimle iletişime geçin. Size en kısa sürede dönüş yapacağız.
+          </p>
+        </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Card className="p-6 md:p-8">
-              {sent ? (
-                <p className="text-accent-green font-medium">Mesajınız alındı. En kısa sürede dönüş yapacağız.</p>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-heading mb-1">Ad Soyad</label>
-                    <input id="name" name="name" type="text" required className={inputClass} placeholder="Adınız Soyadınız" />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-heading mb-1">E-posta</label>
-                    <input id="email" name="email" type="email" required className={inputClass} placeholder="ornek@email.com" />
-                  </div>
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-heading mb-1">Mesaj</label>
-                    <textarea id="message" name="message" rows={5} required className={`${inputClass} resize-none`} placeholder="Mesajınız..." />
-                  </div>
-                  <Button type="submit">Gönder</Button>
-                </form>
-              )}
-            </Card>
-          </div>
-          <div className="space-y-4">
-            <Card className="p-6">
-              <h3 className="font-semibold text-heading mb-2">WhatsApp</h3>
-              <a href="https://wa.me/90XXXXXXXXXX" className="text-accent-blue hover:underline" target="_blank" rel="noopener noreferrer">
-                +90 XXX XXX XX XX
-              </a>
-            </Card>
-            <Card className="p-6">
-              <h3 className="font-semibold text-heading mb-2">E-posta</h3>
-              <a href="mailto:info@woontegra.com" className="text-accent-blue hover:underline">info@woontegra.com</a>
-            </Card>
-            <Card className="p-6">
-              <h3 className="font-semibold text-heading mb-2">Telefon</h3>
-              <a href="tel:+90XXXXXXXXXX" className="text-accent-blue hover:underline">+90 XXX XXX XX XX</a>
-            </Card>
-            <Card className="p-6">
-              <h3 className="font-semibold text-heading mb-2">Adres</h3>
-              <p className="text-surface-600 text-sm">Örnek Mah. Örnek Sok. No: X, İstanbul</p>
-            </Card>
-            <div className="h-48 rounded-xl bg-surface-100 flex items-center justify-center text-surface-500 text-sm">
-              Harita alanı
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-6 h-6 text-blue-600" />
             </div>
+            <h3 className="font-semibold text-gray-900 mb-2">E-posta</h3>
+            <a href={`mailto:${email}`} className="text-blue-600 hover:underline">
+              {email}
+            </a>
           </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Phone className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">Telefon</h3>
+            <a href={`tel:${phone.replace(/\s/g, '')}`} className="text-green-600 hover:underline">
+              {phone}
+            </a>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MapPin className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">Adres</h3>
+            <p className="text-gray-600">{address}</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Mesaj Gönderin</h2>
+          <ContactForm />
         </div>
       </div>
     </div>

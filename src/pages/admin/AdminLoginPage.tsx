@@ -39,7 +39,9 @@ export function AdminLoginPage() {
         return
       }
       localStorage.setItem('woontegra_token', data.token)
-      navigate(from.startsWith('/admin') ? from : '/admin', { replace: true })
+      const target =
+        from.startsWith('/admin') && from !== '/admin' ? from : '/admin/sayfalar'
+      navigate(target, { replace: true })
     } catch {
       setErr('Sunucuya bağlanılamadı. API adresini kontrol edin.')
     }
@@ -47,20 +49,25 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(34,197,94,0.15),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(15,23,42,0.5),transparent_50%)]" />
+      
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/">
-            <img src="/logo.png" alt="Woontegra" className="h-12 mx-auto" />
+            <div className="inline-block px-6 py-3 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 mb-4">
+              <span className="text-2xl font-bold text-white">Woontegra</span>
+            </div>
           </Link>
-          <h1 className="mt-4 text-xl font-bold text-slate-900">Yönetim paneli</h1>
-          <p className="mt-1 text-sm text-slate-600">Yönetici hesabınızla giriş yapın</p>
+          <h1 className="mt-4 text-3xl font-bold text-white">Yönetim Paneli</h1>
+          <p className="mt-2 text-gray-300">Yönetici hesabınızla giriş yapın</p>
         </div>
-        <Card className="p-6 md:p-8 shadow-lg border border-gray-200">
-          {err && <p className="mb-4 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{err}</p>}
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Card className="p-8 md:p-10 shadow-2xl border border-white/10 bg-white/95 backdrop-blur-xl">
+          {err && <p className="mb-6 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3 font-medium">{err}</p>}
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="admin-email" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="admin-email" className="block text-sm font-semibold text-slate-900 mb-2">
                 E-posta
               </label>
               <input
@@ -70,12 +77,12 @@ export function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className={inputClass}
+                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-slate-900 focus:outline-none focus:border-green-500 transition-colors text-lg"
                 placeholder="info@woontegra.com"
               />
             </div>
             <div>
-              <label htmlFor="admin-password" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="admin-password" className="block text-sm font-semibold text-slate-900 mb-2">
                 Şifre
               </label>
               <input
@@ -85,16 +92,20 @@ export function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className={inputClass}
+                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-slate-900 focus:outline-none focus:border-green-500 transition-colors text-lg"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Giriş…' : 'Giriş yap'}
-            </Button>
+            <button 
+              type="submit" 
+              className="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors font-bold text-lg shadow-lg shadow-green-500/30" 
+              disabled={loading}
+            >
+              {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+            </button>
           </form>
-          <p className="mt-6 text-center text-sm text-slate-500">
-            <Link to="/" className="text-accent-blue hover:underline">
-              ← Siteye dön
+          <p className="mt-6 text-center text-sm text-slate-600">
+            <Link to="/" className="text-slate-900 hover:text-green-600 font-medium transition-colors">
+              ← Siteye Dön
             </Link>
           </p>
         </Card>

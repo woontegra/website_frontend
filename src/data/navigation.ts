@@ -1,6 +1,7 @@
 import type { NavLink } from '../types'
 
 export const mainNav: NavLink[] = [
+  { label: 'Ana sayfa', href: '/' },
   { label: 'Hakkımızda', href: '/hakkimizda' },
   {
     label: 'Hizmetler',

@@ -18,15 +18,15 @@ export function CTA({
   return (
     <section className={`py-24 md:py-28 bg-gradient-cta ${className}`}>
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 leading-tight">
+        <h2 className="mb-4 text-2xl font-semibold leading-relaxed tracking-[0.02em] text-slate-900 md:text-3xl">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-slate-600 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+          <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-slate-600">
             {subtitle}
           </p>
         )}
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap justify-center gap-4">
           <Button size="xl" to={primaryAction.href}>
             {primaryAction.label}
           </Button>

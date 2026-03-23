@@ -1,22 +1,24 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 const adminNav = [
-  { label: 'Genel Bakış', href: '/admin' },
-  { label: 'CMS — Sayfalar', href: '/admin/cms' },
-  { label: 'Müşteriler', href: '/admin/musteriler' },
-  { label: 'Teklifler', href: '/admin/teklifler' },
-  { label: 'Projeler', href: '/admin/projeler' },
-  { label: 'İçerik Yönetimi', href: '/admin/icerikler' },
-  { label: 'Blog Yönetimi', href: '/admin/blog' },
-  { label: 'İletişim Formları', href: '/admin/iletisim-formlari' },
-  { label: 'Mail Bildirimleri', href: '/admin/mail-bildirimleri' },
+  { label: 'Dashboard', href: '/admin' },
+  { label: 'Sayfalar', href: '/admin/sayfalar' },
+  { label: 'Yazılar', href: '/admin/yazilar' },
+  { label: 'Kategoriler', href: '/admin/kategoriler' },
+  { label: 'Menüler', href: '/admin/menuler' },
+  { label: 'Hizmetler', href: '/admin/hizmetler' },
+  { label: 'Markalar', href: '/admin/markalar' },
+  { label: 'Mesajlar', href: '/admin/mesajlar' },
+  { label: 'Medya', href: '/admin/medya' },
   { label: 'Ayarlar', href: '/admin/ayarlar' },
 ]
 
 export function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
-  const isActive = (href: string) => location.pathname === href
+
+  const isActive = (href: string) =>
+    href === '/admin' ? location.pathname === '/admin' : location.pathname.startsWith(href)
 
   const logout = () => {
     localStorage.removeItem('woontegra_token')
@@ -24,32 +26,54 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-50 flex">
-      <aside className="w-64 bg-white border-r border-gray-200 shrink-0">
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
-          <Link to="/admin" className="font-bold text-heading">
-            Woontegra Admin
+    <div className="flex min-h-screen bg-slate-50">
+      <aside className="w-64 shrink-0 bg-slate-900 text-white">
+        <div className="flex h-16 items-center justify-between px-6 border-b border-slate-800">
+          <Link to="/admin" className="font-bold text-xl">
+            Woontegra
           </Link>
-          <button type="button" onClick={logout} className="text-xs text-slate-500 hover:text-red-600">
-            Çıkış
-          </button>
         </div>
         <nav className="p-4 space-y-1">
           {adminNav.map((item) => (
             <Link
               key={item.href}
               to={item.href}
-              className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive(item.href) ? 'bg-accent-blue-soft text-accent-blue' : 'text-surface-600 hover:text-heading hover:bg-surface-50'}`}
+              className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                isActive(item.href)
+                  ? 'bg-green-500 text-white shadow-lg shadow-green-500/20'
+                  : 'text-gray-300 hover:bg-slate-800 hover:text-white'
+              }`}
             >
               {item.label}
             </Link>
           ))}
-          <Link to="/" className="block px-4 py-3 rounded-lg text-sm text-surface-600 hover:text-heading">← Siteye dön</Link>
+          <div className="pt-4 mt-4 border-t border-slate-800">
+            <Link to="/" className="flex items-center px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-slate-800">
+              ← Siteye Dön
+            </Link>
+            <button 
+              type="button" 
+              onClick={logout} 
+              className="w-full flex items-center px-4 py-3 rounded-lg text-sm text-gray-400 hover:text-red-400 hover:bg-slate-800 mt-1"
+            >
+              Çıkış Yap
+            </button>
+          </div>
         </nav>
       </aside>
-      <main className="flex-1 p-6 overflow-auto">
-        <Outlet />
-      </main>
+      
+      <div className="flex-1 flex flex-col">
+        <header className="h-16 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-6">
+          <h1 className="text-lg font-semibold text-slate-900">Yönetim Paneli</h1>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">info@woontegra.com</span>
+          </div>
+        </header>
+        
+        <main className="flex-1 overflow-auto p-8 bg-slate-50">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

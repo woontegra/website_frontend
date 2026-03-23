@@ -9,7 +9,7 @@ const steps = [
 
 export function ProcessSection() {
   return (
-    <section className="py-24 md:py-28 bg-slate-50 animate-fade-up">
+    <section className="animate-fade-up bg-slate-50 py-24 md:py-28">
       <div className="container mx-auto px-4">
         <SectionHeader
           title="Süreç nasıl işliyor?"
@@ -17,15 +17,18 @@ export function ProcessSection() {
         />
         <div className="relative">
           <div className="hidden lg:block absolute top-10 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" style={{ left: '12.5%', right: '12.5%' }} />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          <div className="grid gap-8 sm:grid-cols-2 md:gap-10 lg:grid-cols-4">
             {steps.map((s) => (
               <div key={s.step} className="relative flex gap-6">
-                <span className="text-5xl md:text-6xl font-bold text-slate-200 shrink-0 leading-none select-none" aria-hidden>
+                <span
+                  className="shrink-0 select-none text-5xl font-bold leading-none text-slate-200 md:text-6xl"
+                  aria-hidden
+                >
                   {s.step}
                 </span>
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900">{s.title}</h3>
-                  <p className="mt-2 text-slate-600 text-sm leading-relaxed">{s.description}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.description}</p>
                 </div>
               </div>
             ))}

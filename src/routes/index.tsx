@@ -1,7 +1,8 @@
 import { createBrowserRouter, Navigate, useParams } from 'react-router-dom'
-import { MainLayout } from '../layouts/MainLayout'
+import { Layout } from '../layouts/Layout'
 import { PanelLayout } from '../layouts/PanelLayout'
 import { DynamicPage } from '../pages/DynamicPage'
+import { HomePage } from '../pages/HomePage'
 import { BlogPostPage } from '../pages/BlogPostPage'
 import { LoginPage } from '../pages/panel/LoginPage'
 import { RegisterPage } from '../pages/panel/RegisterPage'
@@ -17,39 +18,66 @@ import { AyarlarPage } from '../pages/panel/AyarlarPage'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { AdminDashboardPage } from '../pages/admin/AdminDashboardPage'
 import { AdminPlaceholderPage } from '../pages/admin/AdminPlaceholderPage'
-import { AdminCmsPagesPage } from '../pages/admin/AdminCmsPagesPage'
-import { AdminCmsPageEditor } from '../pages/admin/AdminCmsPageEditor'
+import { AdminMediaPage } from '../pages/admin/AdminMediaPage'
+import { AdminPagesListPage } from '../pages/admin/AdminPagesListPage'
+import { AdminPageEditPage } from '../pages/admin/AdminPageEditPage'
+import { AdminPostsPage } from '../pages/admin/AdminPostsPage'
+import { AdminPostEditPage } from '../pages/admin/AdminPostEditPage'
+import { AdminCategoriesPage } from '../pages/admin/AdminCategoriesPage'
+import { AdminMenusPage } from '../pages/admin/AdminMenusPage'
 import { AdminLoginPage } from '../pages/admin/AdminLoginPage'
+import { AdminServicesPage } from '../pages/admin/AdminServicesPage'
+import { AdminBrandsPage } from '../pages/admin/AdminBrandsPage'
+import { AdminMessagesPage } from '../pages/admin/AdminMessagesPage'
+import { AdminSettingsPage } from '../pages/admin/AdminSettingsPage'
+import { ContactPage } from '../pages/ContactPage'
+import { AboutPage } from '../pages/AboutPage'
+import { SoftwareDevelopmentPage } from '../pages/SoftwareDevelopmentPage'
+import { WebDesignPage } from '../pages/WebDesignPage'
+import { EcommercePage } from '../pages/EcommercePage'
+import { SaasProductPage } from '../pages/SaasProductPage'
+import { TrademarkPatentPage } from '../pages/TrademarkPatentPage'
+import { GameDevelopmentPage } from '../pages/GameDevelopmentPage'
+import { DigitalConsultingPage } from '../pages/DigitalConsultingPage'
+import { SolutionsPage } from '../pages/SolutionsPage'
+import { BlogPage } from '../pages/BlogPage'
+import { BlogPostDetailPage } from '../pages/BlogPostDetailPage'
+import { FaqPage } from '../pages/FaqPage'
+import { QuotePage } from '../pages/QuotePage'
+import { TestPage } from '../pages/TestPage'
+import { TestBuilderPage } from '../pages/admin/TestBuilderPage'
 import { RequireAdmin } from '../components/admin/RequireAdmin'
 
-function Page({ slug }: { slug: string }) {
-  return <DynamicPage slug={slug} />
+function CmsSlugRoute() {
+  const { slug } = useParams<{ slug: string }>()
+  return slug ? <DynamicPage slug={slug} /> : null
 }
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout />,
+    element: <Layout />,
     children: [
-      { index: true, element: <Page slug="home" /> },
-      { path: 'hakkimizda', element: <Page slug="hakkimizda" /> },
-      { path: 'hizmetler', element: <Page slug="hizmetler" /> },
+      { index: true, element: <HomePage /> },
+      { path: 'test', element: <TestPage /> },
+      { path: 'hakkimizda', element: <AboutPage /> },
+      { path: 'iletisim', element: <ContactPage /> },
+      { path: 'sss', element: <FaqPage /> },
+      { path: 'teklif-al', element: <QuotePage /> },
+      { path: 'hizmetler/yazilim-gelistirme', element: <SoftwareDevelopmentPage /> },
+      { path: 'hizmetler/web-tasarim', element: <WebDesignPage /> },
+      { path: 'hizmetler/e-ticaret', element: <EcommercePage /> },
+      { path: 'hizmetler/saas', element: <SaasProductPage /> },
+      { path: 'hizmetler/marka-patent-vekilligi', element: <TrademarkPatentPage /> },
+      { path: 'hizmetler/oyun-gelistirme', element: <GameDevelopmentPage /> },
+      { path: 'hizmetler/dijital-danismanlik', element: <DigitalConsultingPage /> },
+      { path: 'cozumler', element: <SolutionsPage /> },
+      { path: 'blog/:slug', element: <BlogPostDetailPage /> },
+      { path: 'blog', element: <BlogPage /> },
       { path: 'hizmetler/:slug', element: <ServiceDetailRoute /> },
-      { path: 'cozumler', element: <Page slug="cozumler" /> },
-      { path: 'cozumler/bilirkisi-hesaplama', element: <Page slug="bilirkisi-hesaplama" /> },
+      { path: 'cozumler/bilirkisi-hesaplama', element: <DynamicPage slug="bilirkisi-hesaplama" /> },
       { path: 'cozumler/:slug', element: <CozumDetailRoute /> },
-      { path: 'marka-patent', element: <Page slug="marka-patent" /> },
-      { path: 'e-ticaret', element: <Page slug="eticaret" /> },
-      { path: 'oyun-ve-dijital-urunler', element: <Page slug="oyun-ve-dijital-urunler" /> },
-      { path: 'blog', element: <Page slug="blog" /> },
-      { path: 'blog/:slug', element: <BlogPostPage /> },
-      { path: 'iletisim', element: <Page slug="iletisim" /> },
-      { path: 'teklif-al', element: <Page slug="teklif-al" /> },
-      { path: 'sss', element: <Page slug="sss" /> },
-      { path: 'kvkk', element: <Page slug="kvkk" /> },
-      { path: 'gizlilik', element: <Page slug="gizlilik" /> },
-      { path: 'cerez-politikasi', element: <Page slug="cerez-politikasi" /> },
-      { path: 'kullanim-sartlari', element: <Page slug="kullanim-sartlari" /> },
+      { path: ':slug', element: <CmsSlugRoute /> },
     ],
   },
   {
@@ -74,6 +102,16 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: '/admin/sayfalar/:pageId/edit',
+    element: <RequireAdmin />,
+    children: [
+      {
+        index: true,
+        element: <AdminPageEditPage />,
+      },
+    ],
+  },
+  {
     path: '/admin',
     children: [
       { path: 'giris', element: <AdminLoginPage /> },
@@ -84,8 +122,20 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboardPage /> },
-              { path: 'cms', element: <AdminCmsPagesPage /> },
-              { path: 'cms/:id', element: <AdminCmsPageEditor /> },
+              { path: 'sayfalar', element: <AdminPagesListPage /> },
+              { path: 'yazilar', element: <AdminPostsPage /> },
+              { path: 'yazilar/:postId', element: <AdminPostEditPage /> },
+              { path: 'kategoriler', element: <AdminCategoriesPage /> },
+              { path: 'menuler', element: <AdminMenusPage /> },
+              { path: 'medya', element: <AdminMediaPage /> },
+              { path: 'hizmetler', element: <AdminServicesPage /> },
+              { path: 'markalar', element: <AdminBrandsPage /> },
+              { path: 'mesajlar', element: <AdminMessagesPage /> },
+              { path: 'ayarlar', element: <AdminSettingsPage /> },
+              { path: 'test-builder', element: <TestBuilderPage /> },
+              { path: 'cms', element: <Navigate to="/admin/sayfalar" replace /> },
+              { path: 'pages/:pageId/builder', element: <Navigate to="/admin/sayfalar" replace /> },
+              { path: 'cms/:pageId/builder', element: <Navigate to="/admin/sayfalar" replace /> },
               { path: ':section', element: <AdminPlaceholderPage /> },
             ],
           },

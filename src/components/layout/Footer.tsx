@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom'
 import { footerNav } from '../../data/navigation'
+import { LAYOUT_CONTAINER_CLASS } from '../../lib/layoutConstants'
 
 export function Footer() {
   return (
     <footer className="bg-slate-50 border-t border-gray-200">
-      <div className="container mx-auto px-4 py-16 md:py-20">
+      <div className={`${LAYOUT_CONTAINER_CLASS} py-16 md:py-20`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
             <Link to="/" className="inline-block" aria-label="Woontegra Ana Sayfa">
-              <img src="/logo.png" alt="Woontegra" className="h-11 w-auto" />
+              <img src="/logo.png" alt="Woontegra" className="h-14 w-auto md:h-[3.75rem]" />
             </Link>
             <p className="mt-5 text-slate-500 text-sm max-w-xs leading-relaxed">
               Yazılım, dijital ticaret ve teknoloji çözümlerinde tek çatı. Modern altyapı, güvenilir üretim.
