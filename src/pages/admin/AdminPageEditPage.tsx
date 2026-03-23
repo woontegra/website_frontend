@@ -139,7 +139,6 @@ export function AdminPageEditPage() {
 
   const [loading, setLoading] = useState(true)
   const [msg, setMsg] = useState('')
-  const [saving, setSaving] = useState(false)
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
@@ -174,7 +173,6 @@ export function AdminPageEditPage() {
       setMsg('Başlık ve slug gerekli')
       return
     }
-    setSaving(true)
     setMsg('')
     if (isNew) {
       const r = await adminPagesWriteApi<{ id: string }>('', {
@@ -186,7 +184,6 @@ export function AdminPageEditPage() {
           status,
         }),
       })
-      setSaving(false)
       if (r.success && r.data) {
         navigate(`/admin/sayfalar/${(r.data as { id: string }).id}`, { replace: true })
       } else setMsg(r.message ?? 'Kayıt hatası')
@@ -201,7 +198,6 @@ export function AdminPageEditPage() {
         status,
       }),
     })
-    setSaving(false)
     if (r.success) setMsg('Kaydedildi ✓')
     else setMsg(r.message ?? 'Kayıt hatası')
   }
