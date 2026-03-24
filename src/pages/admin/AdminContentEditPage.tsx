@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
 import { HomeSections } from '../../components/admin/HomeSections'
 import { PageSections } from '../../components/admin/PageSections'
+import { getApiUrl } from '../../config/api'
 import { 
   defaultAboutData,
   defaultContactData,
@@ -406,7 +407,7 @@ export function AdminContentEditPage() {
   const loadContent = async () => {
     setLoading(true)
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+      const apiUrl = getApiUrl()
       const response = await fetch(`${apiUrl}/api/page-content/${selectedPage}`)
       const data = await response.json()
       if (data.success && data.data) {
@@ -426,7 +427,7 @@ export function AdminContentEditPage() {
     setSaving(true)
     setMessage('')
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+      const apiUrl = getApiUrl()
       const response = await fetch(`${apiUrl}/api/page-content/${selectedPage}`, {
         method: 'PUT',
         headers: {

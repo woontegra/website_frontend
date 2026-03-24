@@ -5,6 +5,7 @@ import {
   MessageSquare, Image as ImageIcon, Tag,
   Trash2, RefreshCw, AlertCircle
 } from 'lucide-react'
+import { getApiUrl } from '../../config/api'
 
 interface SiteSettings {
   // General
@@ -173,7 +174,8 @@ export function AdminSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/admin`, {
+      const API_URL = getApiUrl()
+      const response = await fetch(`${API_URL}/api/settings/admin`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
         },
@@ -193,7 +195,8 @@ export function AdminSettingsPage() {
     setSaving(true)
     setMessage(null)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings`, {
+      const API_URL = getApiUrl()
+      const response = await fetch(`${API_URL}/api/settings`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -223,7 +226,8 @@ export function AdminSettingsPage() {
     formData.append('file', file)
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
+      const API_URL = getApiUrl()
+      const response = await fetch(`${API_URL}/api/media/upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
@@ -259,7 +263,8 @@ export function AdminSettingsPage() {
 
   const handleTestEmail = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/test-email`, {
+      const API_URL = getApiUrl()
+      const response = await fetch(`${API_URL}/api/settings/test-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -287,7 +292,8 @@ export function AdminSettingsPage() {
 
   const handleClearCache = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/clear-cache`, {
+      const API_URL = getApiUrl()
+      const response = await fetch(`${API_URL}/api/settings/clear-cache`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,

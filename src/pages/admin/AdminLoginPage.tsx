@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
+import { getApiUrl } from '../../config/api'
 
-const apiBase = () => import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const apiBase = () => getApiUrl()
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('')

@@ -1,6 +1,7 @@
 import type { FetchPageResult, PageApiResponse } from '../types/page-api'
+import { getApiUrl } from '../config/api'
 
-const base = () => import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const base = () => getApiUrl()
 
 export async function fetchPublicPage(slug: string): Promise<FetchPageResult> {
   try {

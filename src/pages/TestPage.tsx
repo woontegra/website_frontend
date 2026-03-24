@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
+import { getApiUrl } from '../config/api'
 
 export function TestPage() {
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState<string>('')
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/services')
+    const API_URL = getApiUrl()
+    fetch(`${API_URL}/api/services`)
       .then(res => res.json())
       .then(json => {
         console.log('API Response:', json)

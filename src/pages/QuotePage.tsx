@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react'
 import { Button } from '../components/ui/Button'
+import { getApiUrl } from '../config/api'
 
 const projectTypes = [
   { id: 'software', label: 'Yazılım Geliştirme', icon: '💻' },
@@ -82,7 +83,7 @@ export function QuotePage() {
 
     setIsSubmitting(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+      const API_URL = getApiUrl()
       const response = await fetch(`${API_URL}/api/mail/offer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

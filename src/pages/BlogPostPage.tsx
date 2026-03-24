@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { resolveMediaSrc } from '../api/cms'
 import { LAYOUT_CONTAINER_CLASS } from '../lib/layoutConstants'
+import { getApiUrl } from '../config/api'
 
-const base = () => import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const base = () => getApiUrl()
 
 type PostApi = {
   title: string

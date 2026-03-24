@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Mail, User, Building2, Phone, MessageSquare, Send } from 'lucide-react'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+import { getApiUrl } from '../../config/api'
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -22,6 +21,7 @@ export function ContactForm() {
     setSuccess(false)
 
     try {
+      const API_URL = getApiUrl()
       const response = await fetch(`${API_URL}/api/mail/contact`, {
         method: 'POST',
         headers: {

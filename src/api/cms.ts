@@ -1,4 +1,6 @@
-export const apiBase = () => import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+import { getApiUrl } from '../config/api'
+
+export const apiBase = () => getApiUrl()
 
 /** /uploads/... veya tam URL → tarayıcıda kullanılabilir adres */
 export function resolveMediaSrc(url: string): string {
