@@ -3,6 +3,8 @@ import { Layout } from '../layouts/Layout'
 import { PanelLayout } from '../layouts/PanelLayout'
 import { DynamicPage } from '../pages/DynamicPage'
 import { HomePage } from '../pages/HomePage'
+import { AboutPage } from '../pages/AboutPage'
+import { ContactPage } from '../pages/ContactPage'
 import { LoginPage } from '../pages/panel/LoginPage'
 import { RegisterPage } from '../pages/panel/RegisterPage'
 import { ForgotPasswordPage } from '../pages/panel/ForgotPasswordPage'
@@ -30,8 +32,7 @@ import { AdminBrandsPage } from '../pages/admin/AdminBrandsPage'
 import { AdminMessagesPage } from '../pages/admin/AdminMessagesPage'
 import { AdminSettingsPage } from '../pages/admin/AdminSettingsPage'
 import { AdminQuotesPage } from '../pages/admin/AdminQuotesPage'
-import { ContactPage } from '../pages/ContactPage'
-import { AboutPage } from '../pages/AboutPage'
+import { AdminContentEditPage } from '../pages/admin/AdminContentEditPage'
 import { SoftwareDevelopmentPage } from '../pages/SoftwareDevelopmentPage'
 import { WebDesignPage } from '../pages/WebDesignPage'
 import { EcommercePage } from '../pages/EcommercePage'
@@ -103,13 +104,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin/sayfalar/:pageId/edit',
-    element: <RequireAdmin />,
-    children: [
-      {
-        index: true,
-        element: <AdminPageEditPage />,
-      },
-    ],
+    element: <Navigate to="/admin/icerik-duzenle" replace />,
   },
   {
     path: '/admin',
@@ -122,21 +117,23 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboardPage /> },
-              { path: 'sayfalar', element: <AdminPagesListPage /> },
-              { path: 'yazilar', element: <AdminPostsPage /> },
-              { path: 'yazilar/:postId', element: <AdminPostEditPage /> },
-              { path: 'kategoriler', element: <AdminCategoriesPage /> },
-              { path: 'menuler', element: <AdminMenusPage /> },
-              { path: 'medya', element: <AdminMediaPage /> },
-              { path: 'hizmetler', element: <AdminServicesPage /> },
-              { path: 'markalar', element: <AdminBrandsPage /> },
+              { path: 'sayfalar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'sayfalar/:pageId', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'yazilar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'yazilar/:postId', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'kategoriler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'menuler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'medya', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'hizmetler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'markalar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'mesajlar', element: <AdminMessagesPage /> },
               { path: 'teklifler', element: <AdminQuotesPage /> },
+              { path: 'icerik-duzenle', element: <AdminContentEditPage /> },
               { path: 'ayarlar', element: <AdminSettingsPage /> },
-              { path: 'test-builder', element: <TestBuilderPage /> },
-              { path: 'cms', element: <Navigate to="/admin/sayfalar" replace /> },
-              { path: 'pages/:pageId/builder', element: <Navigate to="/admin/sayfalar" replace /> },
-              { path: 'cms/:pageId/builder', element: <Navigate to="/admin/sayfalar" replace /> },
+              { path: 'test-builder', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'cms', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'pages/:pageId/builder', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'cms/:pageId/builder', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: ':section', element: <AdminPlaceholderPage /> },
             ],
           },

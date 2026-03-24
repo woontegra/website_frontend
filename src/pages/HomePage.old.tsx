@@ -18,41 +18,41 @@ export function HomePage() {
   return (
     <div className="bg-white">
       {/* HERO */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 py-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 py-24 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(34,197,94,0.2),transparent_70%)]" />
         <div className="container mx-auto px-4 max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="text-white">
-              <div className="inline-block px-3 py-1.5 bg-green-500/20 rounded-full mb-4">
-                <span className="text-xs font-medium text-green-400">Teknoloji & Yazılım</span>
+              <div className="inline-block px-4 py-2 bg-green-500/20 rounded-full mb-6">
+                <span className="text-sm font-medium text-green-400">Teknoloji & Yazılım</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-semibold mb-4 leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
                 Woontegra ile Yazılım, Dijital Hizmetler ve Ticaret Tek Yapıda
               </h1>
-              <p className="text-base text-gray-300 mb-6 leading-relaxed">
+              <p className="text-lg text-gray-300 mb-8 leading-relaxed">
                 Woontegra, yazılım geliştirme, e-ticaret sistemleri ve SaaS ürünleri ile işletmeler için sürdürülebilir dijital altyapılar kurar.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => document.getElementById('hizmetler')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="inline-flex items-center justify-center gap-2 text-sm px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                >
+              <div className="flex flex-wrap gap-4">
+                <Button variant="green" to="/hizmetler" className="text-base px-8 py-3">
                   Çözümleri İncele
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <Button variant="outline" to="/iletisim" className="text-sm px-6 py-2.5 border-white/30 text-white hover:bg-white/10">
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+                <Button variant="outline" to="/iletisim" className="text-base px-8 py-3 border-white/30 text-white hover:bg-white/10">
                   İletişime Geç
                 </Button>
               </div>
             </div>
             
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
-              <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full" />
               <img 
                 src="/images/hero-dashboard.jpg" 
                 alt="Woontegra Teknoloji" 
-                className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
+                className="relative rounded-2xl shadow-2xl border border-white/10 w-full h-auto object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.parentElement!.innerHTML = '<div class="relative bg-gradient-to-br from-green-600 to-blue-600 rounded-2xl shadow-2xl border border-white/10 h-96 flex items-center justify-center"><div class="text-white text-center"><div class="text-6xl mb-4">💻</div><div class="text-xl font-semibold">Woontegra</div><div class="text-sm text-gray-200 mt-2">Modern Teknoloji Çözümleri</div></div></div>'
+                }}
               />
             </div>
           </div>
@@ -74,7 +74,7 @@ export function HomePage() {
       </section>
 
       {/* HİZMETLER */}
-      <section id="hizmetler" className="py-24 bg-slate-900">
+      <section className="py-24 bg-slate-900">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">

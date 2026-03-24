@@ -1,0 +1,55 @@
+/* Compact UI Styles for Admin Panel */
+
+.input {
+  @apply h-9 px-3 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500;
+}
+
+.label {
+  @apply text-xs font-medium text-gray-600 mb-1 block;
+}
+
+.card {
+  @apply p-4 rounded-lg border border-gray-200 shadow-sm bg-white;
+}
+
+.button {
+  @apply h-9 px-4 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors font-medium;
+}
+
+.button-secondary {
+  @apply h-9 px-4 text-sm rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors font-medium;
+}
+
+.button-outline {
+  @apply h-9 px-4 text-sm rounded-md border border-gray-300 text-slate-700 hover:bg-slate-50 transition-colors font-medium;
+}
+
+.section-title {
+  @apply text-sm font-semibold text-gray-800 mb-3;
+}
+
+.page-title {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.textarea {
+  @apply px-3 py-2 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500;
+}
+
+.select {
+  @apply h-9 px-3 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500;
+}
+
+/* Compact spacing utilities */
+.compact-space-y {
+  @apply space-y-3;
+}
+
+.compact-gap {
+  @apply gap-3;
+}
+
+/* Global font size */
+body {
+  font-size: 14px;
+}

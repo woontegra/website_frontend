@@ -1,43 +1,69 @@
 import { Button } from '../components/ui/Button'
 import { ArrowRight, CheckCircle, CreditCard, Package, ShoppingBag, ShoppingCart, Tag, TrendingUp, Truck, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { defaultEcommerceData } from '../data/allPagesData'
+import type { HeroSectionData } from '../types/sections'
 
 export function EcommercePage() {
+  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('woontegra_ecommerce_page')
+    if (stored) {
+      try {
+        const pageData = JSON.parse(stored)
+        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
+        if (heroSection) {
+          setHeroData(heroSection.data)
+          return
+        }
+      } catch (e) {
+        console.error('Failed to parse ecommerce page data:', e)
+      }
+    }
+    const heroSection = defaultEcommerceData.sections.find(s => s.type === 'hero')
+    if (heroSection) {
+      setHeroData(heroSection.data as HeroSectionData)
+    }
+  }, [])
+
+  const title = heroData?.title || "Satış Odaklı E-Ticaret Sistemleri Kuruyoruz"
+  const subtitle = heroData?.subtitle || "Sadece bir mağaza değil, satış yapan ve büyüyen bir e-ticaret sistemi kurun."
+  const image = heroData?.image
+
   return (
     <div className="bg-white">
       {/* HERO */}
-      <section className="py-24 bg-gradient-to-br from-emerald-900 via-green-900 to-teal-900">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="relative py-16 bg-gradient-to-br from-emerald-900 via-green-900 to-teal-900 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.2),transparent_70%)]" />
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
-              <h1 className="text-5xl font-bold mb-6 leading-tight">
-                Satış Odaklı E-Ticaret Sistemleri Kuruyoruz
+              <h1 className="text-3xl md:text-4xl font-semibold mb-4 leading-tight">
+                {title}
               </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Sadece bir mağaza değil, satış yapan ve büyüyen bir e-ticaret sistemi kurun.
+              <p className="text-base text-gray-300 mb-6 leading-relaxed">
+                {subtitle}
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button variant="green" to="/iletisim" className="text-lg px-8 py-4 bg-white text-green-900 hover:bg-gray-100">
+              <div className="flex flex-wrap gap-3">
+                <Button variant="green" to="/iletisim" className="text-sm px-6 py-2.5 bg-white text-green-900 hover:bg-gray-100">
                   Teklif Al
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-                <Button variant="outline" to="/iletisim" className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white hover:text-green-900">
+                <Button variant="outline" to="/iletisim" className="text-sm px-6 py-2.5 border-white/30 text-white hover:bg-white hover:text-green-900">
                   Demo Talep Et
                 </Button>
               </div>
             </div>
             
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/ecommerce-screenshot.jpg" 
-                  alt="E-Ticaret Sistemi" 
-                  className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-12 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-6xl mb-4">🛒</div><div class="text-2xl font-semibold">E-Ticaret Sistemi</div></div></div>'
-                  }}
-                />
-              </div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 blur-3xl rounded-full animate-pulse" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
+              <img 
+                src={image || "/images/ecommerce-screenshot.jpg"}
+                alt="E-Ticaret Sistemi" 
+                className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
+              />
             </div>
           </div>
         </div>

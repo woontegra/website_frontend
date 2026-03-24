@@ -1,43 +1,69 @@
 import { Button } from '../components/ui/Button'
 import { ArrowRight, CheckCircle, Eye, Layout, Monitor, Smartphone, TrendingUp, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { defaultWebDesignData } from '../data/allPagesData'
+import type { HeroSectionData } from '../types/sections'
 
 export function WebDesignPage() {
+  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('woontegra_web_design_page')
+    if (stored) {
+      try {
+        const pageData = JSON.parse(stored)
+        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
+        if (heroSection) {
+          setHeroData(heroSection.data)
+          return
+        }
+      } catch (e) {
+        console.error('Failed to parse web-design page data:', e)
+      }
+    }
+    const heroSection = defaultWebDesignData.sections.find(s => s.type === 'hero')
+    if (heroSection) {
+      setHeroData(heroSection.data as HeroSectionData)
+    }
+  }, [])
+
+  const title = heroData?.title || "Modern ve Dönüşüm Odaklı Web Siteleri"
+  const subtitle = heroData?.subtitle || "Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz."
+  const image = heroData?.image
+
   return (
     <div className="bg-white">
       {/* HERO */}
-      <section className="py-24 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="relative py-16 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(147,51,234,0.2),transparent_70%)]" />
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
-              <h1 className="text-5xl font-bold mb-6 leading-tight">
-                Modern ve Dönüşüm Odaklı Web Siteleri
+              <h1 className="text-3xl md:text-4xl font-semibold mb-4 leading-tight">
+                {title}
               </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz.
+              <p className="text-base text-gray-300 mb-6 leading-relaxed">
+                {subtitle}
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button variant="green" to="/iletisim" className="text-lg px-8 py-4">
+              <div className="flex flex-wrap gap-3">
+                <Button variant="green" to="/iletisim" className="text-sm px-6 py-2.5">
                   Teklif Al
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-                <Button variant="outline" to="/iletisim" className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white hover:text-indigo-900">
+                <Button variant="outline" to="/iletisim" className="text-sm px-6 py-2.5 border-white/30 text-white hover:bg-white hover:text-indigo-900">
                   Örnekleri İncele
                 </Button>
               </div>
             </div>
             
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/website-mockup.jpg" 
-                  alt="Web Tasarım Örneği" 
-                  className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-12 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-6xl mb-4">🎨</div><div class="text-2xl font-semibold">Modern Web Tasarım</div></div></div>'
-                  }}
-                />
-              </div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
+              <img 
+                src={image || "/images/website-mockup.jpg"}
+                alt="Web Tasarım Örneği" 
+                className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
+              />
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { contactMessagesApi } from '../../api/contact-messages'
 import { Mail, User, Building2, Phone, MessageSquare, Send } from 'lucide-react'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -21,7 +22,24 @@ export function ContactForm() {
     setSuccess(false)
 
     try {
-      await contactMessagesApi.create(formData)
+      const response = await fetch(`${API_URL}/api/mail/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Mesaj gönderilemedi')
+      }
+
       setSuccess(true)
       setFormData({
         name: '',
@@ -32,7 +50,7 @@ export function ContactForm() {
       })
       setTimeout(() => setSuccess(false), 5000)
     } catch (err) {
-      setError('Mesaj gönderilemedi. Lütfen tekrar deneyin.')
+      setError(err instanceof Error ? err.message : 'Mesaj gönderilemedi. Lütfen tekrar deneyin.')
       console.error('Form gönderme hatası:', err)
     } finally {
       setLoading(false)

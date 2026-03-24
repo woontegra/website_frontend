@@ -2,9 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 const adminNav = [
   { label: 'Dashboard', href: '/admin' },
-  { label: 'Sayfalar', href: '/admin/sayfalar' },
-  { label: 'Blog', href: '/admin/yazilar' },
-  { label: 'Medya', href: '/admin/medya' },
+  { label: 'İçerik Düzenle', href: '/admin/icerik-duzenle' },
   { label: 'Teklifler', href: '/admin/teklifler' },
   { label: 'Mesajlar', href: '/admin/mesajlar' },
   { label: 'Ayarlar', href: '/admin/ayarlar' },

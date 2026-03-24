@@ -1,43 +1,69 @@
 import { Button } from '../components/ui/Button'
 import { ArrowRight, CheckCircle, Code, Database, Settings, ShoppingCart, Users, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { defaultSoftwareDevData } from '../data/allPagesData'
+import type { HeroSectionData } from '../types/sections'
 
 export function SoftwareDevelopmentPage() {
+  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('woontegra_software_dev_page')
+    if (stored) {
+      try {
+        const pageData = JSON.parse(stored)
+        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
+        if (heroSection) {
+          setHeroData(heroSection.data)
+          return
+        }
+      } catch (e) {
+        console.error('Failed to parse software-dev page data:', e)
+      }
+    }
+    const heroSection = defaultSoftwareDevData.sections.find(s => s.type === 'hero')
+    if (heroSection) {
+      setHeroData(heroSection.data as HeroSectionData)
+    }
+  }, [])
+
+  const title = heroData?.title || "İşletmenize Özel Yazılım Geliştiriyoruz"
+  const subtitle = heroData?.subtitle || "Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın."
+  const image = heroData?.image
+
   return (
     <div className="bg-white">
       {/* HERO */}
-      <section className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-green-900">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="relative py-16 bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(34,197,94,0.2),transparent_70%)]" />
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
-              <h1 className="text-5xl font-bold mb-6 leading-tight">
-                İşletmenize Özel Yazılım Geliştiriyoruz
+              <h1 className="text-3xl md:text-4xl font-semibold mb-4 leading-tight">
+                {title}
               </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın.
+              <p className="text-base text-gray-300 mb-6 leading-relaxed">
+                {subtitle}
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button variant="green" to="/iletisim" className="text-lg px-8 py-4">
+              <div className="flex flex-wrap gap-3">
+                <Button variant="green" to="/iletisim" className="text-sm px-6 py-2.5">
                   Teklif Al
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-                <Button variant="outline" to="/iletisim" className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white hover:text-slate-900">
+                <Button variant="outline" to="/iletisim" className="text-sm px-6 py-2.5 border-white/30 text-white hover:bg-white hover:text-slate-900">
                   İletişime Geç
                 </Button>
               </div>
             </div>
             
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/software-dashboard.jpg" 
-                  alt="Yazılım Dashboard" 
-                  className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-12 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-6xl mb-4">💻</div><div class="text-2xl font-semibold">Özel Yazılım Sistemleri</div></div></div>'
-                  }}
-                />
-              </div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
+              <img 
+                src={image || "/images/software-dashboard.jpg"}
+                alt="Yazılım Dashboard" 
+                className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
+              />
             </div>
           </div>
         </div>

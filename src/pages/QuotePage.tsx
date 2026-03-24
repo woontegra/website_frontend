@@ -82,19 +82,29 @@ export function QuotePage() {
 
     setIsSubmitting(true)
     try {
-      const response = await fetch('/api/quote', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+      const response = await fetch(`${API_URL}/api/mail/offer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service: formData.type,
+          note: `Proje: ${formData.description}\nBütçe: ${formData.budget}\nZaman: ${formData.timeline}\nŞirket: ${formData.company || 'Belirtilmedi'}`,
+        }),
       })
+
+      const data = await response.json()
 
       if (response.ok) {
         setCurrentStep(4)
       } else {
-        setErrors({ submit: 'Bir hata oluştu. Lütfen tekrar deneyin.' })
+        setErrors({ submit: data.message || 'Bir hata oluştu. Lütfen tekrar deneyin.' })
       }
     } catch (error) {
       setErrors({ submit: 'Bağlantı hatası. Lütfen tekrar deneyin.' })
+      console.error('Quote form error:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -341,7 +351,7 @@ export function QuotePage() {
                   <Check className="w-12 h-12 text-green-600" />
                 </div>
                 <h2 className="text-4xl font-bold text-slate-900">
-                  Teklif Talebiniz Hazır
+                  Teklif Talebiniz Gönderildi
                 </h2>
                 <p className="text-xl text-slate-600 max-w-2xl mx-auto">
                   Bilgilerinizi aldık. En kısa sürede sizinle iletişime geçeceğiz.

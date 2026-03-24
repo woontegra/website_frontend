@@ -76,14 +76,13 @@ export function Navbar() {
                   >
                     {item.children ? (
                       <>
-                        <Link
-                          to={item.href}
-                          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                        <button
+                          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-default ${
                             isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
                           }`}
                         >
                           {item.label}
-                        </Link>
+                        </button>
                         {megaOpen === item.href && (
                           <div className="absolute left-0 top-full pt-1">
                             <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
@@ -123,8 +122,8 @@ export function Navbar() {
             <Button variant="ghost" size="sm" to="/teklif-al">
               Teklif Al
             </Button>
-            <Button size="sm" to="/panel/giris">
-              Giriş Yap
+            <Button size="sm" to="/iletisim">
+              İletişim
             </Button>
           </div>
 
@@ -184,8 +183,8 @@ export function Navbar() {
                 <Button variant="outline" size="sm" to="/teklif-al" className="flex-1">
                   Teklif Al
                 </Button>
-                <Button size="sm" to="/panel/giris" className="flex-1">
-                  Giriş Yap
+                <Button size="sm" to="/iletisim" className="flex-1">
+                  İletişim
                 </Button>
               </div>
             </nav>
