@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
 import { HomeSections } from '../../components/admin/HomeSections'
 import { PageSections } from '../../components/admin/PageSections'
-import { defaultHomeData } from '../../data/defaultHomeData'
 import { 
   defaultAboutData,
   defaultContactData,
@@ -460,8 +459,7 @@ export function AdminContentEditPage() {
         <h2 className="text-sm font-semibold text-slate-900 mb-3">Sayfalar</h2>
         <div className="space-y-0.5">
           {Object.entries(PAGE_CONFIGS).map(([key, config]) => {
-            const isCategory = 'category' in config
-            const isServiceCategory = config.category === 'Hizmetler'
+            const isServiceCategory = 'category' in config && config.category === 'Hizmetler'
             
             return (
               <button
@@ -519,8 +517,6 @@ export function AdminContentEditPage() {
           <PageSections pageSlug="saas" defaultData={defaultSaasData} storageKey="woontegra_saas_page" />
         ) : selectedPage === 'trademark' ? (
           <PageSections pageSlug="trademark" defaultData={defaultTrademarkData} storageKey="woontegra_trademark_page" />
-        ) : selectedPage === 'game-dev' ? (
-          <PageSections pageSlug="game-dev" defaultData={defaultGameDevData} storageKey="woontegra_game_dev_page" />
         ) : selectedPage === 'consulting' ? (
           <PageSections pageSlug="consulting" defaultData={defaultConsultingData} storageKey="woontegra_consulting_page" />
         ) : selectedPage === 'solutions' ? (

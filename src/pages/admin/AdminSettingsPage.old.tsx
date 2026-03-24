@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { 
   Save, Settings, Palette, Mail, Phone, MapPin, Globe, 
-  Search, BarChart, Code, Shield, Wrench, Upload, X,
-  MessageSquare, Image as ImageIcon, FileText, Tag, Link2,
-  Eye, EyeOff, Trash2, RefreshCw, Power, AlertCircle
+  Search, BarChart, Wrench, Upload, X,
+  MessageSquare, Image as ImageIcon, Tag,
+  Trash2, RefreshCw, AlertCircle
 } from 'lucide-react'
 
 interface SiteSettings {

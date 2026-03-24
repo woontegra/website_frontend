@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Save, ChevronDown, ChevronUp, Settings, Palette, Mail, Globe, BarChart, Code, Shield, Wrench, Upload, X, Tag, RefreshCw, AlertCircle } from 'lucide-react'
+import { Save, ChevronDown, ChevronUp, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw } from 'lucide-react'
 
 interface SiteSettings {
   siteName: string
