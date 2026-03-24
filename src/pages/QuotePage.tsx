@@ -25,6 +25,14 @@ const timelineOptions = [
   { value: 'flexible', label: 'Esnek' },
 ]
 
+const getProjectTypeLabel = (id: string) => {
+  return projectTypes.find(p => p.id === id)?.label || id
+}
+
+const getTimelineLabel = (value: string) => {
+  return timelineOptions.find(t => t.value === value)?.label || value
+}
+
 export function QuotePage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
@@ -91,8 +99,8 @@ export function QuotePage() {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          service: formData.type,
-          note: `Proje: ${formData.description}\nBütçe: ${formData.budget}\nZaman: ${formData.timeline}\nŞirket: ${formData.company || 'Belirtilmedi'}`,
+          service: getProjectTypeLabel(formData.type),
+          note: `Proje: ${formData.description}\nBütçe: ${formData.budget}\nZaman: ${getTimelineLabel(formData.timeline)}\nŞirket: ${formData.company || 'Belirtilmedi'}`,
         }),
       })
 

@@ -26,6 +26,7 @@ function NavItem({ href, label, active, onClick }: { href: string; label: string
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
+  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
   const [cmsNav, setCmsNav] = useState<PublicMenuItem[] | null>(null)
   const location = useLocation()
@@ -158,25 +159,50 @@ export function Navbar() {
                   ))
                 : mainNav.map((item) => (
                     <div key={item.href}>
-                      <Link
-                        to={item.href}
-                        className={`block rounded-lg px-4 py-3 text-sm font-medium ${
-                          isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
-                        }`}
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        {item.label}
-                      </Link>
-                      {item.children?.map((child) => (
+                      {item.children && item.children.length > 0 ? (
+                        <>
+                          <button
+                            onClick={() => setMobileSubmenuOpen(mobileSubmenuOpen === item.href ? null : item.href)}
+                            className={`w-full flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium ${
+                              isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
+                            }`}
+                          >
+                            <span>{item.label}</span>
+                            <svg
+                              className={`w-4 h-4 transition-transform ${mobileSubmenuOpen === item.href ? 'rotate-180' : ''}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          {mobileSubmenuOpen === item.href && (
+                            <div className="animate-fade-in">
+                              {item.children.map((child) => (
+                                <Link
+                                  key={child.href}
+                                  to={child.href}
+                                  className="block py-2 pl-8 pr-4 text-sm text-slate-600 hover:text-slate-900"
+                                  onClick={() => setMobileOpen(false)}
+                                >
+                                  {child.label}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      ) : (
                         <Link
-                          key={child.href}
-                          to={child.href}
-                          className="block py-2 pl-8 pr-4 text-sm text-slate-600 hover:text-slate-900"
+                          to={item.href}
+                          className={`block rounded-lg px-4 py-3 text-sm font-medium ${
+                            isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
+                          }`}
                           onClick={() => setMobileOpen(false)}
                         >
-                          {child.label}
+                          {item.label}
                         </Link>
-                      ))}
+                      )}
                     </div>
                   ))}
               <div className="mt-4 flex gap-2 border-t border-gray-200 px-4 pt-4">
