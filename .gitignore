@@ -29,3 +29,5 @@ build
 coverage
 .vite
 *.log
+public/downloads/*.exe
+public/downloads/*.blockmap

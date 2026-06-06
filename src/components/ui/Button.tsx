@@ -9,6 +9,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size
   href?: string
   to?: string
+  download?: string
   children: React.ReactNode
   className?: string
 }
@@ -32,14 +33,35 @@ const sizeStyles: Record<Size, string> = {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', className = '', children, href, to, ...props }, ref) => {
-    const classes = `inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
+  ({ variant = 'primary', size = 'md', className = '', children, href, to, download, disabled, onClick, ...props }, ref) => {
+    const disabledClass = disabled ? 'pointer-events-none opacity-50 cursor-not-allowed' : ''
+    const classes = `inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${disabledClass} ${className}`
 
     if (to) {
       return <Link to={to} className={classes}>{children}</Link>
     }
     if (href) {
-      return <a href={href} className={classes} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}>{children}</a>
+      const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        if (disabled) {
+          event.preventDefault()
+          return
+        }
+        onClick?.(event as unknown as React.MouseEvent<HTMLButtonElement>)
+      }
+
+      return (
+        <a
+          href={disabled ? undefined : href}
+          className={classes}
+          download={download}
+          aria-disabled={disabled}
+          onClick={handleClick}
+          target={href.startsWith('http') ? '_blank' : undefined}
+          rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+        >
+          {children}
+        </a>
+      )
     }
 
     return (

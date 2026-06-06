@@ -37,6 +37,7 @@ import { BlogPostDetailPage } from '../pages/BlogPostDetailPage'
 import { FaqPage } from '../pages/FAQPage'
 import { QuotePage } from '../pages/QuotePage'
 import { TestPage } from '../pages/TestPage'
+import { SifreKasasiPage } from '../pages/SifreKasasiPage'
 import { RequireAdmin } from '../components/admin/RequireAdmin'
 
 function CmsSlugRoute() {
@@ -68,6 +69,7 @@ export const router = createBrowserRouter([
       { path: 'hizmetler/:slug', element: <ServiceDetailRoute /> },
       { path: 'cozumler/bilirkisi-hesaplama', element: <DynamicPage slug="bilirkisi-hesaplama" /> },
       { path: 'cozumler/:slug', element: <CozumDetailRoute /> },
+      { path: 'ucretsiz-araclar/sifre-kasasi', element: <SifreKasasiPage /> },
       { path: ':slug', element: <CmsSlugRoute /> },
     ],
   },
