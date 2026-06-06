@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { mainNav } from '../../data/navigation'
 import { fetchPublicMenu, type PublicMenuItem } from '../../api/menus'
-import { LAYOUT_CONTAINER_CLASS } from '../../lib/layoutConstants'
 import { Button } from '../ui/Button'
 
+const NAV_CONTAINER_CLASS = 'mx-auto max-w-[1280px] px-4 sm:px-5 min-[1200px]:px-6'
+
 function NavItem({ href, label, active, onClick }: { href: string; label: string; active: boolean; onClick?: () => void }) {
-  const cls = `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+  const cls = `whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
     active ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
   }`
   if (href.startsWith('http')) {
@@ -57,13 +58,17 @@ export function Navbar() {
           : 'border-b border-gray-100 bg-white/95 backdrop-blur-sm'
       }`}
     >
-      <div className={LAYOUT_CONTAINER_CLASS}>
-        <div className="flex min-h-[4rem] items-center justify-between py-1 md:min-h-[4.5rem]">
-          <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Woontegra Ana Sayfa">
-            <img src="/logo.png" alt="Woontegra" className="h-14 w-auto md:h-[3.75rem]" />
+      <div className={NAV_CONTAINER_CLASS}>
+        <div className="flex min-h-[4rem] items-center justify-between gap-2 py-1 min-[1200px]:min-h-[4.5rem] min-[1200px]:gap-3">
+          <Link
+            to="/"
+            className="flex max-w-[140px] shrink-0 items-center min-[1200px]:max-w-[170px]"
+            aria-label="Woontegra Ana Sayfa"
+          >
+            <img src="/logo.png" alt="Woontegra" className="h-11 w-full object-contain min-[1200px]:h-12" />
           </Link>
 
-          <nav className="hidden items-center gap-1 lg:flex">
+          <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">
             {cmsNav
               ? cmsNav.map((item) => (
                   <NavItem key={item.id} href={item.href} label={item.label} active={isActive(item.href)} />
@@ -78,7 +83,7 @@ export function Navbar() {
                     {item.children ? (
                       <>
                         <button
-                          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-default ${
+                          className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors cursor-default ${
                             isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
                           }`}
                         >
@@ -108,7 +113,7 @@ export function Navbar() {
                     ) : (
                       <Link
                         to={item.href}
-                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                        className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
                           isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
                         }`}
                       >
@@ -119,18 +124,18 @@ export function Navbar() {
                 ))}
           </nav>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            <Button variant="ghost" size="sm" to="/teklif-al">
+          <div className="hidden shrink-0 items-center gap-1.5 min-[1200px]:flex">
+            <Button variant="ghost" size="sm" to="/teklif-al" className="whitespace-nowrap !px-3.5 !py-2 text-[14px]">
               Teklif Al
             </Button>
-            <Button size="sm" to="/iletisim">
+            <Button size="sm" to="/iletisim" className="whitespace-nowrap !px-3.5 !py-2 text-[14px]">
               İletişim
             </Button>
           </div>
 
           <button
             type="button"
-            className="p-2 text-slate-600 hover:text-slate-900 lg:hidden"
+            className="flex shrink-0 p-2 text-slate-600 hover:text-slate-900 min-[1200px]:hidden"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Menü"
           >
@@ -145,7 +150,7 @@ export function Navbar() {
         </div>
 
         {mobileOpen && (
-          <div className="animate-fade-in border-t border-gray-200 py-4 lg:hidden">
+          <div className="animate-fade-in border-t border-gray-200 py-4 min-[1200px]:hidden">
             <nav className="flex flex-col gap-1">
               {cmsNav
                 ? cmsNav.map((item) => (

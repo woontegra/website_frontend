@@ -22,6 +22,7 @@ const SEO_DESCRIPTION =
   'Giriş URL\'lerinizi, kullanıcı adlarınızı, şifrelerinizi ve notlarınızı yerel ve şifreli şekilde saklayabileceğiniz ücretsiz Windows masaüstü aracı.'
 
 const PAGE_CONTAINER_CLASS = 'mx-auto max-w-[1200px] px-6 md:px-8 lg:px-10'
+const HERO_CONTAINER_CLASS = 'mx-auto max-w-[1440px] px-6 md:px-10 xl:px-12'
 
 const APP_VERSION = '1.0.0'
 const APP_PLATFORM = 'Windows'
@@ -147,24 +148,55 @@ function DownloadStatsBox({
   stats,
   loading,
   failed,
+  compact = false,
 }: {
   stats: SifreKasasiDownloadStats | null
   loading: boolean
   failed: boolean
+  compact?: boolean
 }) {
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-sm">
+      <div
+        className={`rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm ${compact ? 'px-4 py-3' : 'px-5 py-4'}`}
+      >
         <div className="h-4 w-32 animate-pulse rounded bg-white/10" />
-        <div className="mt-3 h-8 w-16 animate-pulse rounded bg-white/10" />
+        <div className="mt-2 h-7 w-16 animate-pulse rounded bg-white/10" />
       </div>
     )
   }
 
   if (failed || !stats) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-300 backdrop-blur-sm">
+      <div
+        className={`rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 backdrop-blur-sm ${compact ? 'px-4 py-3' : 'px-5 py-4'}`}
+      >
         Yeni yayınlandı
+      </div>
+    )
+  }
+
+  if (compact) {
+    return (
+      <div className="rounded-xl border border-white/15 bg-white/8 px-4 py-3 backdrop-blur-sm">
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
+          <div>
+            <p className="text-xs font-medium text-slate-400">Toplam indirme</p>
+            <p className="text-2xl font-bold tracking-tight text-white">
+              {formatDownloadCount(stats.total)}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400">
+            <span>
+              Kurulum:{' '}
+              <span className="font-semibold text-slate-200">{formatDownloadCount(stats.setup)}</span>
+            </span>
+            <span>
+              Portable:{' '}
+              <span className="font-semibold text-slate-200">{formatDownloadCount(stats.portable)}</span>
+            </span>
+          </div>
+        </div>
       </div>
     )
   }
@@ -217,23 +249,23 @@ function AppScreenshot() {
 
   return (
     <>
-      <div className="relative w-full lg:ml-auto lg:max-w-[820px]">
+      <div className="relative w-full max-w-[980px] justify-self-end overflow-visible xl:max-w-[1040px]">
         <div
-          className="pointer-events-none absolute -inset-3 rounded-3xl bg-gradient-to-br from-accent-blue/25 to-accent-green/20 blur-2xl md:-inset-4"
+          className="pointer-events-none absolute -inset-5 rounded-3xl bg-gradient-to-br from-accent-blue/20 to-accent-green/15 blur-2xl md:-inset-8"
           aria-hidden
         />
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="group relative w-full overflow-hidden rounded-2xl border border-white/20 bg-slate-900/30 text-left shadow-2xl shadow-black/35 ring-1 ring-white/10 transition-transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-accent-blue/50"
+          className="group relative w-full overflow-visible rounded-2xl border border-white/15 text-left shadow-2xl shadow-black/40 focus:outline-none focus:ring-2 focus:ring-accent-blue/50"
           aria-label="Uygulama ekran görüntüsünü büyüt"
         >
           <img
             src={APP_SCREENSHOT_URL}
             alt="Woontegra Şifre Kasası uygulama ekranı"
-            className="block h-auto w-full object-contain"
+            className="block h-auto w-full rounded-2xl object-contain"
           />
-          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-slate-200 opacity-90 transition-opacity group-hover:opacity-100">
+          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-slate-200">
             <ZoomIn className="h-3.5 w-3.5" />
             Büyüt
           </span>
@@ -293,32 +325,32 @@ export function SifreKasasiPage() {
   return (
     <div className="bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 py-20 md:py-28">
+      <section className="relative overflow-x-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 py-24 lg:min-h-[760px] lg:py-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_35%,rgba(37,99,235,0.22),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_65%,rgba(34,197,94,0.18),transparent_55%)]" />
-        <div className={`${PAGE_CONTAINER_CLASS} relative z-10`}>
-          <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-12">
-            <div className="text-white">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-5 py-2 text-sm font-medium text-emerald-100">
+        <div className={`${HERO_CONTAINER_CLASS} relative z-10 flex min-h-[inherit] items-center`}>
+          <div className="grid w-full items-center gap-12 lg:grid-cols-[520px_minmax(0,1fr)] lg:gap-16 xl:gap-20">
+            <div className="flex max-w-[520px] flex-col gap-6 text-white lg:gap-7">
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-5 py-2 text-sm font-medium text-emerald-100">
                 <Shield className="h-4 w-4 text-emerald-300" />
                 Ücretsiz Windows Aracı — Yerel ve Şifreli
               </div>
-              <h1 className="text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
-                Woontegra Şifre Kasası
-              </h1>
-              <p className="mt-6 text-xl font-medium leading-relaxed text-slate-200 md:text-2xl">
-                Giriş bilgilerinizi güvenli, düzenli ve kolay erişilebilir şekilde saklayın.
-              </p>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 md:text-lg md:leading-8">
-                Şifrelerinizi, giriş URL&apos;lerinizi, kullanıcı adlarınızı ve notlarınızı Excel dosyaları
-                yerine yerel ve şifreli bir masaüstü uygulamasında yönetin.
-              </p>
-
-              <div className="mt-8">
-                <VersionInfo variant="dark" />
+              <div className="space-y-5">
+                <h1 className="text-4xl font-bold leading-[1.12] tracking-tight md:text-5xl xl:text-6xl xl:leading-[1.08]">
+                  Woontegra Şifre Kasası
+                </h1>
+                <p className="text-xl font-medium leading-relaxed text-slate-200 md:text-2xl md:leading-snug">
+                  Giriş bilgilerinizi güvenli, düzenli ve kolay erişilebilir şekilde saklayın.
+                </p>
+                <p className="text-base leading-8 text-slate-400 md:text-lg">
+                  Şifrelerinizi, giriş URL&apos;lerinizi, kullanıcı adlarınızı ve notlarınızı Excel dosyaları
+                  yerine yerel ve şifreli bir masaüstü uygulamasında yönetin.
+                </p>
               </div>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <VersionInfo variant="dark" />
+
+              <div className="flex flex-col gap-3">
                 <Button variant="hero" size="xl" href={SETUP_DOWNLOAD_URL} target="_self" className="w-full sm:w-auto">
                   <Download className="mr-2 h-5 w-5" />
                   Windows Kurulum Sürümünü İndir
@@ -335,13 +367,20 @@ export function SifreKasasiPage() {
                 </Button>
               </div>
 
-              <div className="mt-8 grid max-w-2xl gap-4">
+              <div className="flex flex-col gap-3">
                 <TrustNote />
-                <DownloadStatsBox stats={stats} loading={statsLoading} failed={statsFailed} />
+                <DownloadStatsBox
+                  stats={stats}
+                  loading={statsLoading}
+                  failed={statsFailed}
+                  compact
+                />
               </div>
             </div>
 
-            <AppScreenshot />
+            <div className="grid w-full overflow-visible lg:justify-items-end">
+              <AppScreenshot />
+            </div>
           </div>
         </div>
       </section>
