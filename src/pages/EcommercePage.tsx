@@ -46,7 +46,11 @@ export function EcommercePage() {
                 {subtitle}
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button variant="green" to="/iletisim" className="text-sm px-6 py-2.5 bg-white text-green-900 hover:bg-gray-100">
+                <Button
+                  variant="secondary"
+                  to="/teklif-al"
+                  className="text-sm px-6 py-2.5 !border-0 !bg-white !text-emerald-900 shadow-md hover:!bg-slate-100"
+                >
                   Teklif Al
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
