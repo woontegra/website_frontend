@@ -10,6 +10,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string
   to?: string
   download?: string
+  target?: string
+  rel?: string
   children: React.ReactNode
   className?: string
 }
@@ -33,7 +35,7 @@ const sizeStyles: Record<Size, string> = {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', className = '', children, href, to, download, disabled, onClick, ...props }, ref) => {
+  ({ variant = 'primary', size = 'md', className = '', children, href, to, download, target, rel, disabled, onClick, ...props }, ref) => {
     const disabledClass = disabled ? 'pointer-events-none opacity-50 cursor-not-allowed' : ''
     const classes = `inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${disabledClass} ${className}`
 
@@ -56,8 +58,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           download={download}
           aria-disabled={disabled}
           onClick={handleClick}
-          target={href.startsWith('http') ? '_blank' : undefined}
-          rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+          target={target ?? (href.startsWith('http') ? '_blank' : undefined)}
+          rel={rel ?? (href.startsWith('http') ? 'noopener noreferrer' : undefined)}
         >
           {children}
         </a>

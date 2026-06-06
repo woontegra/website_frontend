@@ -1,32 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  AlertTriangle,
   CheckCircle,
-  Copy,
   Download,
-  ExternalLink,
-  Eye,
-  EyeOff,
-  Folder,
-  Globe,
+  FileSpreadsheet,
   HardDrive,
   KeyRound,
-  Lock,
-  Search,
   Shield,
   ShieldCheck,
-  FileSpreadsheet,
-  AlertTriangle,
+  X,
+  ZoomIn,
 } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { FAQItem } from '../components/ui/FAQItem'
 import { SectionHeader } from '../components/ui/SectionHeader'
-import {
-  fetchSifreKasasiStats,
-  getSifreKasasiPortableDownloadUrl,
-  getSifreKasasiSetupDownloadUrl,
-  type SifreKasasiDownloadStats,
-} from '../api/downloads'
+import { fetchSifreKasasiStats, type SifreKasasiDownloadStats } from '../api/downloads'
 
 const SEO_TITLE = 'Woontegra Şifre Kasası | Ücretsiz Windows Şifre Yönetim Aracı'
 const SEO_DESCRIPTION =
@@ -36,9 +25,11 @@ const PAGE_CONTAINER_CLASS = 'mx-auto max-w-[1200px] px-6 md:px-8 lg:px-10'
 
 const APP_VERSION = '1.0.0'
 const APP_PLATFORM = 'Windows'
-const SETUP_DOWNLOAD_URL = getSifreKasasiSetupDownloadUrl()
-const PORTABLE_DOWNLOAD_URL = getSifreKasasiPortableDownloadUrl()
-const DOWNLOAD_BUSY_MS = 2000
+const SETUP_DOWNLOAD_URL =
+  'https://websitebackend-production-ab6e.up.railway.app/api/public/downloads/sifre-kasasi/setup'
+const PORTABLE_DOWNLOAD_URL =
+  'https://websitebackend-production-ab6e.up.railway.app/api/public/downloads/sifre-kasasi/portable'
+const APP_SCREENSHOT_URL = '/images/woontegra-sifre-kasasi-ekran.png'
 
 const SECURITY_CARDS = [
   {
@@ -75,13 +66,6 @@ const FEATURES = [
   'Şifreli yedek alma ve geri yükleme',
   'Güvenli Excel ve tam Excel dışa aktarım',
   'Kurulumlu ve portable Windows sürümü',
-]
-
-const MOCK_ENTRIES = [
-  { site: 'E-posta Hesabı', user: 'info@firma.com', strength: 'Güçlü' },
-  { site: 'Bankacılık Portalı', user: 'kullanici_01', strength: 'Çok Güçlü' },
-  { site: 'E-Ticaret Paneli', user: 'admin@magaza.com', strength: 'Güçlü' },
-  { site: 'Bulut Depolama', user: 'yedek@firma.com', strength: 'Orta' },
 ]
 
 const FAQ_ITEMS = [
@@ -215,138 +199,72 @@ function DownloadCountLabel({ count, loading }: { count: number | null; loading:
   )
 }
 
-type DownloadButtonProps = {
-  href: string
-  variant: 'hero' | 'outline' | 'primary' | 'green'
-  size?: 'lg' | 'xl'
-  className?: string
-  children: React.ReactNode
-  onDownloadStart?: () => void
-}
+function AppScreenshot() {
+  const [expanded, setExpanded] = useState(false)
 
-function DownloadButton({
-  href,
-  variant,
-  size = 'xl',
-  className = '',
-  children,
-  onDownloadStart,
-}: DownloadButtonProps) {
-  const [busy, setBusy] = useState(false)
-
-  const handleClick = useCallback(() => {
-    if (busy) return
-    setBusy(true)
-    onDownloadStart?.()
-    window.location.assign(href)
-    window.setTimeout(() => setBusy(false), DOWNLOAD_BUSY_MS)
-  }, [busy, href, onDownloadStart])
+  useEffect(() => {
+    if (!expanded) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setExpanded(false)
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [expanded])
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      disabled={busy}
-      onClick={handleClick}
-      className={className}
-    >
-      {children}
-    </Button>
-  )
-}
+    <>
+      <div className="relative w-full lg:ml-auto lg:max-w-[820px]">
+        <div
+          className="pointer-events-none absolute -inset-3 rounded-3xl bg-gradient-to-br from-accent-blue/25 to-accent-green/20 blur-2xl md:-inset-4"
+          aria-hidden
+        />
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="group relative w-full overflow-hidden rounded-2xl border border-white/20 bg-slate-900/30 text-left shadow-2xl shadow-black/35 ring-1 ring-white/10 transition-transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-accent-blue/50"
+          aria-label="Uygulama ekran görüntüsünü büyüt"
+        >
+          <img
+            src={APP_SCREENSHOT_URL}
+            alt="Woontegra Şifre Kasası uygulama ekranı"
+            className="block h-auto w-full object-contain"
+          />
+          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-slate-200 opacity-90 transition-opacity group-hover:opacity-100">
+            <ZoomIn className="h-3.5 w-3.5" />
+            Büyüt
+          </span>
+        </button>
+      </div>
 
-function AppScreenshotPlaceholder() {
-  return (
-    <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-      <div className="absolute -inset-6 bg-gradient-to-br from-accent-blue/25 to-accent-green/25 blur-3xl rounded-full" />
-      <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue to-accent-green rounded-3xl opacity-25 blur-md" />
-      <Card
-        hover={false}
-        className="relative overflow-hidden rounded-2xl border border-white/15 bg-slate-900/90 shadow-2xl shadow-black/40 backdrop-blur-md"
-      >
-        <div className="flex items-center justify-between border-b border-white/10 bg-slate-800/80 px-5 py-3.5">
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-red-400/90" />
-            <span className="h-3 w-3 rounded-full bg-amber-400/90" />
-            <span className="h-3 w-3 rounded-full bg-emerald-400/90" />
-          </div>
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-            <Lock className="h-3.5 w-3.5 text-accent-green" />
-            Woontegra Şifre Kasası
-          </div>
-          <div className="w-16" />
+      {expanded && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 md:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Woontegra Şifre Kasası ekran görüntüsü"
+          onClick={() => setExpanded(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="absolute right-4 top-4 rounded-xl border border-white/15 bg-slate-900/80 p-2 text-white transition-colors hover:bg-slate-800"
+            aria-label="Kapat"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <img
+            src={APP_SCREENSHOT_URL}
+            alt="Woontegra Şifre Kasası uygulama ekranı — büyük görünüm"
+            className="max-h-[90vh] max-w-[min(1200px,95vw)] object-contain"
+            onClick={(event) => event.stopPropagation()}
+          />
         </div>
-
-        <div className="flex min-h-[420px] md:min-h-[480px]">
-          <div className="hidden w-44 shrink-0 border-r border-white/10 bg-slate-800/50 p-4 sm:block">
-            <div className="mb-4 flex items-center gap-2 rounded-lg bg-accent-blue/20 px-3 py-2 text-xs font-medium text-accent-blue-light">
-              <Folder className="h-3.5 w-3.5" />
-              Tüm Kayıtlar
-            </div>
-            <div className="space-y-2">
-              {['İş Hesapları', 'Kişisel', 'Bankacılık'].map((folder) => (
-                <div
-                  key={folder}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-400"
-                >
-                  <Folder className="h-3.5 w-3.5" />
-                  {folder}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-1 flex-col">
-            <div className="border-b border-white/10 px-5 py-4">
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-800/80 px-4 py-2.5">
-                <Search className="h-4 w-4 text-slate-500" />
-                <span className="text-sm text-slate-500">Kayıt ara...</span>
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-2.5 p-4 md:p-5">
-              {MOCK_ENTRIES.map((entry) => (
-                <div
-                  key={entry.site}
-                  className="flex items-center justify-between rounded-xl border border-white/8 bg-slate-800/70 px-4 py-3.5 transition-colors hover:border-accent-blue/30 hover:bg-slate-800"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 shrink-0 text-accent-blue-light" />
-                      <span className="truncate text-sm font-medium text-slate-200">{entry.site}</span>
-                    </div>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                      <span>{entry.user}</span>
-                      <span className="text-slate-600">••••••••</span>
-                      <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-emerald-400">
-                        {entry.strength}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="ml-3 flex shrink-0 items-center gap-1.5 text-slate-500">
-                    <Copy className="h-3.5 w-3.5" />
-                    <EyeOff className="h-3.5 w-3.5" />
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <ShieldCheck className="h-4 w-4 text-accent-green" />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between border-t border-white/10 bg-slate-800/60 px-5 py-3 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <Lock className="h-3.5 w-3.5 text-accent-green" />
-                Kasa kilitli — yerel depolama
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Eye className="h-3.5 w-3.5" />
-                4 kayıt
-              </span>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
+      )}
+    </>
   )
 }
 
@@ -372,12 +290,6 @@ export function SifreKasasiPage() {
     loadStats()
   }, [loadStats])
 
-  const handleDownloadStart = useCallback(() => {
-    window.setTimeout(() => {
-      void loadStats()
-    }, 1500)
-  }, [loadStats])
-
   return (
     <div className="bg-white">
       {/* Hero */}
@@ -385,7 +297,7 @@ export function SifreKasasiPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_35%,rgba(37,99,235,0.22),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_65%,rgba(34,197,94,0.18),transparent_55%)]" />
         <div className={`${PAGE_CONTAINER_CLASS} relative z-10`}>
-          <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-12">
             <div className="text-white">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-5 py-2 text-sm font-medium text-emerald-100">
                 <Shield className="h-4 w-4 text-emerald-300" />
@@ -407,24 +319,20 @@ export function SifreKasasiPage() {
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <DownloadButton
-                  variant="hero"
-                  href={SETUP_DOWNLOAD_URL}
-                  onDownloadStart={handleDownloadStart}
-                  className="w-full sm:w-auto"
-                >
+                <Button variant="hero" size="xl" href={SETUP_DOWNLOAD_URL} target="_self" className="w-full sm:w-auto">
                   <Download className="mr-2 h-5 w-5" />
                   Windows Kurulum Sürümünü İndir
-                </DownloadButton>
-                <DownloadButton
+                </Button>
+                <Button
                   variant="outline"
+                  size="xl"
                   href={PORTABLE_DOWNLOAD_URL}
-                  onDownloadStart={handleDownloadStart}
+                  target="_self"
                   className="w-full border-white/35 text-white hover:bg-white hover:text-slate-900 sm:w-auto"
                 >
                   <Download className="mr-2 h-5 w-5" />
                   Portable Sürümü İndir
-                </DownloadButton>
+                </Button>
               </div>
 
               <div className="mt-8 grid max-w-2xl gap-4">
@@ -433,7 +341,7 @@ export function SifreKasasiPage() {
               </div>
             </div>
 
-            <AppScreenshotPlaceholder />
+            <AppScreenshot />
           </div>
         </div>
       </section>
@@ -501,15 +409,10 @@ export function SifreKasasiPage() {
                 açabilirsiniz.
               </p>
               <DownloadCountLabel count={stats?.setup ?? null} loading={statsLoading} />
-              <DownloadButton
-                variant="primary"
-                href={SETUP_DOWNLOAD_URL}
-                onDownloadStart={handleDownloadStart}
-                className="mt-6 w-full"
-              >
+              <Button variant="primary" size="xl" href={SETUP_DOWNLOAD_URL} target="_self" className="mt-6 w-full">
                 <Download className="mr-2 h-5 w-5" />
                 Setup İndir
-              </DownloadButton>
+              </Button>
             </Card>
             <Card
               variant="elevated"
@@ -523,15 +426,10 @@ export function SifreKasasiPage() {
                 Kurulum gerektirmez. İndirip doğrudan çalıştırabilirsiniz.
               </p>
               <DownloadCountLabel count={stats?.portable ?? null} loading={statsLoading} />
-              <DownloadButton
-                variant="green"
-                href={PORTABLE_DOWNLOAD_URL}
-                onDownloadStart={handleDownloadStart}
-                className="mt-6 w-full"
-              >
+              <Button variant="green" size="xl" href={PORTABLE_DOWNLOAD_URL} target="_self" className="mt-6 w-full">
                 <Download className="mr-2 h-5 w-5" />
                 Portable İndir
-              </DownloadButton>
+              </Button>
             </Card>
           </div>
         </div>
