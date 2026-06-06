@@ -37,7 +37,7 @@ export function AdminLoginPage() {
       }
       localStorage.setItem('woontegra_token', data.token)
       const target =
-        from.startsWith('/admin') && from !== '/admin' ? from : '/admin/sayfalar'
+        from.startsWith('/admin') && from !== '/admin' && from !== '/admin/giris' ? from : '/admin'
       navigate(target, { replace: true })
     } catch {
       setErr('Sunucuya bağlanılamadı. API adresini kontrol edin.')

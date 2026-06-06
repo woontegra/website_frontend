@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Save, ChevronDown, ChevronUp, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw } from 'lucide-react'
+import { Save, ChevronDown, ChevronUp, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw, Lock } from 'lucide-react'
 import { getApiUrl } from '../../config/api'
 
 interface SiteSettings {
@@ -129,7 +129,12 @@ export function AdminSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [newKeyword, setNewKeyword] = useState('')
-  const [openSections, setOpenSections] = useState<string[]>(['general'])
+  const [openSections, setOpenSections] = useState<string[]>(['account', 'general'])
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordSaving, setPasswordSaving] = useState(false)
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   useEffect(() => {
     fetchSettings()
@@ -202,6 +207,46 @@ export function AdminSettingsPage() {
       ...settings,
       defaultKeywords: settings.defaultKeywords.filter(k => k !== keyword)
     })
+  }
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPasswordMessage(null)
+
+    if (newPassword.length < 8) {
+      setPasswordMessage({ type: 'error', text: 'Yeni şifre en az 8 karakter olmalıdır.' })
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'Yeni şifreler eşleşmiyor.' })
+      return
+    }
+
+    setPasswordSaving(true)
+    try {
+      const API_URL = getApiUrl()
+      const response = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      })
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        setPasswordMessage({ type: 'error', text: data.message ?? 'Şifre güncellenemedi' })
+        return
+      }
+      setPasswordMessage({ type: 'success', text: 'Şifreniz güncellendi.' })
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch {
+      setPasswordMessage({ type: 'error', text: 'Bağlantı hatası' })
+    } finally {
+      setPasswordSaving(false)
+    }
   }
 
   const handleClearCache = async () => {
@@ -285,6 +330,61 @@ export function AdminSettingsPage() {
           {message.text}
         </div>
       )}
+
+      {/* HESAP */}
+      <Section id="account" icon={Lock} title="Hesap Güvenliği">
+        <form onSubmit={handleChangePassword} className="space-y-3">
+          {passwordMessage && (
+            <div
+              className={`rounded-lg p-3 text-sm ${
+                passwordMessage.type === 'success'
+                  ? 'border border-green-200 bg-green-50 text-green-800'
+                  : 'border border-red-200 bg-red-50 text-red-800'
+              }`}
+            >
+              {passwordMessage.text}
+            </div>
+          )}
+          <div>
+            <label className="label">Mevcut Şifre</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="input w-full"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+          <div>
+            <label className="label">Yeni Şifre</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="input w-full"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </div>
+          <div>
+            <label className="label">Yeni Şifre (Tekrar)</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="input w-full"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </div>
+          <button type="submit" disabled={passwordSaving} className="button">
+            {passwordSaving ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
+          </button>
+        </form>
+      </Section>
 
       {/* GENEL AYARLAR */}
       <Section id="general" icon={Settings} title="Genel Ayarlar">
