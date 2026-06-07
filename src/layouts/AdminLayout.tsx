@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { clearAdminSession } from '../lib/adminAuth'
 
 const adminNav = [
   { label: 'Dashboard', href: '/admin' },
@@ -16,7 +17,7 @@ export function AdminLayout() {
     href === '/admin' ? location.pathname === '/admin' : location.pathname.startsWith(href)
 
   const logout = () => {
-    localStorage.removeItem('woontegra_token')
+    clearAdminSession()
     navigate('/admin/giris', { replace: true })
   }
 

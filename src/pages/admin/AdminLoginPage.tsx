@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
 import { getApiUrl } from '../../config/api'
+import { saveAdminSession } from '../../lib/adminAuth'
 
 const apiBase = () => getApiUrl()
 
@@ -35,7 +36,7 @@ export function AdminLoginPage() {
         setLoading(false)
         return
       }
-      localStorage.setItem('woontegra_token', data.token)
+      saveAdminSession(data.token, data.refreshToken)
       const target =
         from.startsWith('/admin') && from !== '/admin' && from !== '/admin/giris' ? from : '/admin'
       navigate(target, { replace: true })

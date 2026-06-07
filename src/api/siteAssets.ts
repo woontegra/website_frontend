@@ -1,4 +1,5 @@
 import { buildApiUrl } from '../config/api'
+import { adminFetch } from '../lib/adminAuth'
 
 export type SiteAssetKind = 'logo' | 'favicon'
 
@@ -10,11 +11,8 @@ export async function uploadSiteAsset(
   formData.append('file', file)
   formData.append('kind', kind)
 
-  const response = await fetch(buildApiUrl('/admin/cms/site-assets/upload'), {
+  const response = await adminFetch(buildApiUrl('/admin/cms/site-assets/upload'), {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
-    },
     body: formData,
   })
 

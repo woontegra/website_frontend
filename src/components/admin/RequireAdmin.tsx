@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { clearAdminSession, getAdminToken, isJwtExpired } from '../../lib/adminAuth'
 
 function parseJwtRole(token: string): string | null {
   try {
@@ -13,13 +14,17 @@ function parseJwtRole(token: string): string | null {
 
 export function RequireAdmin() {
   const location = useLocation()
-  const token = localStorage.getItem('woontegra_token')
-  if (!token) {
+  const token = getAdminToken()
+
+  if (!token || isJwtExpired(token)) {
+    if (token) clearAdminSession()
     return <Navigate to="/admin/giris" replace state={{ from: location.pathname }} />
   }
+
   if (parseJwtRole(token) !== 'admin') {
-    localStorage.removeItem('woontegra_token')
+    clearAdminSession()
     return <Navigate to="/admin/giris" replace />
   }
+
   return <Outlet />
 }

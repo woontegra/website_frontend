@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Save, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw, Lock } from 'lucide-react'
 import { buildApiUrl } from '../../config/api'
+import { adminFetch } from '../../lib/adminAuth'
 import { ManagedImageField } from '../../components/admin/ManagedImageField'
 import { SiteAssetField } from '../../components/admin/SiteAssetField'
 import { DEFAULT_SITE_FAVICON, DEFAULT_SITE_LOGO } from '../../api/siteSettings'
@@ -183,11 +184,7 @@ export function AdminSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch(buildApiUrl('/settings/admin'), {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
-        },
-      })
+      const response = await adminFetch(buildApiUrl('/settings/admin'))
       if (response.ok) {
         const data = await response.json()
         applySettingsFromApi(data)
@@ -222,12 +219,8 @@ export function AdminSettingsPage() {
         payload.metaConversionsAccessToken = metaAccessTokenInput.trim()
       }
 
-      const response = await fetch(buildApiUrl('/settings'), {
+      const response = await adminFetch(buildApiUrl('/settings'), {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
-        },
         body: JSON.stringify(payload),
       })
 
@@ -237,10 +230,12 @@ export function AdminSettingsPage() {
         setMessage({ type: 'success', text: 'Ayarlar kaydedildi!' })
         setTimeout(() => setMessage(null), 3000)
       } else {
-        setMessage({ type: 'error', text: 'Kaydetme hatası' })
+        const data = (await response.json().catch(() => ({}))) as { message?: string }
+        setMessage({ type: 'error', text: data.message ?? 'Kaydetme hatası' })
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Bağlantı hatası' })
+      const text = error instanceof Error ? error.message : 'Bağlantı hatası'
+      setMessage({ type: 'error', text })
     } finally {
       setSaving(false)
     }
@@ -284,12 +279,8 @@ export function AdminSettingsPage() {
 
     setPasswordSaving(true)
     try {
-      const response = await fetch(buildApiUrl('/auth/change-password'), {
+      const response = await adminFetch(buildApiUrl('/auth/change-password'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
-        },
         body: JSON.stringify({ currentPassword, newPassword }),
       })
       const data = await response.json()
@@ -310,11 +301,8 @@ export function AdminSettingsPage() {
 
   const handleClearCache = async () => {
     try {
-      const response = await fetch(buildApiUrl('/settings/clear-cache'), {
+      const response = await adminFetch(buildApiUrl('/settings/clear-cache'), {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
-        },
       })
       if (response.ok) {
         setMessage({ type: 'success', text: 'Cache temizlendi!' })
