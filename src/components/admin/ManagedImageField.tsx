@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Upload, Link2, Loader2, CheckCircle2, AlertCircle, FolderOpen, X } from 'lucide-react'
 import { adminUploadMedia, resolveMediaSrc } from '../../api/cms'
-import { isPersistentImageUrl } from '../../lib/resolveImageUrl'
+import { isCloudinaryMediaUrl } from '../../lib/resolveImageUrl'
 import { MediaLibraryModal } from './MediaLibraryModal'
 
 const ACCEPT = '.jpg,.jpeg,.png,.webp,.svg'
@@ -71,17 +71,23 @@ export function ManagedImageField({
     const result = await adminUploadMedia(file)
     setUploading(false)
 
-    if (result.success && result.data?.url) {
+    if (result.success && result.data?.url && isCloudinaryMediaUrl(result.data.url)) {
       onChange(result.data.url)
-      setStatus({ type: 'success', text: 'Görsel yüklendi. Kalıcı URL alana yazıldı.' })
+      setStatus({ type: 'success', text: 'Görsel Cloudinary\'ye yüklendi. Kalıcı URL kaydedildi.' })
       setTimeout(() => setStatus(null), 4000)
     } else {
-      setStatus({ type: 'error', text: result.message ?? 'Yükleme başarısız.' })
+      const fallback =
+        result.code === 'CLOUDINARY_NOT_CONFIGURED'
+          ? 'Cloudinary yapılandırılmamış. Railway ortam değişkenlerine CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY ve CLOUDINARY_API_SECRET ekleyin.'
+          : (result.message ?? 'Yükleme başarısız.')
+      setStatus({ type: 'error', text: fallback })
     }
   }
 
   const showLegacyWarning =
-    Boolean(value) && !isPersistentImageUrl(value) && value.startsWith('/images/')
+    Boolean(value) &&
+    !isCloudinaryMediaUrl(value) &&
+    (value.startsWith('/images/') || value.startsWith('/uploads/'))
 
   return (
     <div className="space-y-2">
@@ -155,8 +161,8 @@ export function ManagedImageField({
 
       {showLegacyWarning ? (
         <p className="text-xs font-medium text-amber-700">
-          Bu yol ({value}) deploy sonrası kaybolabilir. Kalıcı olması için görseli yukarıdan yeniden yükleyin
-          (Cloudinary URL önerilir).
+          Bu yol ({value}) kalıcı değil; deploy/redeploy sonrası kaybolur. Görseli yukarıdan yeniden yükleyin —
+          kayıt <code className="rounded bg-amber-100 px-1">https://res.cloudinary.com/...</code> formatında olmalı.
         </p>
       ) : null}
 
