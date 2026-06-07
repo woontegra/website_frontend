@@ -35,7 +35,7 @@ export function SiteTracking() {
       const envGa = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim()
       const measurementId = envGa || settings.googleAnalyticsId
       if (measurementId) {
-        initGoogleAnalytics(measurementId)
+        await initGoogleAnalytics(measurementId)
       }
 
       if (settings.googleTagManagerId) {
