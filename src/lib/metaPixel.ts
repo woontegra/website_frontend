@@ -1,5 +1,5 @@
-import { getApiBase } from '../config/api'
 import { WOONTEGRA_META_PIXEL_FALLBACK } from '../config/tracking'
+import { fetchTrackingSettings } from './trackingSettings'
 
 declare global {
   interface Window {
@@ -50,16 +50,9 @@ export async function resolveMetaPixelId(): Promise<string> {
   if (envPixel) return envPixel
 
   try {
-    const response = await fetch(`${getApiBase()}/api/settings/tracking`)
-    if (response.ok) {
-      const data = (await response.json()) as {
-        metaPixelId?: string
-        metaBrowserPixelEnabled?: boolean
-      }
-      if (data.metaBrowserPixelEnabled !== false) {
-        const panelPixel = (data.metaPixelId ?? '').trim()
-        if (panelPixel) return panelPixel
-      }
+    const settings = await fetchTrackingSettings()
+    if (settings.metaBrowserPixelEnabled !== false && settings.metaPixelId) {
+      return settings.metaPixelId
     }
   } catch {
     /* API yoksa fallback */

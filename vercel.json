@@ -1,7 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/((?!images/|assets/|sitemap\\.xml|robots\\.txt|.*\\..*).*)",
+      "source": "/uploads/branding/:path*",
+      "destination": "https://websitebackend-production-ab6e.up.railway.app/uploads/branding/:path*"
+    },
+    {
+      "source": "/((?!images/|assets/|uploads/|sitemap\\.xml|robots\\.txt|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]

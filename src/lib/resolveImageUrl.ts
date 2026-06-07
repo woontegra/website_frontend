@@ -42,6 +42,10 @@ export function resolveImageUrl(url?: string | null): string {
   }
 
   if (normalized.startsWith('/uploads/branding/')) {
+    // Önce aynı origin (Vercel proxy); yoksa doğrudan backend
+    if (typeof window !== 'undefined') {
+      return normalized
+    }
     return `${getApiBase()}${normalized}`
   }
 
