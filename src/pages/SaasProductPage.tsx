@@ -1,9 +1,18 @@
 import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
+import { defaultSaasData } from '../data/allPagesData'
+import { useHeroSection } from '../hooks/useHeroSection'
 import { ArrowRight, CheckCircle, Cloud, Database, Lock, Layers, Zap, BarChart3, Users, CreditCard, Code, Activity } from 'lucide-react'
 
 export function SaasProductPage() {
+  const { heroData } = useHeroSection('saas', defaultSaasData)
+  const title = heroData?.title || 'Kendi Yazılım Ürününüzü Geliştirin'
+  const subtitle =
+    heroData?.subtitle ||
+    'SaaS (Software as a Service) modeli ile çalışan, ölçeklenebilir ve sürdürülebilir yazılım ürünleri geliştiriyoruz.'
+  const heroImage = heroData?.image || siteImages.saasDashboard
+
   return (
     <div className="bg-white">
       {/* HERO */}
@@ -12,10 +21,10 @@ export function SaasProductPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="text-white">
               <h1 className="text-5xl font-bold mb-6 leading-tight">
-                Kendi Yazılım Ürününüzü Geliştirin
+                {title}
               </h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                SaaS (Software as a Service) modeli ile çalışan, ölçeklenebilir ve sürdürülebilir yazılım ürünleri geliştiriyoruz.
+                {subtitle}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button variant="green" to="/iletisim" className="text-lg px-8 py-4">
@@ -31,7 +40,7 @@ export function SaasProductPage() {
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <SafeImage
-                  src={siteImages.saasDashboard}
+                  src={heroImage}
                   alt="SaaS Dashboard"
                   className="w-full h-auto object-cover"
                 />

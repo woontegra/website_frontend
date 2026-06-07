@@ -1,9 +1,18 @@
 import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
+import { defaultSolutionsData } from '../data/allPagesData'
+import { useHeroSection } from '../hooks/useHeroSection'
 import { ArrowRight } from 'lucide-react'
 
 export function SolutionsPage() {
+  const { heroData } = useHeroSection('solutions', defaultSolutionsData)
+  const title = heroData?.title || 'Geliştirdiğimiz Dijital Yapılar'
+  const subtitle =
+    heroData?.subtitle ||
+    'Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir.'
+  const heroImage = heroData?.image || siteImages.solutionsHero
+
   return (
     <div className="bg-white">
       {/* HERO */}
@@ -12,17 +21,17 @@ export function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="text-white">
               <h1 className="text-6xl font-bold mb-8 leading-tight">
-                Geliştirdiğimiz Dijital Yapılar
+                {title}
               </h1>
               <p className="text-2xl text-gray-300 leading-relaxed">
-                Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir.
+                {subtitle}
               </p>
             </div>
             
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
                 <SafeImage
-                  src={siteImages.solutionsHero}
+                  src={heroImage}
                   alt="Dijital Sistemler"
                   className="w-full h-auto object-cover"
                 />

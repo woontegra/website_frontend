@@ -78,7 +78,7 @@ export function HeroEditor({ data, onChange }: HeroEditorProps) {
       <ManagedImageField
         label="Hero Görseli"
         value={data.image || ''}
-        onChange={(url) => handleChange('image', url)}
+        onChange={(url) => onChange({ ...data, image: url, imageUrl: url })}
         hint="Görsel Seç ile galeriden ön izleme yaparak seçin."
       />
     </div>

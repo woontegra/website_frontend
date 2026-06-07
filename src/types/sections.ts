@@ -20,7 +20,10 @@ export interface HeroSectionData {
   subtitle: string
   button1Text: string
   button2Text: string
+  /** Panel kayıt alanı (birincil) */
   image?: string
+  /** Builder / legacy alias — public site her ikisini de okur */
+  imageUrl?: string
 }
 
 // Services Section

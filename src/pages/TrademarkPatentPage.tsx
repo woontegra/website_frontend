@@ -1,9 +1,18 @@
 import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
+import { defaultTrademarkData } from '../data/allPagesData'
+import { useHeroSection } from '../hooks/useHeroSection'
 import { ArrowRight, CheckCircle, FileText, Search, Shield, Scale, Award, FileCheck } from 'lucide-react'
 
 export function TrademarkPatentPage() {
+  const { heroData } = useHeroSection('trademark', defaultTrademarkData)
+  const title = heroData?.title || 'Markanızı Güvence Altına Alın'
+  const subtitle =
+    heroData?.subtitle ||
+    'Marka tescil, patent ve hukuki süreçlerde profesyonel destek ile markanızı koruyun.'
+  const heroImage = heroData?.image || siteImages.trademarkDocument
+
   return (
     <div className="bg-white">
       {/* HERO */}
@@ -12,10 +21,10 @@ export function TrademarkPatentPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="text-white">
               <h1 className="text-5xl font-bold mb-6 leading-tight">
-                Markanızı Güvence Altına Alın
+                {title}
               </h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Marka tescil, patent ve hukuki süreçlerde profesyonel destek ile markanızı koruyun.
+                {subtitle}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button variant="green" to="/iletisim" className="text-lg px-8 py-4">
@@ -31,7 +40,7 @@ export function TrademarkPatentPage() {
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <SafeImage
-                  src={siteImages.trademarkDocument}
+                  src={heroImage}
                   alt="Marka Tescil Belgesi"
                   className="w-full h-auto object-cover"
                 />

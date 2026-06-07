@@ -1,4 +1,5 @@
 import type { PageData } from '../types/sections'
+import { siteImages } from './siteImages'
 
 export const defaultHomeData: PageData = {
   slug: 'home',
@@ -13,6 +14,8 @@ export const defaultHomeData: PageData = {
         subtitle: 'Sadece yazılım geliştirmiyoruz, kendi ürünlerimizi yaratıyor ve yönetiyoruz. E-ticaret, SaaS, danışmanlık – hepsini deneyimliyoruz.',
         button1Text: 'Hizmetlerimiz',
         button2Text: 'İletişime Geç',
+        image: siteImages.homeHero,
+        imageUrl: siteImages.homeHero,
       },
     },
     {

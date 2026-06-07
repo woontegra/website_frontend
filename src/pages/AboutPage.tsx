@@ -6,7 +6,7 @@ import { defaultAboutData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
 
 export function AboutPage() {
-  const heroData = useHeroSection('about', defaultAboutData)
+  const { heroData } = useHeroSection('about', defaultAboutData)
 
   const title = heroData?.title || "Woontegra'yı Tanıyın"
   const subtitle = heroData?.subtitle || "Yazılım, e-ticaret ve dijital sistemler alanında ürün geliştiren ve markalar yöneten bir teknoloji şirketiyiz."

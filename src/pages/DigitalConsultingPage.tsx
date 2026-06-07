@@ -1,9 +1,18 @@
 import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
+import { defaultConsultingData } from '../data/allPagesData'
+import { useHeroSection } from '../hooks/useHeroSection'
 import { ArrowRight, CheckCircle, Compass, LineChart, ShoppingBag, Settings, Cpu, TrendingUp } from 'lucide-react'
 
 export function DigitalConsultingPage() {
+  const { heroData } = useHeroSection('consulting', defaultConsultingData)
+  const title = heroData?.title || 'Dijital Süreçlerinizi Doğru Kurgulayın'
+  const subtitle =
+    heroData?.subtitle ||
+    'Doğru strateji olmadan yapılan yatırımlar zaman ve para kaybına dönüşür. İşinize en uygun dijital yapıyı birlikte planlıyoruz.'
+  const heroImage = heroData?.image || siteImages.consultingDashboard
+
   return (
     <div className="bg-white">
       {/* HERO */}
@@ -12,10 +21,10 @@ export function DigitalConsultingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="text-white">
               <h1 className="text-5xl font-bold mb-6 leading-tight">
-                Dijital Süreçlerinizi Doğru Kurgulayın
+                {title}
               </h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Doğru strateji olmadan yapılan yatırımlar zaman ve para kaybına dönüşür. İşinize en uygun dijital yapıyı birlikte planlıyoruz.
+                {subtitle}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button variant="green" to="/iletisim" className="text-lg px-8 py-4">
@@ -31,7 +40,7 @@ export function DigitalConsultingPage() {
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <SafeImage
-                  src={siteImages.consultingDashboard}
+                  src={heroImage}
                   alt="Dijital Analiz"
                   className="w-full h-auto object-cover"
                 />

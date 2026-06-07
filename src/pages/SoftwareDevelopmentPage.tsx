@@ -6,7 +6,7 @@ import { defaultSoftwareDevData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
 
 export function SoftwareDevelopmentPage() {
-  const heroData = useHeroSection('software-dev', defaultSoftwareDevData)
+  const { heroData } = useHeroSection('software-dev', defaultSoftwareDevData)
 
   const title = heroData?.title || "İşletmenize Özel Yazılım Geliştiriyoruz"
   const subtitle = heroData?.subtitle || "Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın."

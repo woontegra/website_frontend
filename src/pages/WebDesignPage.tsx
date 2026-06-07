@@ -6,7 +6,7 @@ import { defaultWebDesignData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
 
 export function WebDesignPage() {
-  const heroData = useHeroSection('web-design', defaultWebDesignData)
+  const { heroData } = useHeroSection('web-design', defaultWebDesignData)
 
   const title = heroData?.title || "Modern ve Dönüşüm Odaklı Web Siteleri"
   const subtitle = heroData?.subtitle || "Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz."

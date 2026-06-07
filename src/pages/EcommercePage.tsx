@@ -6,7 +6,7 @@ import { defaultEcommerceData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
 
 export function EcommercePage() {
-  const heroData = useHeroSection('ecommerce', defaultEcommerceData)
+  const { heroData } = useHeroSection('ecommerce', defaultEcommerceData)
 
   const title = heroData?.title || "Satış Odaklı E-Ticaret Sistemleri Kuruyoruz"
   const subtitle = heroData?.subtitle || "Sadece bir mağaza değil, satış yapan ve büyüyen bir e-ticaret sistemi kurun."

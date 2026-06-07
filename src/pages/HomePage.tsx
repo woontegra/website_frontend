@@ -1,11 +1,22 @@
 import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
+import { defaultHomeData } from '../data/defaultHomeData'
+import { useHeroSection } from '../hooks/useHeroSection'
 import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef } from 'react'
 
 export function HomePage() {
+  const { heroData } = useHeroSection('home', defaultHomeData)
   const brandsScrollRef = useRef<HTMLDivElement>(null)
+
+  const heroTag = heroData?.tag || 'Teknoloji & Yazılım'
+  const heroTitle =
+    heroData?.title || 'Woontegra ile Yazılım, Dijital Hizmetler ve Ticaret Tek Yapıda'
+  const heroSubtitle =
+    heroData?.subtitle ||
+    'Woontegra, yazılım geliştirme, e-ticaret sistemleri ve SaaS ürünleri ile işletmeler için sürdürülebilir dijital altyapılar kurar.'
+  const heroImage = heroData?.image || siteImages.homeHero
 
   const scrollBrands = (direction: 'left' | 'right') => {
     if (brandsScrollRef.current) {
@@ -26,13 +37,13 @@ export function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white">
               <div className="inline-block px-3 py-1.5 bg-green-500/20 rounded-full mb-4">
-                <span className="text-xs font-medium text-green-400">Teknoloji & Yazılım</span>
+                <span className="text-xs font-medium text-green-400">{heroTag}</span>
               </div>
               <h1 className="text-3xl md:text-4xl font-semibold mb-4 leading-tight">
-                Woontegra ile Yazılım, Dijital Hizmetler ve Ticaret Tek Yapıda
+                {heroTitle}
               </h1>
               <p className="text-base text-gray-300 mb-6 leading-relaxed">
-                Woontegra, yazılım geliştirme, e-ticaret sistemleri ve SaaS ürünleri ile işletmeler için sürdürülebilir dijital altyapılar kurar.
+                {heroSubtitle}
               </p>
               <div className="flex flex-wrap gap-3">
                 <button
@@ -52,7 +63,7 @@ export function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
               <SafeImage
-                src={siteImages.homeHero}
+                src={heroImage}
                 alt="Woontegra Teknoloji"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />

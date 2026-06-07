@@ -14,7 +14,9 @@ function isPageData(value: unknown): value is PageData {
 /** Public — canlı site ve panel önizleme */
 export async function fetchPageSections(pageKey: string): Promise<PageData | null> {
   try {
-    const response = await fetch(buildApiUrl(`/page-content/${pageKey}`))
+    const response = await fetch(buildApiUrl(`/page-content/${pageKey}`), {
+      cache: 'no-store',
+    })
     if (!response.ok) return null
     const json = (await response.json()) as { success?: boolean; data?: unknown }
     if (!json.success || !json.data || !isPageData(json.data)) return null

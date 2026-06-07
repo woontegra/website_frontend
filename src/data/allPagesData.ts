@@ -217,7 +217,7 @@ export const defaultConsultingData: PageData = {
 export const defaultSolutionsData: PageData = {
   slug: 'solutions',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Çözümlerimiz', title: 'Geliştirdiğimiz Dijital Yapılar', subtitle: 'Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir', button1Text: 'Ürünleri İncele', button2Text: 'İletişim' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Çözümlerimiz', title: 'Geliştirdiğimiz Dijital Yapılar', subtitle: 'Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir', button1Text: 'Ürünleri İncele', button2Text: 'İletişim', image: siteImages.solutionsHero, imageUrl: siteImages.solutionsHero }},
     { id: 'text-1', type: 'text-content', order: 2, data: { title: 'Aktif Projelerimiz', paragraphs: ['Woontegra, yazılım geliştirme ve dijital sistem kurmanın ötesinde, kendi markalarını oluşturan ve yöneten bir yapı kurmuştur.', 'Aşağıda yer alan projeler, aktif olarak geliştirilen ve yönetilen sistemlerdir.'] }},
     { id: 'brands-1', type: 'brands', order: 3, data: { title: 'Ürünlerimiz', subtitle: 'Her biri farklı sektörde deneyim kazandığımız projeler', items: [
       { name: 'Bilirkişi Hesaplama Programı', description: 'Hukuk ve aktüerya alanında kullanılan profesyonel bir hesaplama yazılımıdır', image: siteImages.bilirkisiHesapHero },
