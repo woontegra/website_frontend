@@ -13,7 +13,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
             <Link to="/" className="inline-block" aria-label="Woontegra Ana Sayfa">
-              <img src={logoSrc} alt={siteName} className="h-14 w-auto md:h-[3.75rem]" />
+              <img src={logoSrc} alt={siteName} className="h-16 w-auto md:h-20" />
             </Link>
             <p className="mt-5 text-slate-500 text-sm max-w-xs leading-relaxed">
               Yazılım, dijital ticaret ve teknoloji çözümlerinde tek çatı. Modern altyapı, güvenilir üretim.

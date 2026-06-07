@@ -21,30 +21,44 @@ const defaultSettings: PublicSiteSettings = {
 const SiteSettingsContext = createContext<PublicSiteSettings>(defaultSettings)
 
 function faviconMimeType(path: string): string {
-  const lower = path.toLowerCase()
+  const lower = path.toLowerCase().split('?')[0]
   if (lower.endsWith('.svg')) return 'image/svg+xml'
   if (lower.endsWith('.png')) return 'image/png'
   if (lower.endsWith('.ico')) return 'image/x-icon'
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg'
   return 'image/png'
 }
 
 function applyFavicon(path: string) {
-  const href = resolveImageUrl(path)
-  if (!href) return
+  const resolved = resolveImageUrl(path)
+  if (!resolved) return
 
-  const mime = faviconMimeType(href)
-  const selectors = ['link[rel="icon"]', 'link[rel="shortcut icon"]', 'link[rel="apple-touch-icon"]']
+  const version = encodeURIComponent(path.trim())
+  const href = `${resolved}${resolved.includes('?') ? '&' : '?'}v=${version}`
+  const mime = faviconMimeType(path)
 
-  for (const selector of selectors) {
-    let link = document.querySelector<HTMLLinkElement>(selector)
+  document
+    .querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
+    .forEach((node) => {
+      if (!(node as HTMLLinkElement).id?.startsWith('woontegra-')) {
+        node.remove()
+      }
+    })
+
+  const upsert = (id: string, rel: string) => {
+    let link = document.getElementById(id) as HTMLLinkElement | null
     if (!link) {
       link = document.createElement('link')
-      link.rel = selector.includes('apple') ? 'apple-touch-icon' : 'icon'
+      link.id = id
       document.head.appendChild(link)
     }
+    link.rel = rel
     link.type = mime
     link.href = href
   }
+
+  upsert('woontegra-favicon', 'icon')
+  upsert('woontegra-apple-touch-icon', 'apple-touch-icon')
 }
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {

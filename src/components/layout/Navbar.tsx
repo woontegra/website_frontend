@@ -63,13 +63,17 @@ export function Navbar() {
       }`}
     >
       <div className={NAV_CONTAINER_CLASS}>
-        <div className="flex min-h-[4rem] items-center justify-between gap-2 py-1 min-[1200px]:min-h-[4.5rem] min-[1200px]:gap-3">
+        <div className="flex min-h-[4.5rem] items-center justify-between gap-2 py-1.5 min-[1200px]:min-h-[5rem] min-[1200px]:gap-3">
           <Link
             to="/"
-            className="flex max-w-[140px] shrink-0 items-center min-[1200px]:max-w-[170px]"
+            className="flex max-w-[200px] shrink-0 items-center min-[1200px]:max-w-[260px]"
             aria-label="Woontegra Ana Sayfa"
           >
-            <img src={logoSrc} alt={siteName} className="h-11 w-full object-contain min-[1200px]:h-12" />
+            <img
+              src={logoSrc}
+              alt={siteName}
+              className="h-14 w-auto max-w-full object-contain min-[1200px]:h-[4.25rem]"
+            />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">
