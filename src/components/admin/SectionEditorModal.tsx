@@ -13,16 +13,21 @@ import { BlogPostsEditor } from './sections/BlogPostsEditor'
 
 interface SectionEditorModalProps {
   section: PageSection
-  onSave: (updatedSection: PageSection) => void
+  onSave: (updatedSection: PageSection) => void | Promise<void>
   onClose: () => void
 }
 
 export function SectionEditorModal({ section, onSave, onClose }: SectionEditorModalProps) {
   const [editedData, setEditedData] = useState<SectionData>(section.data)
+  const [saving, setSaving] = useState(false)
 
-  const handleSave = () => {
-    onSave({ ...section, data: editedData })
-    onClose()
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await onSave({ ...section, data: editedData })
+    } finally {
+      setSaving(false)
+    }
   }
 
   const getSectionTitle = () => {
@@ -88,6 +93,7 @@ export function SectionEditorModal({ section, onSave, onClose }: SectionEditorMo
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-slate-900">{getSectionTitle()}</h2>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
           >
@@ -102,18 +108,17 @@ export function SectionEditorModal({ section, onSave, onClose }: SectionEditorMo
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="button-outline"
-          >
+          <button type="button" onClick={onClose} className="button-outline" disabled={saving}>
             İptal
           </button>
           <button
+            type="button"
             onClick={handleSave}
-            className="button flex items-center gap-1.5"
+            disabled={saving}
+            className="button flex items-center gap-1.5 disabled:opacity-60"
           >
             <Save className="w-3.5 h-3.5" />
-            Kaydet
+            {saving ? 'Kaydediliyor…' : 'Kaydet'}
           </button>
         </div>
       </div>

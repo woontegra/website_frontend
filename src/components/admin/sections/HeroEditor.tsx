@@ -76,10 +76,10 @@ export function HeroEditor({ data, onChange }: HeroEditorProps) {
       </div>
 
       <ManagedImageField
-        label="Hero Görseli (opsiyonel)"
+        label="Hero Görseli"
         value={data.image || ''}
         onChange={(url) => handleChange('image', url)}
-        hint="Yüklenen görseller kalıcı medya sistemine kaydedilir (Cloudinary)."
+        hint="Dosya seçerek yükleyin; kalıcı Cloudinary URL otomatik kaydedilir. Kaydettikten sonra canlı sitede görünür."
       />
     </div>
   )

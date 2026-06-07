@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ImageOff } from 'lucide-react'
 import { resolveImageUrl } from '../../lib/resolveImageUrl'
 
@@ -20,6 +20,11 @@ export function SafeImage({
 }: SafeImageProps) {
   const [hasError, setHasError] = useState(false)
   const resolvedSrc = src ? resolveImageUrl(src) : ''
+  const hadSource = Boolean(src?.trim())
+
+  useEffect(() => {
+    setHasError(false)
+  }, [resolvedSrc])
 
   if (!resolvedSrc || hasError) {
     return (
@@ -29,7 +34,9 @@ export function SafeImage({
         aria-label={alt || fallbackText}
       >
         <ImageOff className="h-8 w-8 shrink-0 opacity-60" aria-hidden />
-        <span className="text-sm font-medium">{fallbackText}</span>
+        <span className="text-sm font-medium">
+          {hadSource ? 'Görsel bulunamadı' : fallbackText}
+        </span>
       </div>
     )
   }

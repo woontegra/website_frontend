@@ -2,32 +2,11 @@ import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Eye, Layout, Monitor, Smartphone, TrendingUp, Zap } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { defaultWebDesignData } from '../data/allPagesData'
-import type { HeroSectionData } from '../types/sections'
+import { useHeroSection } from '../hooks/useHeroSection'
 
 export function WebDesignPage() {
-  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('woontegra_web_design_page')
-    if (stored) {
-      try {
-        const pageData = JSON.parse(stored)
-        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
-        if (heroSection) {
-          setHeroData(heroSection.data)
-          return
-        }
-      } catch (e) {
-        console.error('Failed to parse web-design page data:', e)
-      }
-    }
-    const heroSection = defaultWebDesignData.sections.find(s => s.type === 'hero')
-    if (heroSection) {
-      setHeroData(heroSection.data as HeroSectionData)
-    }
-  }, [])
+  const heroData = useHeroSection('web-design', defaultWebDesignData)
 
   const title = heroData?.title || "Modern ve Dönüşüm Odaklı Web Siteleri"
   const subtitle = heroData?.subtitle || "Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz."

@@ -2,33 +2,11 @@ import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { ArrowRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { defaultAboutData } from '../data/allPagesData'
-import type { HeroSectionData } from '../types/sections'
+import { useHeroSection } from '../hooks/useHeroSection'
 
 export function AboutPage() {
-  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('woontegra_about_page')
-    if (stored) {
-      try {
-        const pageData = JSON.parse(stored)
-        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
-        if (heroSection) {
-          setHeroData(heroSection.data)
-          return
-        }
-      } catch (e) {
-        console.error('Failed to parse about page data:', e)
-      }
-    }
-    // Fallback to default data
-    const heroSection = defaultAboutData.sections.find(s => s.type === 'hero')
-    if (heroSection) {
-      setHeroData(heroSection.data as HeroSectionData)
-    }
-  }, [])
+  const heroData = useHeroSection('about', defaultAboutData)
 
   const title = heroData?.title || "Woontegra'yı Tanıyın"
   const subtitle = heroData?.subtitle || "Yazılım, e-ticaret ve dijital sistemler alanında ürün geliştiren ve markalar yöneten bir teknoloji şirketiyiz."

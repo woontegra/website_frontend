@@ -2,32 +2,11 @@ import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Code, Database, Settings, ShoppingCart, Users, Zap } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { defaultSoftwareDevData } from '../data/allPagesData'
-import type { HeroSectionData } from '../types/sections'
+import { useHeroSection } from '../hooks/useHeroSection'
 
 export function SoftwareDevelopmentPage() {
-  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('woontegra_software_dev_page')
-    if (stored) {
-      try {
-        const pageData = JSON.parse(stored)
-        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
-        if (heroSection) {
-          setHeroData(heroSection.data)
-          return
-        }
-      } catch (e) {
-        console.error('Failed to parse software-dev page data:', e)
-      }
-    }
-    const heroSection = defaultSoftwareDevData.sections.find(s => s.type === 'hero')
-    if (heroSection) {
-      setHeroData(heroSection.data as HeroSectionData)
-    }
-  }, [])
+  const heroData = useHeroSection('software-dev', defaultSoftwareDevData)
 
   const title = heroData?.title || "İşletmenize Özel Yazılım Geliştiriyoruz"
   const subtitle = heroData?.subtitle || "Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın."

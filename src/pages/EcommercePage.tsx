@@ -2,32 +2,11 @@ import { Button } from '../components/ui/Button'
 import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, CreditCard, Package, ShoppingBag, ShoppingCart, Tag, TrendingUp, Truck, Users } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { defaultEcommerceData } from '../data/allPagesData'
-import type { HeroSectionData } from '../types/sections'
+import { useHeroSection } from '../hooks/useHeroSection'
 
 export function EcommercePage() {
-  const [heroData, setHeroData] = useState<HeroSectionData | null>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('woontegra_ecommerce_page')
-    if (stored) {
-      try {
-        const pageData = JSON.parse(stored)
-        const heroSection = pageData.sections?.find((s: any) => s.type === 'hero')
-        if (heroSection) {
-          setHeroData(heroSection.data)
-          return
-        }
-      } catch (e) {
-        console.error('Failed to parse ecommerce page data:', e)
-      }
-    }
-    const heroSection = defaultEcommerceData.sections.find(s => s.type === 'hero')
-    if (heroSection) {
-      setHeroData(heroSection.data as HeroSectionData)
-    }
-  }, [])
+  const heroData = useHeroSection('ecommerce', defaultEcommerceData)
 
   const title = heroData?.title || "Satış Odaklı E-Ticaret Sistemleri Kuruyoruz"
   const subtitle = heroData?.subtitle || "Sadece bir mağaza değil, satış yapan ve büyüyen bir e-ticaret sistemi kurun."
