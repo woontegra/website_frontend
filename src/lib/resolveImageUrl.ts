@@ -1,3 +1,5 @@
+import { getApiBase } from '../config/api'
+
 /**
  * Eski panel/veritabanı kayıtlarındaki bilinen path hatalarını düzeltir.
  * Key: kayıtlı yanlış path → value: public/images içindeki gerçek dosya.
@@ -37,6 +39,10 @@ export function resolveImageUrl(url?: string | null): string {
 
   if (normalized.startsWith('/images/')) {
     return normalized
+  }
+
+  if (normalized.startsWith('/uploads/branding/')) {
+    return `${getApiBase()}${normalized}`
   }
 
   if (normalized.startsWith('/uploads/')) {

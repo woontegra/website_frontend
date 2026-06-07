@@ -89,10 +89,12 @@ export const PUBLIC_IMAGE_CATALOG: PublicImageItem[] = [
   { title: 'CTA arka plan', path: '/images/cta-bg.jpg', category: 'tools', alt: 'Çağrı bölümü arka plan görseli' },
 
   // Marka
-  { title: 'Marka — Bilirkişi', path: '/images/marka-bilirkisi.jpg', category: 'brand', alt: 'Bilirkişi marka logosu veya görseli' },
-  { title: 'Marka — Optimoon', path: '/images/marka-optimoon.jpg', category: 'brand', alt: 'Optimoon marka görseli' },
-  { title: 'Marka — Datça', path: '/images/marka-datca.jpg', category: 'brand', alt: 'Datça Tropikal marka görseli' },
-  { title: 'Marka — Mercan', path: '/images/marka-mercan.jpg', category: 'brand', alt: 'Mercan danışmanlık marka görseli' },
+  { title: 'Site logosu (SVG)', path: '/logo.svg', category: 'brand', alt: 'Woontegra site logosu' },
+  { title: 'Site favicon (SVG)', path: '/favicon.svg', category: 'brand', alt: 'Woontegra favicon' },
+  { title: 'Marka — Bilirkişi', path: '/images/brand-bilirkisi.jpg', category: 'brand', alt: 'Bilirkişi marka logosu veya görseli' },
+  { title: 'Marka — Optimoon', path: '/images/brand-optimoon.jpg', category: 'brand', alt: 'Optimoon marka görseli' },
+  { title: 'Marka — Datça', path: '/images/brand-datca.jpg', category: 'brand', alt: 'Datça Tropikal marka görseli' },
+  { title: 'Marka — Mercan', path: '/images/brand-mercan.jpg', category: 'brand', alt: 'Mercan danışmanlık marka görseli' },
   { title: 'Marka kartı — Bilirkişi', path: '/images/brand-bilirkisi.jpg', category: 'brand', alt: 'Bilirkişi marka kartı görseli' },
   { title: 'Marka kartı — Optimoon', path: '/images/brand-optimoon.jpg', category: 'brand', alt: 'Optimoon marka kartı görseli' },
   { title: 'Marka kartı — Datça', path: '/images/brand-datca.jpg', category: 'brand', alt: 'Datça marka kartı görseli' },

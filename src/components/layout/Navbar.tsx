@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { mainNav } from '../../data/navigation'
 import { fetchPublicMenu, type PublicMenuItem } from '../../api/menus'
 import { Button } from '../ui/Button'
+import { useSiteSettings } from '../../contexts/SiteSettingsContext'
+import { resolveImageUrl } from '../../lib/resolveImageUrl'
 
 const NAV_CONTAINER_CLASS = 'mx-auto max-w-[1280px] px-4 sm:px-5 min-[1200px]:px-6'
 
@@ -25,6 +27,8 @@ function NavItem({ href, label, active, onClick }: { href: string; label: string
 }
 
 export function Navbar() {
+  const { logo, siteName } = useSiteSettings()
+  const logoSrc = resolveImageUrl(logo)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
@@ -65,7 +69,7 @@ export function Navbar() {
             className="flex max-w-[140px] shrink-0 items-center min-[1200px]:max-w-[170px]"
             aria-label="Woontegra Ana Sayfa"
           >
-            <img src="/logo.png" alt="Woontegra" className="h-11 w-full object-contain min-[1200px]:h-12" />
+            <img src={logoSrc} alt={siteName} className="h-11 w-full object-contain min-[1200px]:h-12" />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">

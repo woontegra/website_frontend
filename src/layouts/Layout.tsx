@@ -3,6 +3,7 @@ import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { MaintenancePage } from '../pages/MaintenancePage'
 import { MetaPixelRouteTracker } from '../components/tracking/MetaPixelRouteTracker'
+import { SiteSettingsProvider } from '../contexts/SiteSettingsContext'
 import { SURFACE_PAGE_ROOT } from '../lib/sectionSurfaces'
 
 export { LAYOUT_CONTAINER_CLASS } from '../lib/layoutConstants'
@@ -25,11 +26,13 @@ export function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <MetaPixelRouteTracker />
-      <Navbar />
-      <main className={`w-full flex-1 ${SURFACE_PAGE_ROOT}`}>{children ?? <Outlet />}</main>
-      <Footer />
-    </div>
+    <SiteSettingsProvider>
+      <div className="flex min-h-screen flex-col bg-white">
+        <MetaPixelRouteTracker />
+        <Navbar />
+        <main className={`w-full flex-1 ${SURFACE_PAGE_ROOT}`}>{children ?? <Outlet />}</main>
+        <Footer />
+      </div>
+    </SiteSettingsProvider>
   )
 }

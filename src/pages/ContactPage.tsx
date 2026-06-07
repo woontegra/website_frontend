@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 
 export function ContactPage() {
   const email = localStorage.getItem('contact_email') || 'info@woontegra.com'
-  const phone = localStorage.getItem('contact_phone') || '0532 317 17 55'
+  const phone = localStorage.getItem('contact_phone') || '0531 586 17 55'
   const address = localStorage.getItem('contact_address') || 'İskele Mahallesi Bademli Caddesi 43/6 Datça-Muğla'
 
   return (

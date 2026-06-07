@@ -98,8 +98,8 @@ export const defaultContactData: PageData = {
       order: 2,
       data: {
         email: 'info@woontegra.com',
-        phone: '0532 317 17 55',
-        whatsapp: '905323171755',
+        phone: '0531 586 17 55',
+        whatsapp: '905315861755',
         address: 'İskele Mahallesi Bademli Caddesi 43/6 Datça-Muğla',
         mapEmbed: '',
       },
@@ -244,7 +244,7 @@ export const defaultBlogData: PageData = {
         categories: ['Tümü', 'Yazılım', 'E-Ticaret', 'SaaS', 'Marka & Patent', 'Dijital Büyüme'],
         posts: [
           { id: '1', slug: 'dijital-donusum-rehberi', title: 'Dijital Dönüşüm Rehberi: İşletmenizi Geleceğe Taşıyın', excerpt: 'Dijital dönüşüm sadece teknoloji değil, iş yapış şeklinizi değiştirmektir.', category: 'Dijital Büyüme', image: siteImages.blog.digitalTransformation, date: '20 Mart 2026', featured: true },
-          { id: '2', slug: 'saas-urun-geliştirme-rehberi', title: 'SaaS Ürün Geliştirme Rehberi', excerpt: 'Başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımlar.', category: 'SaaS', image: siteImages.blog.saasGuide, date: '15 Mart 2026' },
+          { id: '2', slug: 'saas-urun-gelistirme-rehberi', title: 'SaaS Ürün Geliştirme Rehberi', excerpt: 'Başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımlar.', category: 'SaaS', image: siteImages.blog.saasGuide, date: '15 Mart 2026' },
           { id: '3', slug: 'e-ticaret-optimizasyonu', title: 'E-Ticaret Optimizasyonu', excerpt: 'Dönüşüm oranlarını artırmak için uygulanabilir stratejiler.', category: 'E-Ticaret', image: siteImages.blog.ecommerceOptimization, date: '12 Mart 2026' },
           { id: '4', slug: 'marka-tescil-sureci', title: 'Marka Tescil Süreci', excerpt: 'Markanızı koruma altına almak için izlemeniz gereken adımlar.', category: 'Marka & Patent', image: siteImages.blog.trademark, date: '10 Mart 2026' },
           { id: '5', slug: 'modern-web-teknolojileri', title: 'Modern Web Teknolojileri', excerpt: 'Güncel web geliştirme araçları ve framework seçimi.', category: 'Yazılım', image: siteImages.blog.webTech, date: '8 Mart 2026' },

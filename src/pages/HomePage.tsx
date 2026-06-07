@@ -3,11 +3,15 @@ import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { defaultHomeData } from '../data/defaultHomeData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { usePageSection } from '../hooks/usePageSection'
+import { getBrandImage } from '../lib/brandImage'
+import type { BrandsSectionData } from '../types/sections'
 import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef } from 'react'
 
 export function HomePage() {
   const { heroData } = useHeroSection('home', defaultHomeData)
+  const { data: brandsData } = usePageSection<BrandsSectionData>('home', 'brands', defaultHomeData)
   const brandsScrollRef = useRef<HTMLDivElement>(null)
 
   const heroTag = heroData?.tag || 'Teknoloji & Yazılım'
@@ -147,28 +151,28 @@ export function HomePage() {
               {[
                 { 
                   name: 'Bilirkişi', 
-                  image: siteImages.brandBilirkisi,
+                  image: getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi),
                   desc: 'Hukuk ve aktüerya alanında kullanılan profesyonel hesaplama yazılımıdır.',
                   gradient: 'from-blue-600 to-purple-600',
                   url: 'https://www.bilirkisihesap.com/'
                 },
                 { 
                   name: 'Optimoon', 
-                  image: siteImages.brandOptimoon,
+                  image: getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon),
                   desc: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır.',
                   gradient: 'from-purple-600 to-pink-600',
                   url: 'https://optimoon.com/'
                 },
                 { 
                   name: 'Datça Tropikal', 
-                  image: siteImages.brandDatca,
+                  image: getBrandImage(brandsData, 'datça', siteImages.brandDatca),
                   desc: 'Yerel üretim ve doğal ürünlerin satışını gerçekleştiren markamızdır.',
                   gradient: 'from-green-600 to-teal-600',
                   url: 'https://datcatropikal.com/'
                 },
                 { 
                   name: 'Mercan Danışmanlık', 
-                  image: siteImages.brandMercan,
+                  image: getBrandImage(brandsData, 'mercan', siteImages.brandMercan),
                   desc: 'Marka tescil ve patent danışmanlık süreçlerini yöneten markamızdır.',
                   gradient: 'from-orange-600 to-red-600',
                   url: 'https://mercandanismanlik.com/'

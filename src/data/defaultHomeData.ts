@@ -70,22 +70,22 @@ export const defaultHomeData: PageData = {
           {
             name: 'Bilirkişi Hesaplama',
             description: 'Hukuk ve aktüerya alanında profesyonel hesaplama yazılımı',
-            image: '/brands/bilirkisi.png',
+            image: '/images/brand-bilirkisi.jpg',
           },
           {
             name: 'Optimoon',
             description: 'Doğal taş ve özel tasarım ürünler e-ticaret platformu',
-            image: '/brands/optimoon.png',
+            image: '/images/brand-optimoon.jpg',
           },
           {
             name: 'Datça Tropikal',
             description: 'Datça bölgesine ait doğal ve yerel ürünler',
-            image: '/brands/datca.png',
+            image: '/images/brand-datca.jpg',
           },
           {
             name: 'Mercan Danışmanlık',
             description: 'Marka tescil ve patent danışmanlığı',
-            image: '/brands/mercan.png',
+            image: '/images/brand-mercan.jpg',
           },
         ],
       },

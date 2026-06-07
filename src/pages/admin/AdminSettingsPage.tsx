@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Save, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw, Lock } from 'lucide-react'
 import { buildApiUrl } from '../../config/api'
 import { ManagedImageField } from '../../components/admin/ManagedImageField'
+import { SiteAssetField } from '../../components/admin/SiteAssetField'
+import { DEFAULT_SITE_FAVICON, DEFAULT_SITE_LOGO } from '../../api/siteSettings'
 import { SettingsCollapsibleSection } from '../../components/admin/SettingsCollapsibleSection'
 
 interface SiteSettings {
@@ -89,8 +91,8 @@ export function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>({
     siteName: 'Woontegra',
     siteDescription: 'Yazılım, e-ticaret ve dijital sistemler',
-    logo: '',
-    favicon: '',
+    logo: DEFAULT_SITE_LOGO,
+    favicon: DEFAULT_SITE_FAVICON,
     darkModeLogo: '',
     language: 'tr',
     currency: 'TRY',
@@ -147,7 +149,7 @@ export function AdminSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [newKeyword, setNewKeyword] = useState('')
-  const [openSections, setOpenSections] = useState<string[]>(['account', 'general'])
+  const [openSections, setOpenSections] = useState<string[]>(['account', 'general', 'brand'])
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -479,6 +481,31 @@ export function AdminSettingsPage() {
         isOpen={openSections.includes('brand')}
         onToggle={toggleSection}
       >
+        <div className="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-800">Logo & Favicon</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              <strong>PC’den Yükle</strong> ile dosyayı doğrudan kaydedin veya galeriden mevcut görseli seçin.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <SiteAssetField
+              label="Site Logosu"
+              kind="logo"
+              value={settings.logo}
+              onChange={(url) => setSettings({ ...settings, logo: url })}
+              hint="Navbar ve footer’da görünür."
+            />
+            <SiteAssetField
+              label="Favicon"
+              kind="favicon"
+              value={settings.favicon}
+              onChange={(url) => setSettings({ ...settings, favicon: url })}
+              hint="Tarayıcı sekmesi ikonu."
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="label">Primary Color</label>

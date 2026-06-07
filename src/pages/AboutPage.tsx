@@ -4,9 +4,18 @@ import { siteImages } from '../data/siteImages'
 import { ArrowRight } from 'lucide-react'
 import { defaultAboutData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { usePageSection } from '../hooks/usePageSection'
+import { getBrandImage } from '../lib/brandImage'
+import type { BrandsSectionData } from '../types/sections'
 
 export function AboutPage() {
   const { heroData } = useHeroSection('about', defaultAboutData)
+  const { data: brandsData } = usePageSection<BrandsSectionData>('about', 'brands', defaultAboutData)
+
+  const bilirkisiImage = getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi)
+  const optimoonImage = getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon)
+  const datcaImage = getBrandImage(brandsData, 'datça', siteImages.brandDatca)
+  const mercanImage = getBrandImage(brandsData, 'mercan', siteImages.brandMercan)
 
   const title = heroData?.title || "Woontegra'yı Tanıyın"
   const subtitle = heroData?.subtitle || "Yazılım, e-ticaret ve dijital sistemler alanında ürün geliştiren ve markalar yöneten bir teknoloji şirketiyiz."
@@ -159,7 +168,7 @@ export function AboutPage() {
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-blue-600 to-purple-600">
                   <SafeImage
-                    src={siteImages.brandBilirkisi}
+                    src={bilirkisiImage}
                     alt="Bilirkişi"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -191,7 +200,7 @@ export function AboutPage() {
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="lg:order-2 relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-purple-600 to-pink-600">
                   <SafeImage
-                    src={siteImages.brandOptimoon}
+                    src={optimoonImage}
                     alt="Optimoon"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -223,7 +232,7 @@ export function AboutPage() {
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-green-600 to-teal-600">
                   <SafeImage
-                    src={siteImages.brandDatca}
+                    src={datcaImage}
                     alt="Datça Tropikal"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -255,7 +264,7 @@ export function AboutPage() {
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="lg:order-2 relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-orange-600 to-red-600">
                   <SafeImage
-                    src={siteImages.brandMercan}
+                    src={mercanImage}
                     alt="Mercan Danışmanlık"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
