@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { BlogCoverImage } from '../components/blog/BlogCoverImage'
 import { defaultBlogData } from '../data/allPagesData'
+import { getBlogCoverImage } from '../data/frontendImages'
 import { useHeroSection } from '../hooks/useHeroSection'
 import { usePageSection } from '../hooks/usePageSection'
 import type { BlogPostsSectionData } from '../types/sections'
@@ -75,7 +76,7 @@ export function BlogPage() {
                 className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
               >
                 <BlogCoverImage
-                  src={post.image}
+                  src={getBlogCoverImage(post.slug)}
                   alt={post.title}
                   category={post.category}
                   className="aspect-video"
@@ -111,7 +112,7 @@ export function BlogPage() {
             >
               <div className="grid gap-0 lg:grid-cols-2">
                 <BlogCoverImage
-                  src={featuredPost.image}
+                  src={getBlogCoverImage(featuredPost.slug)}
                   alt={featuredPost.title}
                   category={featuredPost.category}
                   className="aspect-video lg:aspect-auto lg:min-h-[320px]"

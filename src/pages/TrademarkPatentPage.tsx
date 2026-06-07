@@ -1,18 +1,17 @@
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { defaultTrademarkData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
-import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight, CheckCircle, FileText, Search, Shield, Scale, Award, FileCheck } from 'lucide-react'
 
 export function TrademarkPatentPage() {
-  const { heroData, loaded: heroLoaded } = useHeroSection('trademark', defaultTrademarkData)
+  const { heroData } = useHeroSection('trademark', defaultTrademarkData)
   const title = heroData?.title || 'Markanızı Güvence Altına Alın'
   const subtitle =
     heroData?.subtitle ||
     'Marka tescil, patent ve hukuki süreçlerde profesyonel destek ile markanızı koruyun.'
-  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.trademarkDocument)
+  const heroImage = frontendImages.trademarkDocument
 
   return (
     <div className="bg-white">
@@ -40,7 +39,7 @@ export function TrademarkPatentPage() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <SafeImage
+                <StaticImage
                   src={heroImage}
                   alt="Marka Tescil Belgesi"
                   className="w-full h-auto object-cover"

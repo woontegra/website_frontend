@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button'
 import { BlogPostHero } from '../components/blog/BlogPostHero'
 import { defaultBlogData } from '../data/allPagesData'
 import { getBlogPostContent } from '../data/blogPostContent'
+import { getBlogCoverImage } from '../data/frontendImages'
 import { usePageSection } from '../hooks/usePageSection'
 import type { BlogPost, BlogPostsSectionData } from '../types/sections'
 
@@ -56,7 +57,7 @@ export function BlogPostDetailPage() {
   return (
     <div className="bg-slate-50">
       <BlogPostHero
-        image={post.image}
+        image={getBlogCoverImage(post.slug)}
         title={post.title}
         category={post.category}
         date={post.date}

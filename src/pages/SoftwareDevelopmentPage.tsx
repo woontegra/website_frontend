@@ -1,17 +1,15 @@
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { ArrowRight, CheckCircle, Code, Database, Settings, ShoppingCart, Users, Zap } from 'lucide-react'
 import { defaultSoftwareDevData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
-import { resolvePageImage } from '../lib/resolveImageUrl'
-
 export function SoftwareDevelopmentPage() {
-  const { heroData, loaded: heroLoaded } = useHeroSection('software-dev', defaultSoftwareDevData)
+  const { heroData } = useHeroSection('software-dev', defaultSoftwareDevData)
 
   const title = heroData?.title || "İşletmenize Özel Yazılım Geliştiriyoruz"
   const subtitle = heroData?.subtitle || "Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın."
-  const image = resolvePageImage(heroLoaded, heroData?.image, siteImages.softwareHero)
+  const image = frontendImages.softwareHero
 
   return (
     <div className="bg-white">
@@ -41,7 +39,7 @@ export function SoftwareDevelopmentPage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <SafeImage
+              <StaticImage
                 src={image}
                 alt="Yazılım Dashboard"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"

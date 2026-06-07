@@ -1,18 +1,17 @@
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { defaultSaasData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
-import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight, CheckCircle, Cloud, Database, Lock, Layers, Zap, BarChart3, Users, CreditCard, Code, Activity } from 'lucide-react'
 
 export function SaasProductPage() {
-  const { heroData, loaded: heroLoaded } = useHeroSection('saas', defaultSaasData)
+  const { heroData } = useHeroSection('saas', defaultSaasData)
   const title = heroData?.title || 'Kendi Yazılım Ürününüzü Geliştirin'
   const subtitle =
     heroData?.subtitle ||
     'SaaS (Software as a Service) modeli ile çalışan, ölçeklenebilir ve sürdürülebilir yazılım ürünleri geliştiriyoruz.'
-  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.saasDashboard)
+  const heroImage = frontendImages.saasDashboard
 
   return (
     <div className="bg-white">
@@ -40,7 +39,7 @@ export function SaasProductPage() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <SafeImage
+                <StaticImage
                   src={heroImage}
                   alt="SaaS Dashboard"
                   className="w-full h-auto object-cover"

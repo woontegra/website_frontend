@@ -1,26 +1,21 @@
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { ArrowRight } from 'lucide-react'
 import { defaultAboutData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
-import { usePageSection } from '../hooks/usePageSection'
-import { getBrandImage } from '../lib/brandImage'
-import { resolvePageImage } from '../lib/resolveImageUrl'
-import type { BrandsSectionData } from '../types/sections'
 
 export function AboutPage() {
-  const { heroData, loaded: heroLoaded } = useHeroSection('about', defaultAboutData)
-  const { data: brandsData, loaded: brandsLoaded } = usePageSection<BrandsSectionData>('about', 'brands', defaultAboutData)
+  const { heroData } = useHeroSection('about', defaultAboutData)
 
-  const bilirkisiImage = getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi, brandsLoaded)
-  const optimoonImage = getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon, brandsLoaded)
-  const datcaImage = getBrandImage(brandsData, 'datça', siteImages.brandDatca, brandsLoaded)
-  const mercanImage = getBrandImage(brandsData, 'mercan', siteImages.brandMercan, brandsLoaded)
+  const bilirkisiImage = frontendImages.brands.bilirkisi
+  const optimoonImage = frontendImages.brands.optimoon
+  const datcaImage = frontendImages.brands.datca
+  const mercanImage = frontendImages.brands.mercan
 
   const title = heroData?.title || "Woontegra'yı Tanıyın"
   const subtitle = heroData?.subtitle || "Yazılım, e-ticaret ve dijital sistemler alanında ürün geliştiren ve markalar yöneten bir teknoloji şirketiyiz."
-  const image = resolvePageImage(heroLoaded, heroData?.image, siteImages.aboutHero)
+  const image = frontendImages.aboutHero
 
   return (
     <div className="bg-white">
@@ -44,7 +39,7 @@ export function AboutPage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <SafeImage
+              <StaticImage
                 src={image}
                 alt="Hakkımızda"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
@@ -168,7 +163,7 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-blue-600 to-purple-600">
-                  <SafeImage
+                  <StaticImage
                     src={bilirkisiImage}
                     alt="Bilirkişi"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -200,7 +195,7 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="lg:order-2 relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-purple-600 to-pink-600">
-                  <SafeImage
+                  <StaticImage
                     src={optimoonImage}
                     alt="Optimoon"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -232,7 +227,7 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-green-600 to-teal-600">
-                  <SafeImage
+                  <StaticImage
                     src={datcaImage}
                     alt="Datça Tropikal"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -264,7 +259,7 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="lg:order-2 relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-orange-600 to-red-600">
-                  <SafeImage
+                  <StaticImage
                     src={mercanImage}
                     alt="Mercan Danışmanlık"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

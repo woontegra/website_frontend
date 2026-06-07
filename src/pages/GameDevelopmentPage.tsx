@@ -1,6 +1,6 @@
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { ArrowRight, CheckCircle, Gamepad2, Smartphone, Globe, Box, GraduationCap, Sparkles, Code, Database, Activity } from 'lucide-react'
 
 export function GameDevelopmentPage() {
@@ -30,8 +30,8 @@ export function GameDevelopmentPage() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <SafeImage
-                  src={siteImages.gameScene}
+                <StaticImage
+                  src={frontendImages.gameScene}
                   alt="Oyun Sahnesi"
                   className="w-full h-auto object-cover"
                 />

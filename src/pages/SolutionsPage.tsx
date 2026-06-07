@@ -1,18 +1,17 @@
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { defaultSolutionsData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
-import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight } from 'lucide-react'
 
 export function SolutionsPage() {
-  const { heroData, loaded: heroLoaded } = useHeroSection('solutions', defaultSolutionsData)
+  const { heroData } = useHeroSection('solutions', defaultSolutionsData)
   const title = heroData?.title || 'Geliştirdiğimiz Dijital Yapılar'
   const subtitle =
     heroData?.subtitle ||
     'Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir.'
-  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.solutionsHero)
+  const heroImage = frontendImages.solutionsHero
 
   return (
     <div className="bg-white overflow-x-hidden">
@@ -31,7 +30,7 @@ export function SolutionsPage() {
 
             <div className="relative min-w-0">
               <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <SafeImage
+                <StaticImage
                   src={heroImage}
                   alt="Dijital Sistemler"
                   className="w-full h-auto object-cover"
@@ -83,8 +82,8 @@ export function SolutionsPage() {
 
             <div className="relative min-w-0">
               <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <SafeImage
-                  src={siteImages.bilirkisiHesapHero}
+                <StaticImage
+                  src={frontendImages.bilirkisiHesapHero}
                   alt="Bilirkişi Hesaplama"
                   className="w-full h-auto object-cover"
                 />
@@ -100,8 +99,8 @@ export function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
             <div className="relative order-2 lg:order-1 min-w-0">
               <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <SafeImage
-                  src={siteImages.optimoonProducts}
+                <StaticImage
+                  src={frontendImages.optimoonProducts}
                   alt="Optimoon Ürünleri"
                   className="w-full h-auto object-cover"
                 />
@@ -153,8 +152,8 @@ export function SolutionsPage() {
 
             <div className="relative min-w-0">
               <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <SafeImage
-                  src={siteImages.datcaProducts}
+                <StaticImage
+                  src={frontendImages.datcaProducts}
                   alt="Datça Tropikal Ürünleri"
                   className="w-full h-auto object-cover"
                 />
@@ -170,8 +169,8 @@ export function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
             <div className="relative order-2 lg:order-1 min-w-0">
               <div className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <SafeImage
-                  src={siteImages.mercanServices}
+                <StaticImage
+                  src={frontendImages.mercanServices}
                   alt="Mercan Danışmanlık"
                   className="w-full h-auto object-cover"
                 />

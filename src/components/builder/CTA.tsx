@@ -2,8 +2,7 @@ import { useNode } from '@craftjs/core'
 import { CTASettings } from './settings/CTASettings'
 import { Button } from '../ui/Button'
 import { ArrowRight } from 'lucide-react'
-import { siteImages } from '../../data/siteImages'
-import { isValidImageSrc, resolveImageUrl } from '../../lib/resolveImageUrl'
+import { frontendImages } from '../../data/frontendImages'
 
 export interface CTAProps {
   title?: string
@@ -18,13 +17,11 @@ export const CTA = ({
   subtitle = 'Uzman ekibimizle tanışın ve dijital dönüşüm yolculuğunuza bugün başlayın',
   buttonText = 'Ücretsiz Görüşme Talep Edin',
   buttonLink = '/iletisim',
-  backgroundImage = siteImages.ctaBackground,
+  backgroundImage = frontendImages.ctaBackground,
 }: CTAProps) => {
   const {
     connectors: { connect, drag },
   } = useNode()
-
-  const bgUrl = isValidImageSrc(backgroundImage) ? resolveImageUrl(backgroundImage) : ''
 
   return (
     <div
@@ -33,7 +30,7 @@ export const CTA = ({
       }}
       className="relative py-20 md:py-28 overflow-hidden"
       style={{
-        backgroundImage: bgUrl ? `url("${bgUrl}")` : 'none',
+        backgroundImage: backgroundImage ? `url("${backgroundImage}")` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
@@ -58,7 +55,7 @@ CTA.craft = {
     subtitle: 'Uzman ekibimizle tanışın ve dijital dönüşüm yolculuğunuza bugün başlayın',
     buttonText: 'Ücretsiz Görüşme Talep Edin',
     buttonLink: '/iletisim',
-    backgroundImage: siteImages.ctaBackground,
+    backgroundImage: frontendImages.ctaBackground,
   },
   related: {
     settings: CTASettings,

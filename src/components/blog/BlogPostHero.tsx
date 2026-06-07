@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { resolveImageUrl } from '../../lib/resolveImageUrl'
 import { getBlogCategoryGradient } from '../../lib/blogCategoryStyle'
 
 type BlogPostHeroProps = {
-  image?: string | null
+  image: string
   title: string
   category: string
   date: string
@@ -13,26 +11,17 @@ type BlogPostHeroProps = {
 }
 
 export function BlogPostHero({ image, title, category, date, readTime = '8 dk okuma' }: BlogPostHeroProps) {
-  const [failed, setFailed] = useState(false)
-  const resolvedSrc = image ? resolveImageUrl(image) : ''
   const gradient = getBlogCategoryGradient(category)
-
-  useEffect(() => {
-    setFailed(false)
-  }, [resolvedSrc])
-
-  const showImage = Boolean(resolvedSrc) && !failed
 
   return (
     <section className={`relative min-h-[22rem] overflow-hidden bg-gradient-to-br md:min-h-[26rem] ${gradient}`}>
-      {showImage ? (
-        <img
-          src={resolvedSrc}
-          alt={title}
-          className="absolute inset-0 h-full w-full object-cover"
-          onError={() => setFailed(true)}
-        />
-      ) : null}
+      <img
+        src={image}
+        alt={title}
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="sync"
+      />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_40%,rgba(255,255,255,0.12),transparent_60%)]" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
 

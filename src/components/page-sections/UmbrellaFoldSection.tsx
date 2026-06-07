@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { SafeImage } from '../ui/SafeImage'
-import { isValidImageSrc } from '../../lib/resolveImageUrl'
+import { StaticImage } from '../ui/StaticImage'
+import { frontendImages } from '../../data/frontendImages'
 
 /**
- * Ana sayfa — Woontegra çatı marka alanı (panelden: kicker, başlık, gövde, CTA, görsel URL)
+ * Ana sayfa — Woontegra çatı marka alanı (panelden: kicker, başlık, gövde, CTA)
  */
 export default function UmbrellaFoldSection(p: Record<string, unknown>) {
   const kicker = String(p.kicker ?? 'Çatı marka')
@@ -13,8 +13,6 @@ export default function UmbrellaFoldSection(p: Record<string, unknown>) {
     p.body ??
       'Optimoon’dan Bilirkişi Hesaplama’ya, Datça Tropikal’den Mercan Danışmanlık’a kadar ürün ve hizmet markalarımızı aynı mühendislik disiplini ve kalite anlayışıyla yönetiyoruz.'
   )
-  const imageUrl = String(p.imageUrl ?? '').trim()
-  const hasImage = isValidImageSrc(imageUrl)
   const cta1 = (p.cta1 as { text?: string; href?: string }) ?? { text: 'Çözümlerimiz', href: '/cozumler' }
   const cta2 = (p.cta2 as { text?: string; href?: string }) ?? { text: 'İletişim', href: '/iletisim' }
 
@@ -24,7 +22,6 @@ export default function UmbrellaFoldSection(p: Record<string, unknown>) {
       aria-labelledby="umbrella-fold-title"
       data-section="umbrella_fold"
     >
-      {/* Sıcak degrade: amber, şeftali, yumuşak terracotta */}
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-br from-amber-50/95 via-orange-50/80 to-rose-100/70"
         aria-hidden
@@ -83,32 +80,11 @@ export default function UmbrellaFoldSection(p: Record<string, unknown>) {
 
         <div className="relative mx-auto w-full max-w-lg lg:mx-0 lg:justify-self-end">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-amber-100/60 bg-amber-50/50 shadow-xl shadow-amber-900/8 ring-1 ring-amber-200/50 backdrop-blur-sm">
-            {hasImage ? (
-              <SafeImage
-                src={imageUrl}
-                alt=""
-                className="h-full w-full object-cover"
-                wrapperClassName="h-full"
-                skeletonClassName="min-h-0 rounded-none"
-                fallbackClassName="min-h-0 rounded-none border-0"
-              />
-            ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-amber-100/90 via-orange-50/70 to-rose-50/60 p-8 text-center">
-                <div className="flex flex-wrap justify-center gap-2">
-                  {['Woontegra', 'SaaS', 'E-ticaret', 'Danışmanlık'].map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-lg border border-amber-200/70 bg-amber-50/90 px-3 py-1.5 text-xs font-semibold text-amber-800/90"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <p className="max-w-xs text-sm leading-relaxed text-amber-800/70">
-                  Panelden bu alana görsel URL&apos;si ekleyebilirsiniz. Boş bırakılınca yer tutucu gösterilir.
-                </p>
-              </div>
-            )}
+            <StaticImage
+              src={frontendImages.homeHero}
+              alt="Woontegra"
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       </div>

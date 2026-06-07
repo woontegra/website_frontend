@@ -12,8 +12,8 @@ import {
   ZoomIn,
 } from 'lucide-react'
 import { Button } from '../components/ui/Button'
-import { SafeImage } from '../components/ui/SafeImage'
-import { siteImages } from '../data/siteImages'
+import { StaticImage } from '../components/ui/StaticImage'
+import { frontendImages } from '../data/frontendImages'
 import { Card } from '../components/ui/Card'
 import { FAQItem } from '../components/ui/FAQItem'
 import { SectionHeader } from '../components/ui/SectionHeader'
@@ -32,7 +32,7 @@ const SETUP_DOWNLOAD_URL =
   'https://websitebackend-production-ab6e.up.railway.app/api/public/downloads/sifre-kasasi/setup'
 const PORTABLE_DOWNLOAD_URL =
   'https://websitebackend-production-ab6e.up.railway.app/api/public/downloads/sifre-kasasi/portable'
-const APP_SCREENSHOT_URL = siteImages.sifreKasasiScreenshot
+const APP_SCREENSHOT_URL = frontendImages.sifreKasasiScreenshot
 
 const SECURITY_CARDS = [
   {
@@ -262,7 +262,7 @@ function AppScreenshot() {
           className="group relative w-full overflow-visible rounded-2xl border border-white/15 text-left shadow-2xl shadow-black/40 focus:outline-none focus:ring-2 focus:ring-accent-blue/50"
           aria-label="Uygulama ekran görüntüsünü büyüt"
         >
-          <SafeImage
+          <StaticImage
             src={APP_SCREENSHOT_URL}
             alt="Woontegra Şifre Kasası uygulama ekranı"
             className="block h-auto w-full rounded-2xl object-contain"
@@ -290,7 +290,7 @@ function AppScreenshot() {
           >
             <X className="h-5 w-5" />
           </button>
-          <SafeImage
+          <StaticImage
             src={APP_SCREENSHOT_URL}
             alt="Woontegra Şifre Kasası uygulama ekranı — büyük görünüm"
             className="max-h-[90vh] max-w-[min(1200px,95vw)] object-contain"

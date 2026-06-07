@@ -3,8 +3,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { mainNav } from '../../data/navigation'
 import { fetchPublicMenu, type PublicMenuItem } from '../../api/menus'
 import { Button } from '../ui/Button'
-import { useSiteSettings } from '../../contexts/SiteSettingsContext'
-import { SafeLogo } from '../ui/SafeLogo'
+import {
+  HEADER_LOGO_ALT,
+  HEADER_LOGO_HEIGHT,
+  HEADER_LOGO_SRC,
+  HEADER_LOGO_WIDTH,
+} from '../../config/siteLogo'
 
 const NAV_CONTAINER_CLASS = 'mx-auto max-w-[1280px] px-4 sm:px-5 min-[1200px]:px-6'
 
@@ -27,7 +31,6 @@ function NavItem({ href, label, active, onClick }: { href: string; label: string
 }
 
 export function Navbar() {
-  const { logo, siteName, loaded: settingsLoaded } = useSiteSettings()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
@@ -68,7 +71,16 @@ export function Navbar() {
             className="flex max-w-[200px] shrink-0 items-center min-[1200px]:max-w-[260px]"
             aria-label="Woontegra Ana Sayfa"
           >
-            <SafeLogo src={logo} alt={siteName} loading={!settingsLoaded} />
+            <img
+              src={HEADER_LOGO_SRC}
+              alt={HEADER_LOGO_ALT}
+              width={HEADER_LOGO_WIDTH}
+              height={HEADER_LOGO_HEIGHT}
+              className="block h-14 w-[180px] max-w-full object-contain object-left min-[1200px]:h-[4.25rem]"
+              loading="eager"
+              fetchPriority="high"
+              decoding="sync"
+            />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">

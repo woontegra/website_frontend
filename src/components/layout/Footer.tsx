@@ -1,23 +1,29 @@
 import { Link } from 'react-router-dom'
 import { footerNav } from '../../data/navigation'
-import { useSiteSettings } from '../../contexts/SiteSettingsContext'
 import { LAYOUT_CONTAINER_CLASS } from '../../lib/layoutConstants'
-import { SafeLogo } from '../ui/SafeLogo'
+import {
+  HEADER_LOGO_ALT,
+  HEADER_LOGO_HEIGHT,
+  HEADER_LOGO_SRC,
+  HEADER_LOGO_WIDTH,
+} from '../../config/siteLogo'
 
 export function Footer() {
-  const { logo, siteName, loaded: settingsLoaded } = useSiteSettings()
   return (
     <footer className="bg-slate-50 border-t border-gray-200">
       <div className={`${LAYOUT_CONTAINER_CLASS} py-16 md:py-20`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
             <Link to="/" className="inline-block" aria-label="Woontegra Ana Sayfa">
-              <SafeLogo
-                src={logo}
-                alt={siteName}
-                loading={!settingsLoaded}
-                className="h-16 w-auto max-w-full object-contain md:h-20"
-                textClassName="text-2xl font-bold tracking-tight text-slate-900"
+              <img
+                src={HEADER_LOGO_SRC}
+                alt={HEADER_LOGO_ALT}
+                width={HEADER_LOGO_WIDTH}
+                height={HEADER_LOGO_HEIGHT}
+                className="block h-16 w-[180px] max-w-full object-contain object-left md:h-20"
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
               />
             </Link>
             <p className="mt-5 text-slate-500 text-sm max-w-xs leading-relaxed">
