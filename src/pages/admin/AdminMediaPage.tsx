@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { adminListMedia, adminUploadMedia, resolveMediaSrc, type MediaAssetRow } from '../../api/cms'
+import { adminListMedia, resolveMediaSrc, type MediaAssetRow } from '../../api/cms'
+import { PUBLIC_IMAGE_OPTIONS } from '../../data/publicImages'
 
 export function AdminMediaPage() {
   const [items, setItems] = useState<MediaAssetRow[]>([])
@@ -23,26 +24,10 @@ export function AdminMediaPage() {
     <div>
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Medya</h1>
       {msg && <p className="mb-4 text-amber-700 text-sm">{msg}</p>}
-      <div className="mb-4">
-        <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={async (e) => {
-              const f = e.target.files?.[0]
-              e.target.value = ''
-              if (!f) return
-              setMsg('Yükleniyor…')
-              const r = await adminUploadMedia(f)
-              if (r.success) {
-                setMsg('')
-                load()
-              } else setMsg(r.message ?? 'Yükleme başarısız')
-            }}
-          />
-          + Görsel yükle
-        </label>
+      <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+        Bilgisayardan yükleme kapalı. Kurumsal site görselleri{' '}
+        <code className="rounded bg-white px-1">frontend/public/images</code> klasöründen gelir (
+        {PUBLIC_IMAGE_OPTIONS.length} dosya). İçerik düzenleme modallarından seçim yapın.
       </div>
       {loading ? (
         <p className="text-slate-500">Yükleniyor…</p>

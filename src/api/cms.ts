@@ -1,5 +1,5 @@
 import { buildApiUrl } from '../config/api'
-import { isCloudinaryMediaUrl, resolveImageUrl } from '../lib/resolveImageUrl'
+import { resolveImageUrl } from '../lib/resolveImageUrl'
 
 /** @deprecated resolveImageUrl kullanın */
 export function resolveMediaSrc(url: string): string {
@@ -60,42 +60,14 @@ export async function adminListMedia(): Promise<{ success: boolean; data?: Media
   return adminApi<MediaAssetRow[]>('/media')
 }
 
-type UploadMediaResponse = {
-  success: boolean
-  data?: MediaAssetRow
-  message?: string
-  code?: string
-}
-
-export async function adminUploadMedia(file: File): Promise<UploadMediaResponse> {
-  const token = getAdminToken()
-  const fd = new FormData()
-  fd.append('file', file)
-  const res = await fetch(buildApiUrl('/admin/cms/media/upload'), {
-    method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: fd,
-  })
-  const json = (await res.json().catch(() => ({}))) as UploadMediaResponse
-  if (!res.ok) {
-    return {
-      success: false,
-      code: json.code,
-      message: json.message ?? 'Yükleme hatası',
-    }
+/** Kurumsal site: yükleme devre dışı — public/images kullanın */
+export async function adminUploadMedia(
+  _file: File
+): Promise<{ success: boolean; message?: string; code?: string }> {
+  return {
+    success: false,
+    code: 'UPLOAD_DISABLED',
+    message:
+      'Bilgisayardan yükleme devre dışı. Panelden public/images listesinden görsel seçin (/images/... yolu).',
   }
-
-  const url = json.data?.url ?? ''
-  if (!isCloudinaryMediaUrl(url)) {
-    return {
-      success: false,
-      code: 'INVALID_MEDIA_URL',
-      message:
-        url.startsWith('/uploads/')
-          ? 'Sunucu geçici /uploads yolu döndürdü. Railway’de CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY ve CLOUDINARY_API_SECRET tanımlayın.'
-          : 'Yükleme yanıtı geçerli bir Cloudinary URL içermiyor.',
-    }
-  }
-
-  return json
 }

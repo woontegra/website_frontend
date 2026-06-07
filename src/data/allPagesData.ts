@@ -15,6 +15,7 @@ export const defaultAboutData: PageData = {
         subtitle: 'Yazılım, e-ticaret ve dijital sistemler alanında ürün geliştiren ve markalar yöneten bir teknoloji şirketiyiz.',
         button1Text: 'Hizmetlerimiz',
         button2Text: 'İletişime Geç',
+        image: siteImages.aboutHero,
       },
     },
     {
@@ -120,7 +121,7 @@ export const defaultContactData: PageData = {
 export const defaultSoftwareDevData: PageData = {
   slug: 'software-dev',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Yazılım Geliştirme', title: 'İşletmenize Özel Yazılım Geliştiriyoruz', subtitle: 'Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın.', button1Text: 'Teklif Al', button2Text: 'İletişime Geç' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Yazılım Geliştirme', title: 'İşletmenize Özel Yazılım Geliştiriyoruz', subtitle: 'Hazır çözümler yerine, işinize özel geliştirilen sistemlerle süreçlerinizi hızlandırın ve kontrol altına alın.', button1Text: 'Teklif Al', button2Text: 'İletişime Geç', image: '/images/yazilim.png' }},
     { id: 'features-1', type: 'service-features', order: 2, data: { title: 'Geliştirdiğimiz Yazılım Türleri', subtitle: 'İhtiyacınıza özel sistemler', features: [
       { title: 'Yönetim Panelleri', description: 'Admin sistemleri', icon: 'Settings' },
       { title: 'E-Ticaret Altyapıları', description: 'Online satış sistemleri', icon: 'ShoppingCart' },
@@ -137,7 +138,7 @@ export const defaultSoftwareDevData: PageData = {
 export const defaultWebDesignData: PageData = {
   slug: 'web-design',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Web Tasarım', title: 'Modern ve Dönüşüm Odaklı Web Siteleri', subtitle: 'Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz.', button1Text: 'Teklif Al', button2Text: 'Örnekleri İncele' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Web Tasarım', title: 'Modern ve Dönüşüm Odaklı Web Siteleri', subtitle: 'Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz.', button1Text: 'Teklif Al', button2Text: 'Örnekleri İncele', image: '/images/web-tasarim.png' }},
     { id: 'features-1', type: 'service-features', order: 2, data: { title: 'Web Tasarım Hizmetlerimiz', subtitle: 'Sonuç odaklı tasarımlar', features: [
       { title: 'Kurumsal Web Siteleri', description: 'Profesyonel kurumsal siteler', icon: 'Monitor' },
       { title: 'Landing Page', description: 'Satış sayfaları', icon: 'TrendingUp' },
@@ -154,7 +155,7 @@ export const defaultWebDesignData: PageData = {
 export const defaultEcommerceData: PageData = {
   slug: 'ecommerce',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'E-Ticaret', title: 'Satış Odaklı E-Ticaret Sistemleri Kuruyoruz', subtitle: 'Sadece bir mağaza değil, satış yapan ve büyüyen bir e-ticaret sistemi kurun.', button1Text: 'Teklif Al', button2Text: 'Demo Talep Et' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'E-Ticaret', title: 'Satış Odaklı E-Ticaret Sistemleri Kuruyoruz', subtitle: 'Sadece bir mağaza değil, satış yapan ve büyüyen bir e-ticaret sistemi kurun.', button1Text: 'Teklif Al', button2Text: 'Demo Talep Et', image: siteImages.ecommerceHero }},
     { id: 'features-1', type: 'service-features', order: 2, data: { title: 'E-Ticaret Çözümlerimiz', subtitle: 'Satış odaklı sistemler', features: [
       { title: 'Özel E-Ticaret Siteleri', description: 'Sıfırdan özel geliştirme', icon: 'ShoppingCart' },
       { title: 'WooCommerce Altyapı Kurulumu', description: 'WordPress tabanlı mağaza', icon: 'ShoppingBag' },
@@ -171,7 +172,7 @@ export const defaultEcommerceData: PageData = {
 export const defaultSaasData: PageData = {
   slug: 'saas',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'SaaS Ürün Geliştirme', title: 'Kendi Yazılım Ürününüzü Geliştirin', subtitle: 'SaaS (Software as a Service) modeli ile çalışan, ölçeklenebilir ve sürdürülebilir yazılım ürünleri geliştiriyoruz.', button1Text: 'Projeni Anlat', button2Text: 'Teklif Al' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'SaaS Ürün Geliştirme', title: 'Kendi Yazılım Ürününüzü Geliştirin', subtitle: 'SaaS (Software as a Service) modeli ile çalışan, ölçeklenebilir ve sürdürülebilir yazılım ürünleri geliştiriyoruz.', button1Text: 'Projeni Anlat', button2Text: 'Teklif Al', image: siteImages.saasDashboard }},
     { id: 'features-1', type: 'service-features', order: 2, data: { title: 'SaaS Geliştirme Hizmetlerimiz', subtitle: 'Bulut tabanlı sistemler', features: [
       { title: 'Multi-Tenant Mimari', description: 'Çoklu müşteri desteği', icon: 'Users' },
       { title: 'Abonelik Yönetimi', description: 'Otomatik faturalandırma', icon: 'CreditCard' },
@@ -186,7 +187,7 @@ export const defaultSaasData: PageData = {
 export const defaultTrademarkData: PageData = {
   slug: 'trademark',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Marka & Patent', title: 'Marka Tescil ve Patent Başvuru Süreçleri', subtitle: 'Markanızı ve fikri mülkiyetinizi koruma altına alın', button1Text: 'Başvuru Yap', button2Text: 'Bilgi Al' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Marka & Patent', title: 'Marka Tescil ve Patent Başvuru Süreçleri', subtitle: 'Markanızı ve fikri mülkiyetinizi koruma altına alın', button1Text: 'Başvuru Yap', button2Text: 'Bilgi Al', image: siteImages.trademarkDocument }},
     { id: 'features-1', type: 'service-features', order: 2, data: { title: 'Marka & Patent Hizmetlerimiz', subtitle: 'Profesyonel danışmanlık', features: [
       { title: 'Marka Tescil', description: 'Türkiye ve uluslararası marka tescili', icon: 'Award' },
       { title: 'Patent Başvurusu', description: 'Buluş ve tasarım patent başvuruları', icon: 'Shield' },
@@ -201,7 +202,7 @@ export const defaultTrademarkData: PageData = {
 export const defaultConsultingData: PageData = {
   slug: 'consulting',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Dijital Danışmanlık', title: 'Dijital Dönüşüm Stratejileri ve Danışmanlık', subtitle: 'İşletmenizin dijital dönüşüm yolculuğunda yanınızdayız', button1Text: 'Danışmanlık Al', button2Text: 'İletişim' }},
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Dijital Danışmanlık', title: 'Dijital Dönüşüm Stratejileri ve Danışmanlık', subtitle: 'İşletmenizin dijital dönüşüm yolculuğunda yanınızdayız', button1Text: 'Danışmanlık Al', button2Text: 'İletişim', image: siteImages.consultingDashboard }},
     { id: 'features-1', type: 'service-features', order: 2, data: { title: 'Danışmanlık Hizmetlerimiz', subtitle: 'Stratejik dijital dönüşüm', features: [
       { title: 'Dijital Strateji', description: 'Dijital dönüşüm yol haritası', icon: 'Map' },
       { title: 'Teknoloji Seçimi', description: 'Doğru teknoloji kararları', icon: 'Cpu' },

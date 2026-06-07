@@ -3,7 +3,7 @@ export const siteImages = {
   softwareHero: '/images/yazilim-dashboard.jpg',
   ecommerceHero: '/images/e-ticaret-sistemi.jpg',
   webDesignHero: '/images/web-tasarim-mockup.jpg',
-  aboutHero: '/images/hakkimizda-hero.jpg',
+  aboutHero: '/images/about-hero.png',
   sifreKasasiScreenshot: '/images/woontegra-sifre-kasasi-ekran.png',
   solutionsHero: '/images/cozumler-sistem.jpg',
   bilirkisiHesapHero: '/images/bilirkisi-hesap-ekran.jpg',

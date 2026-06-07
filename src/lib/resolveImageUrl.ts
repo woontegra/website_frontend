@@ -1,49 +1,61 @@
-import { getApiBase } from '../config/api'
-
-const MEDIA_CDN_BASE = (import.meta.env.VITE_WOONTEGRA_MEDIA_CDN ?? '').replace(/\/$/, '')
+/**
+ * Eski panel/veritabanı kayıtlarındaki bilinen path hatalarını düzeltir.
+ * Key: kayıtlı yanlış path → value: public/images içindeki gerçek dosya.
+ */
+const IMAGE_PATH_ALIASES: Record<string, string> = {
+  '/images/about-hero.jpg': '/images/about-hero.png',
+  '/images/blog/default.jpg': '/images/blog/varsayilan.jpg',
+  '/images/e-ticaret.png': '/images/e-ticaret.jpeg',
+  '/images/e-ticaret.jpg': '/images/e-ticaret-sistemi.jpg',
+  '/images/web-tasarim.jpg': '/images/web-tasarim-mockup.jpg',
+}
 
 /**
  * Tüm görsel URL'lerini tek noktadan çözümler.
- * - https://... (Cloudinary dahil) → olduğu gibi
- * - /images/... → Vercel static veya opsiyonel CDN öneki
- * - /uploads/... → backend API (geçici disk; yeni yüklemeler Cloudinary'ye gider)
+ * Woontegra kurumsal site görselleri frontend/public/images altındadır.
+ * /images/... pathleri aynen Vite/Vercel static asset olarak kullanılır.
  */
-export function resolveImageUrl(url?: string | null): string {
+export function normalizePublicImagePath(url?: string | null): string {
   if (!url) return ''
-
   const trimmed = url.trim()
   if (!trimmed) return ''
 
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed
-  }
+  const lower = trimmed.toLowerCase()
+  if (IMAGE_PATH_ALIASES[lower]) return IMAGE_PATH_ALIASES[lower]
+  if (IMAGE_PATH_ALIASES[trimmed]) return IMAGE_PATH_ALIASES[trimmed]
 
-  if (trimmed.startsWith('/images/')) {
-    return MEDIA_CDN_BASE ? `${MEDIA_CDN_BASE}${trimmed}` : trimmed
-  }
-
-  if (trimmed.startsWith('/uploads/')) {
-    return `${getApiBase()}${trimmed}`
-  }
-
-  if (trimmed.startsWith('/')) {
-    return trimmed
-  }
-
-  return `/${trimmed}`
+  return trimmed
 }
 
-/** Yönetici yüklemeleri — yalnızca Cloudinary https URL kalıcı kabul edilir */
-export function isCloudinaryMediaUrl(url?: string | null): boolean {
+export function resolveImageUrl(url?: string | null): string {
+  const normalized = normalizePublicImagePath(url)
+  if (!normalized) return ''
+
+  if (/^https?:\/\//i.test(normalized)) {
+    return normalized
+  }
+
+  if (normalized.startsWith('/images/')) {
+    return normalized
+  }
+
+  if (normalized.startsWith('/uploads/')) {
+    return ''
+  }
+
+  if (normalized.startsWith('/')) {
+    return normalized
+  }
+
+  return `/images/${normalized.replace(/^\/+/, '')}`
+}
+
+export function isPublicImagePath(url?: string | null): boolean {
   if (!url) return false
-  return /^https:\/\/res\.cloudinary\.com\//i.test(url.trim())
+  const resolved = resolveImageUrl(url)
+  return resolved.startsWith('/images/')
 }
 
 export function isPersistentImageUrl(url?: string | null): boolean {
-  if (!url) return false
-  const trimmed = url.trim()
-  if (trimmed.startsWith('/uploads/')) return false
-  if (isCloudinaryMediaUrl(trimmed)) return true
-  if (trimmed.startsWith('/images/')) return true
-  return /^https?:\/\//i.test(trimmed)
+  return isPublicImagePath(url) || /^https?:\/\//i.test(url?.trim() ?? '')
 }

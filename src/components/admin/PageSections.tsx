@@ -169,7 +169,7 @@ export function PageSections({ pageSlug, defaultData, storageKey }: PageSections
         <div>
           <h2 className="page-title">{pageData.slug.toUpperCase()} Bölümleri</h2>
           <p className="mt-1 text-xs text-slate-600">
-            Görseller Cloudinary&apos;ye yüklenir; değişiklikler veritabanına kaydedilir.
+            Görseller public/images listesinden seçilir; değişiklikler veritabanına kaydedilir.
           </p>
         </div>
         <div className="flex gap-2">

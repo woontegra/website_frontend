@@ -23,7 +23,7 @@ export function BlogPostsEditor({ data, onChange }: BlogPostsEditorProps) {
       title: 'Yeni Blog Yazısı',
       excerpt: '',
       category: 'Yazılım',
-      image: '/images/blog/default.jpg',
+      image: '/images/blog/varsayilan.jpg',
       date: new Date().toLocaleDateString('tr-TR'),
       featured: false,
     }

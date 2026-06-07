@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchPageSections } from '../api/pageSections'
+import { resolveImageUrl } from '../lib/resolveImageUrl'
 import type { HeroSectionData, PageData } from '../types/sections'
 
 export function useHeroSection(pageKey: string, defaultData: PageData) {
@@ -13,7 +14,9 @@ export function useHeroSection(pageKey: string, defaultData: PageData) {
       const page = fromApi ?? defaultData
       const hero = page.sections.find((section) => section.type === 'hero')
       if (!cancelled && hero) {
-        setHeroData(hero.data as HeroSectionData)
+        const raw = hero.data as HeroSectionData
+        const image = raw.image ? resolveImageUrl(raw.image) : undefined
+        setHeroData({ ...raw, image: image || undefined })
       }
     }
 

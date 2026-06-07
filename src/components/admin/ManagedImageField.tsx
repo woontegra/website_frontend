@@ -1,30 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-import { Upload, Link2, Loader2, CheckCircle2, AlertCircle, FolderOpen, X } from 'lucide-react'
-import { adminUploadMedia, resolveMediaSrc } from '../../api/cms'
-import { isCloudinaryMediaUrl } from '../../lib/resolveImageUrl'
-import { MediaLibraryModal } from './MediaLibraryModal'
+import { useEffect, useMemo, useState } from 'react'
+import { AlertCircle, ChevronDown, ChevronUp, ImageIcon, ImagePlus, X } from 'lucide-react'
+import { resolveImageUrl } from '../../lib/resolveImageUrl'
+import { findPublicImageByPath, getFilenameFromPath } from '../../data/publicImageCatalog'
+import { PublicImagePickerModal } from './PublicImagePickerModal'
 
-const ACCEPT = '.jpg,.jpeg,.png,.webp,.svg'
-const MAX_BYTES = 8 * 1024 * 1024
-
-const ALLOWED_TYPES = new Set([
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-  'image/svg+xml',
-])
-
-function validateImageFile(file: File): string | null {
-  const extOk = /\.(jpe?g|png|webp|svg)$/i.test(file.name)
-  if (!ALLOWED_TYPES.has(file.type) && !extOk) {
-    return 'Sadece JPG, JPEG, PNG, WebP ve SVG dosyaları kabul edilir.'
-  }
-  if (file.size > MAX_BYTES) {
-    return 'Dosya boyutu en fazla 8 MB olabilir.'
-  }
-  return null
-}
+const HELP_TEXT =
+  'Görseller frontend/public/images klasörüne eklenmeli ve /images/dosya-adi.png formatında kullanılmalıdır. Canlı panelden yapılan /uploads yüklemeleri deploy sonrası kalıcı değildir.'
 
 type ManagedImageFieldProps = {
   label?: string
@@ -35,6 +16,10 @@ type ManagedImageFieldProps = {
   inputClassName?: string
 }
 
+/**
+ * Kurumsal site görsel alanı — public/images galeri seçici.
+ * Tüm panel görsel alanları bu component üzerinden çalışır.
+ */
 export function ManagedImageField({
   label,
   value,
@@ -43,183 +28,139 @@ export function ManagedImageField({
   compact = false,
   inputClassName,
 }: ManagedImageFieldProps) {
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [uploading, setUploading] = useState(false)
-  const [status, setStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [showManualUrl, setShowManualUrl] = useState(false)
-  const [libraryOpen, setLibraryOpen] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [previewError, setPreviewError] = useState(false)
+  const [manualOpen, setManualOpen] = useState(false)
+  const [manualDraft, setManualDraft] = useState('')
 
   const labelClass = compact ? 'label-sm' : 'label'
   const inputClass = inputClassName ?? (compact ? 'input-sm w-full' : 'input w-full')
-  const previewSrc = value ? resolveMediaSrc(value) : ''
+  const previewSrc = value ? resolveImageUrl(value) : ''
+  const isUploadPath = value.startsWith('/uploads/')
+
+  const catalogItem = useMemo(() => (value ? findPublicImageByPath(value) : undefined), [value])
+  const displayTitle = catalogItem?.title ?? (value ? 'Özel görsel' : '')
 
   useEffect(() => {
     setPreviewError(false)
   }, [previewSrc])
 
-  const handleFile = async (file: File) => {
-    const validationError = validateImageFile(file)
-    if (validationError) {
-      setStatus({ type: 'error', text: validationError })
-      return
-    }
-
-    setUploading(true)
-    setStatus(null)
-
-    const result = await adminUploadMedia(file)
-    setUploading(false)
-
-    if (result.success && result.data?.url && isCloudinaryMediaUrl(result.data.url)) {
-      onChange(result.data.url)
-      setStatus({ type: 'success', text: 'Görsel Cloudinary\'ye yüklendi. Kalıcı URL kaydedildi.' })
-      setTimeout(() => setStatus(null), 4000)
-    } else {
-      const fallback =
-        result.code === 'CLOUDINARY_NOT_CONFIGURED'
-          ? 'Cloudinary yapılandırılmamış. Railway ortam değişkenlerine CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY ve CLOUDINARY_API_SECRET ekleyin.'
-          : (result.message ?? 'Yükleme başarısız.')
-      setStatus({ type: 'error', text: fallback })
-    }
-  }
-
-  const showLegacyWarning =
-    Boolean(value) &&
-    !isCloudinaryMediaUrl(value) &&
-    (value.startsWith('/images/') || value.startsWith('/uploads/'))
+  useEffect(() => {
+    if (manualOpen) setManualDraft(value)
+  }, [manualOpen, value])
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {label ? <label className={labelClass}>{label}</label> : null}
 
-      <div className="flex flex-wrap items-center gap-2">
+      <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        {HELP_TEXT}
+      </p>
+
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+        {value && previewSrc && !previewError ? (
+          <div className="aspect-[16/7] w-full overflow-hidden bg-slate-100">
+            <img
+              src={previewSrc}
+              alt={catalogItem?.alt ?? displayTitle}
+              className="h-full w-full object-cover"
+              onError={() => setPreviewError(true)}
+            />
+          </div>
+        ) : (
+          <div className="flex aspect-[16/7] flex-col items-center justify-center gap-2 bg-slate-50 text-slate-400">
+            <ImageIcon className="h-10 w-10 opacity-50" />
+            <span className="text-sm">Henüz görsel seçilmedi</span>
+          </div>
+        )}
+
+        <div className="space-y-3 p-4">
+          {value ? (
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-slate-900">{displayTitle}</p>
+              <p className="font-mono text-xs text-slate-500">{value}</p>
+              {!catalogItem && value ? (
+                <p className="text-xs text-slate-400">
+                  Dosya: {getFilenameFromPath(value)}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {previewError && value ? (
+            <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+              Önizleme yüklenemedi. Path public/images içinde olmayabilir.
+            </p>
+          ) : null}
+
+          {isUploadPath ? (
+            <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+              /uploads/ yolu deploy sonrası kaybolur. Galeriden /images/... seçin.
+            </p>
+          ) : null}
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            >
+              <ImagePlus className="h-4 w-4" />
+              Görsel Seç
+            </button>
+            {value ? (
+              <button
+                type="button"
+                onClick={() => onChange('')}
+                className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+              >
+                <X className="h-4 w-4" />
+                Kaldır
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-slate-200">
         <button
           type="button"
-          disabled={uploading}
-          onClick={() => fileRef.current?.click()}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
+          onClick={() => setManualOpen((o) => !o)}
+          className="flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-medium text-slate-600 hover:bg-slate-50"
         >
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-          {uploading ? 'Yükleniyor…' : 'Dosya Seç / Görsel Yükle'}
+          <span>Manuel URL (gelişmiş)</span>
+          {manualOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
-        <button
-          type="button"
-          disabled={uploading}
-          onClick={() => setLibraryOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
-        >
-          <FolderOpen className="h-3.5 w-3.5" />
-          Medya Kütüphanesi
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowManualUrl((prev) => !prev)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
-        >
-          <Link2 className="h-3.5 w-3.5" />
-          {showManualUrl ? 'Manuel URL Gizle' : 'Manuel URL'}
-        </button>
-        {value ? (
-          <button
-            type="button"
-            onClick={() => onChange('')}
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-2 text-xs font-medium text-red-600 hover:bg-red-50"
-          >
-            <X className="h-3.5 w-3.5" />
-            Kaldır
-          </button>
+        {manualOpen ? (
+          <div className="space-y-2 border-t border-slate-100 px-3 py-3">
+            <input
+              type="text"
+              value={manualDraft}
+              onChange={(e) => setManualDraft(e.target.value)}
+              placeholder="/images/yazilim.png"
+              className={inputClass}
+            />
+            <button
+              type="button"
+              disabled={!manualDraft.trim()}
+              onClick={() => onChange(manualDraft.trim())}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              URL uygula
+            </button>
+          </div>
         ) : null}
       </div>
 
-      <input
-        ref={fileRef}
-        type="file"
-        accept={ACCEPT}
-        className="hidden"
-        onChange={async (event) => {
-          const file = event.target.files?.[0]
-          event.target.value = ''
-          if (file) await handleFile(file)
-        }}
-      />
-
-      {status ? (
-        <p
-          className={`flex items-center gap-1.5 text-xs font-medium ${
-            status.type === 'success' ? 'text-emerald-700' : 'text-red-600'
-          }`}
-        >
-          {status.type === 'success' ? (
-            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-          ) : (
-            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-          )}
-          {status.text}
-        </p>
-      ) : null}
-
-      {showLegacyWarning ? (
-        <p className="text-xs font-medium text-amber-700">
-          Bu yol ({value}) kalıcı değil; deploy/redeploy sonrası kaybolur. Görseli yukarıdan yeniden yükleyin —
-          kayıt <code className="rounded bg-amber-100 px-1">https://res.cloudinary.com/...</code> formatında olmalı.
-        </p>
-      ) : null}
-
-      {value ? (
-        <div className="space-y-1.5">
-          <p className="text-xs font-medium text-slate-600">Kayıtlı görsel URL</p>
-          <input
-            type="text"
-            readOnly
-            value={value}
-            className={`${inputClass} bg-slate-50 text-slate-700`}
-          />
-        </div>
-      ) : null}
-
-      {previewSrc ? (
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-2">
-          {!previewError ? (
-            <img
-              src={previewSrc}
-              alt="Önizleme"
-              className="mx-auto max-h-40 w-auto max-w-full rounded object-contain"
-              onError={() => setPreviewError(true)}
-            />
-          ) : (
-            <div className="flex flex-col items-center gap-2 px-4 py-6 text-center text-sm text-red-600">
-              <AlertCircle className="h-6 w-6" />
-              <span>Görsel önizlemesi yüklenemedi. URL geçersiz veya dosya sunucuda yok.</span>
-            </div>
-          )}
-        </div>
-      ) : null}
-
-      {showManualUrl ? (
-        <div className="space-y-1">
-          <p className="text-xs text-slate-500">Gelişmiş: harici veya mevcut URL yapıştırın</p>
-          <input
-            type="text"
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder="https://res.cloudinary.com/…"
-            className={inputClass}
-          />
-        </div>
-      ) : null}
-
       {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}
 
-      <MediaLibraryModal
-        open={libraryOpen}
-        onClose={() => setLibraryOpen(false)}
-        onPick={(url) => {
-          onChange(url)
-          setLibraryOpen(false)
-          setStatus({ type: 'success', text: 'Görsel medya kütüphanesinden seçildi.' })
-          setTimeout(() => setStatus(null), 3000)
-        }}
+      <PublicImagePickerModal
+        open={pickerOpen}
+        currentPath={value}
+        onClose={() => setPickerOpen(false)}
+        onConfirm={onChange}
       />
     </div>
   )

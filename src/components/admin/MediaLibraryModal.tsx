@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { adminListMedia, adminUploadMedia, resolveMediaSrc, type MediaAssetRow } from '../../api/cms'
+import { adminListMedia, resolveMediaSrc, type MediaAssetRow } from '../../api/cms'
 
 type Props = {
   open: boolean
@@ -44,26 +44,9 @@ export function MediaLibraryModal({ open, onClose, onPick }: Props) {
           </button>
         </div>
         <div className="border-b border-slate-100 px-4 py-2">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white hover:bg-slate-800">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={async (e) => {
-                const f = e.target.files?.[0]
-                e.target.value = ''
-                if (!f) return
-                setMsg('Yükleniyor…')
-                const r = await adminUploadMedia(f)
-                if (r.success && r.data) {
-                  setMsg('')
-                  load()
-                  onPick(r.data.url)
-                } else setMsg(r.message ?? 'Yükleme başarısız')
-              }}
-            />
-            Görsel yükle
-          </label>
+          <p className="text-xs text-slate-600">
+            Bilgisayardan yükleme kapalı. İçerik düzenleme modallarından public/images listesini kullanın.
+          </p>
           {msg ? <p className="mt-2 text-xs text-amber-700">{msg}</p> : null}
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-4">

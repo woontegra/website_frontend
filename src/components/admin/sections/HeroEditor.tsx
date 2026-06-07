@@ -79,7 +79,7 @@ export function HeroEditor({ data, onChange }: HeroEditorProps) {
         label="Hero Görseli"
         value={data.image || ''}
         onChange={(url) => handleChange('image', url)}
-        hint="Dosya seçerek yükleyin; kalıcı Cloudinary URL otomatik kaydedilir. Kaydettikten sonra canlı sitede görünür."
+        hint="Görsel Seç ile galeriden ön izleme yaparak seçin."
       />
     </div>
   )

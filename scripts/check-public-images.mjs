@@ -3,12 +3,23 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '..')
-const siteImagesPath = join(rootDir, 'src', 'data', 'siteImages.ts')
 const publicImagesDir = join(rootDir, 'public', 'images')
 
-const source = readFileSync(siteImagesPath, 'utf8')
+const sources = [
+  join(rootDir, 'src', 'data', 'siteImages.ts'),
+  join(rootDir, 'src', 'data', 'publicImageCatalog.ts'),
+  join(rootDir, 'src', 'data', 'publicImages.ts'),
+]
+
 const pathPattern = /['"](\/images\/[^'"]+)['"]/g
-const paths = [...new Set([...source.matchAll(pathPattern)].map((match) => match[1]))]
+const paths = new Set()
+
+for (const filePath of sources) {
+  const source = readFileSync(filePath, 'utf8')
+  for (const match of source.matchAll(pathPattern)) {
+    paths.add(match[1])
+  }
+}
 
 const errors = []
 
@@ -17,16 +28,7 @@ for (const imagePath of paths) {
   const filePath = join(publicImagesDir, ...relativePath.split('/'))
 
   if (!existsSync(filePath)) {
-    const keyMatch = source
-      .split('\n')
-      .find((line) => line.includes(imagePath))
-      ?.trim()
-      .split(':')[0]
-      ?.trim()
-
-    errors.push(
-      `Eksik görsel dosyası:\n  public/images/${relativePath}\n  ${keyMatch ? `${keyMatch} tarafından kullanılıyor.` : `siteImages içinde tanımlı (${imagePath}).`}`,
-    )
+    errors.push(`Eksik görsel: public/images/${relativePath} (kodda: ${imagePath})`)
   }
 }
 
@@ -38,4 +40,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`Görsel dosyaları hazır: ${paths.length} kritik görsel doğrulandı.`)
+console.log(`Görsel dosyaları hazır: ${paths.size} path doğrulandı.`)
