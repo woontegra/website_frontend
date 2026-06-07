@@ -3,15 +3,16 @@ import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { defaultTrademarkData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight, CheckCircle, FileText, Search, Shield, Scale, Award, FileCheck } from 'lucide-react'
 
 export function TrademarkPatentPage() {
-  const { heroData } = useHeroSection('trademark', defaultTrademarkData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('trademark', defaultTrademarkData)
   const title = heroData?.title || 'Markanızı Güvence Altına Alın'
   const subtitle =
     heroData?.subtitle ||
     'Marka tescil, patent ve hukuki süreçlerde profesyonel destek ile markanızı koruyun.'
-  const heroImage = heroData?.image || siteImages.trademarkDocument
+  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.trademarkDocument)
 
   return (
     <div className="bg-white">

@@ -3,15 +3,16 @@ import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { defaultSaasData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight, CheckCircle, Cloud, Database, Lock, Layers, Zap, BarChart3, Users, CreditCard, Code, Activity } from 'lucide-react'
 
 export function SaasProductPage() {
-  const { heroData } = useHeroSection('saas', defaultSaasData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('saas', defaultSaasData)
   const title = heroData?.title || 'Kendi Yazılım Ürününüzü Geliştirin'
   const subtitle =
     heroData?.subtitle ||
     'SaaS (Software as a Service) modeli ile çalışan, ölçeklenebilir ve sürdürülebilir yazılım ürünleri geliştiriyoruz.'
-  const heroImage = heroData?.image || siteImages.saasDashboard
+  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.saasDashboard)
 
   return (
     <div className="bg-white">

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
+import { SafeLogo } from '../../components/ui/SafeLogo'
+import { DEFAULT_SITE_LOGO } from '../../api/siteSettings'
 import { Button } from '../../components/ui/Button'
 
 const inputClass = 'w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-heading placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue'
@@ -21,7 +23,7 @@ export function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
-            <img src="/logo.png" alt="Woontegra" className="h-12 mx-auto" />
+            <SafeLogo src={DEFAULT_SITE_LOGO} alt="Woontegra" className="mx-auto h-12 w-auto" textClassName="text-xl font-bold text-slate-900" />
           </Link>
           <p className="mt-2 text-surface-600">Yeni hesap oluşturun</p>
         </div>

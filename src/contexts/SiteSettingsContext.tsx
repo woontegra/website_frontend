@@ -5,20 +5,25 @@ import {
   fetchPublicSiteSettings,
   type PublicSiteSettings,
 } from '../api/siteSettings'
-import { resolveImageUrl } from '../lib/resolveImageUrl'
+import { isValidImageSrc, resolveImageUrl } from '../lib/resolveImageUrl'
 
-const defaultSettings: PublicSiteSettings = {
+export type SiteSettingsState = PublicSiteSettings & {
+  loaded: boolean
+}
+
+const defaultSettings: SiteSettingsState = {
   siteName: 'Woontegra',
   contactEmail: 'info@woontegra.com',
   contactPhone: '',
   contactAddress: '',
-  logo: DEFAULT_SITE_LOGO,
-  favicon: DEFAULT_SITE_FAVICON,
+  logo: '',
+  favicon: '',
   primaryColor: '#22c55e',
   secondaryColor: '#0ea5e9',
+  loaded: false,
 }
 
-const SiteSettingsContext = createContext<PublicSiteSettings>(defaultSettings)
+const SiteSettingsContext = createContext<SiteSettingsState>(defaultSettings)
 
 function faviconMimeType(path: string): string {
   const lower = path.toLowerCase().split('?')[0]
@@ -30,6 +35,8 @@ function faviconMimeType(path: string): string {
 }
 
 function applyFavicon(path: string) {
+  if (!isValidImageSrc(path)) return
+
   const resolved = resolveImageUrl(path)
   if (!resolved) return
 
@@ -62,12 +69,18 @@ function applyFavicon(path: string) {
 }
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<PublicSiteSettings>(defaultSettings)
+  const [settings, setSettings] = useState<SiteSettingsState>(defaultSettings)
 
   useEffect(() => {
     let cancelled = false
     void fetchPublicSiteSettings().then((data) => {
-      if (!cancelled) setSettings(data)
+      if (cancelled) return
+      setSettings({
+        ...data,
+        logo: data.logo?.trim() || DEFAULT_SITE_LOGO,
+        favicon: data.favicon?.trim() || DEFAULT_SITE_FAVICON,
+        loaded: true,
+      })
     })
     return () => {
       cancelled = true
@@ -75,8 +88,9 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    if (!settings.loaded) return
     applyFavicon(settings.favicon)
-  }, [settings.favicon])
+  }, [settings.favicon, settings.loaded])
 
   return <SiteSettingsContext.Provider value={settings}>{children}</SiteSettingsContext.Provider>
 }

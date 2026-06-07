@@ -3,15 +3,16 @@ import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { defaultConsultingData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight, CheckCircle, Compass, LineChart, ShoppingBag, Settings, Cpu, TrendingUp } from 'lucide-react'
 
 export function DigitalConsultingPage() {
-  const { heroData } = useHeroSection('consulting', defaultConsultingData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('consulting', defaultConsultingData)
   const title = heroData?.title || 'Dijital Süreçlerinizi Doğru Kurgulayın'
   const subtitle =
     heroData?.subtitle ||
     'Doğru strateji olmadan yapılan yatırımlar zaman ve para kaybına dönüşür. İşinize en uygun dijital yapıyı birlikte planlıyoruz.'
-  const heroImage = heroData?.image || siteImages.consultingDashboard
+  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.consultingDashboard)
 
   return (
     <div className="bg-white">

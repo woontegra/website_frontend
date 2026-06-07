@@ -3,15 +3,16 @@ import { SafeImage } from '../components/ui/SafeImage'
 import { siteImages } from '../data/siteImages'
 import { defaultSolutionsData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 import { ArrowRight } from 'lucide-react'
 
 export function SolutionsPage() {
-  const { heroData } = useHeroSection('solutions', defaultSolutionsData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('solutions', defaultSolutionsData)
   const title = heroData?.title || 'Geliştirdiğimiz Dijital Yapılar'
   const subtitle =
     heroData?.subtitle ||
     'Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir.'
-  const heroImage = heroData?.image || siteImages.solutionsHero
+  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.solutionsHero)
 
   return (
     <div className="bg-white overflow-x-hidden">

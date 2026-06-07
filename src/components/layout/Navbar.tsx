@@ -4,7 +4,7 @@ import { mainNav } from '../../data/navigation'
 import { fetchPublicMenu, type PublicMenuItem } from '../../api/menus'
 import { Button } from '../ui/Button'
 import { useSiteSettings } from '../../contexts/SiteSettingsContext'
-import { resolveImageUrl } from '../../lib/resolveImageUrl'
+import { SafeLogo } from '../ui/SafeLogo'
 
 const NAV_CONTAINER_CLASS = 'mx-auto max-w-[1280px] px-4 sm:px-5 min-[1200px]:px-6'
 
@@ -27,8 +27,7 @@ function NavItem({ href, label, active, onClick }: { href: string; label: string
 }
 
 export function Navbar() {
-  const { logo, siteName } = useSiteSettings()
-  const logoSrc = resolveImageUrl(logo)
+  const { logo, siteName, loaded: settingsLoaded } = useSiteSettings()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
@@ -69,11 +68,7 @@ export function Navbar() {
             className="flex max-w-[200px] shrink-0 items-center min-[1200px]:max-w-[260px]"
             aria-label="Woontegra Ana Sayfa"
           >
-            <img
-              src={logoSrc}
-              alt={siteName}
-              className="h-14 w-auto max-w-full object-contain min-[1200px]:h-[4.25rem]"
-            />
+            <SafeLogo src={logo} alt={siteName} loading={!settingsLoaded} />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">

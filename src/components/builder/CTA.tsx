@@ -3,6 +3,7 @@ import { CTASettings } from './settings/CTASettings'
 import { Button } from '../ui/Button'
 import { ArrowRight } from 'lucide-react'
 import { siteImages } from '../../data/siteImages'
+import { isValidImageSrc, resolveImageUrl } from '../../lib/resolveImageUrl'
 
 export interface CTAProps {
   title?: string
@@ -23,6 +24,8 @@ export const CTA = ({
     connectors: { connect, drag },
   } = useNode()
 
+  const bgUrl = isValidImageSrc(backgroundImage) ? resolveImageUrl(backgroundImage) : ''
+
   return (
     <div
       ref={(ref) => {
@@ -30,7 +33,7 @@ export const CTA = ({
       }}
       className="relative py-20 md:py-28 overflow-hidden"
       style={{
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+        backgroundImage: bgUrl ? `url("${bgUrl}")` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}

@@ -6,20 +6,21 @@ import { defaultAboutData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
 import { usePageSection } from '../hooks/usePageSection'
 import { getBrandImage } from '../lib/brandImage'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 import type { BrandsSectionData } from '../types/sections'
 
 export function AboutPage() {
-  const { heroData } = useHeroSection('about', defaultAboutData)
-  const { data: brandsData } = usePageSection<BrandsSectionData>('about', 'brands', defaultAboutData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('about', defaultAboutData)
+  const { data: brandsData, loaded: brandsLoaded } = usePageSection<BrandsSectionData>('about', 'brands', defaultAboutData)
 
-  const bilirkisiImage = getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi)
-  const optimoonImage = getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon)
-  const datcaImage = getBrandImage(brandsData, 'datça', siteImages.brandDatca)
-  const mercanImage = getBrandImage(brandsData, 'mercan', siteImages.brandMercan)
+  const bilirkisiImage = getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi, brandsLoaded)
+  const optimoonImage = getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon, brandsLoaded)
+  const datcaImage = getBrandImage(brandsData, 'datça', siteImages.brandDatca, brandsLoaded)
+  const mercanImage = getBrandImage(brandsData, 'mercan', siteImages.brandMercan, brandsLoaded)
 
   const title = heroData?.title || "Woontegra'yı Tanıyın"
   const subtitle = heroData?.subtitle || "Yazılım, e-ticaret ve dijital sistemler alanında ürün geliştiren ve markalar yöneten bir teknoloji şirketiyiz."
-  const image = heroData?.image
+  const image = resolvePageImage(heroLoaded, heroData?.image, siteImages.aboutHero)
 
   return (
     <div className="bg-white">
@@ -44,7 +45,7 @@ export function AboutPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
               <SafeImage
-                src={image || siteImages.aboutHero}
+                src={image}
                 alt="Hakkımızda"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />

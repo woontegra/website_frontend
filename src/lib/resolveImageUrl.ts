@@ -10,6 +10,25 @@ const IMAGE_PATH_ALIASES: Record<string, string> = {
   '/images/e-ticaret.png': '/images/e-ticaret.jpeg',
   '/images/e-ticaret.jpg': '/images/e-ticaret-sistemi.jpg',
   '/images/web-tasarim.jpg': '/images/web-tasarim-mockup.jpg',
+  '/brands/optimoon.png': '/images/brand-optimoon.jpg',
+  '/brands/datca.png': '/images/brand-datca.jpg',
+  '/brands/mercan.png': '/images/brand-mercan.jpg',
+  '/brands/bilirkisi.png': '/images/brand-bilirkisi.jpg',
+  '/logo.png': '/logo.svg',
+}
+
+const INVALID_LITERALS = new Set(['null', 'undefined', 'none', 'false', 'n/a', 'na'])
+
+/**
+ * Ham görsel değerinin geçerli olup olmadığını kontrol eder.
+ * Geçersizse img render edilmemeli — 404 isteği oluşmaz.
+ */
+export function isValidImageSrc(url?: string | null): boolean {
+  if (url == null) return false
+  const trimmed = url.trim()
+  if (!trimmed) return false
+  if (INVALID_LITERALS.has(trimmed.toLowerCase())) return false
+  return Boolean(resolveImageUrl(trimmed))
 }
 
 /**
@@ -33,6 +52,8 @@ export function resolveImageUrl(url?: string | null): string {
   const normalized = normalizePublicImagePath(url)
   if (!normalized) return ''
 
+  if (INVALID_LITERALS.has(normalized.toLowerCase())) return ''
+
   if (/^https?:\/\//i.test(normalized)) {
     return normalized
   }
@@ -42,7 +63,6 @@ export function resolveImageUrl(url?: string | null): string {
   }
 
   if (normalized.startsWith('/uploads/branding/')) {
-    // Önce aynı origin (Vercel proxy); yoksa doğrudan backend
     if (typeof window !== 'undefined') {
       return normalized
     }
@@ -68,4 +88,15 @@ export function isPublicImagePath(url?: string | null): boolean {
 
 export function isPersistentImageUrl(url?: string | null): boolean {
   return isPublicImagePath(url) || /^https?:\/\//i.test(url?.trim() ?? '')
+}
+
+/** API yüklenene kadar fallback basmamak için sayfa görselleri. */
+export function resolvePageImage(
+  loaded: boolean,
+  apiImage: string | undefined | null,
+  fallback: string,
+): string | undefined {
+  const fromApi = apiImage?.trim()
+  if (!loaded) return fromApi || undefined
+  return fromApi || fallback
 }

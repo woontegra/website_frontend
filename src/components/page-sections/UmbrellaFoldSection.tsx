@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { resolveImageUrl } from '../../lib/resolveImageUrl'
+import { SafeImage } from '../ui/SafeImage'
+import { isValidImageSrc } from '../../lib/resolveImageUrl'
 
 /**
  * Ana sayfa — Woontegra çatı marka alanı (panelden: kicker, başlık, gövde, CTA, görsel URL)
@@ -12,7 +13,8 @@ export default function UmbrellaFoldSection(p: Record<string, unknown>) {
     p.body ??
       'Optimoon’dan Bilirkişi Hesaplama’ya, Datça Tropikal’den Mercan Danışmanlık’a kadar ürün ve hizmet markalarımızı aynı mühendislik disiplini ve kalite anlayışıyla yönetiyoruz.'
   )
-  const imageUrl = String(p.imageUrl ?? '')
+  const imageUrl = String(p.imageUrl ?? '').trim()
+  const hasImage = isValidImageSrc(imageUrl)
   const cta1 = (p.cta1 as { text?: string; href?: string }) ?? { text: 'Çözümlerimiz', href: '/cozumler' }
   const cta2 = (p.cta2 as { text?: string; href?: string }) ?? { text: 'İletişim', href: '/iletisim' }
 
@@ -81,8 +83,15 @@ export default function UmbrellaFoldSection(p: Record<string, unknown>) {
 
         <div className="relative mx-auto w-full max-w-lg lg:mx-0 lg:justify-self-end">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-amber-100/60 bg-amber-50/50 shadow-xl shadow-amber-900/8 ring-1 ring-amber-200/50 backdrop-blur-sm">
-            {imageUrl ? (
-              <img src={resolveImageUrl(imageUrl)} alt="" className="h-full w-full object-cover" loading="lazy" />
+            {hasImage ? (
+              <SafeImage
+                src={imageUrl}
+                alt=""
+                className="h-full w-full object-cover"
+                wrapperClassName="h-full"
+                skeletonClassName="min-h-0 rounded-none"
+                fallbackClassName="min-h-0 rounded-none border-0"
+              />
             ) : (
               <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-amber-100/90 via-orange-50/70 to-rose-50/60 p-8 text-center">
                 <div className="flex flex-wrap justify-center gap-2">

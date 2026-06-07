@@ -4,13 +4,14 @@ import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Eye, Layout, Monitor, Smartphone, TrendingUp, Zap } from 'lucide-react'
 import { defaultWebDesignData } from '../data/allPagesData'
 import { useHeroSection } from '../hooks/useHeroSection'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 
 export function WebDesignPage() {
-  const { heroData } = useHeroSection('web-design', defaultWebDesignData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('web-design', defaultWebDesignData)
 
   const title = heroData?.title || "Modern ve Dönüşüm Odaklı Web Siteleri"
   const subtitle = heroData?.subtitle || "Sadece güzel görünen değil, ziyaretçiyi müşteriye dönüştüren web siteleri tasarlıyoruz."
-  const image = heroData?.image
+  const image = resolvePageImage(heroLoaded, heroData?.image, siteImages.webDesignHero)
 
   return (
     <div className="bg-white">
@@ -41,7 +42,7 @@ export function WebDesignPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
               <SafeImage
-                src={image || siteImages.webDesignHero}
+                src={image}
                 alt="Web Tasarım Örneği"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />

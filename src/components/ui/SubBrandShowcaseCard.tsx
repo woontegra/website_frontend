@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { SafeImage } from './SafeImage'
+import { isValidImageSrc } from '../../lib/resolveImageUrl'
 
 type Props = {
   name: string
@@ -18,9 +19,8 @@ function initials(name: string) {
 }
 
 export function SubBrandShowcaseCard({ name, description, href, logo }: Props) {
-  const [imgOk, setImgOk] = useState(true)
   const external = /^https?:\/\//i.test(href)
-  const showFallback = !imgOk
+  const hasLogo = isValidImageSrc(logo)
 
   const className =
     'group relative block h-full rounded-3xl border border-white/70 bg-white/75 p-7 shadow-md shadow-slate-900/[0.04] backdrop-blur-sm outline-none ' +
@@ -30,19 +30,20 @@ export function SubBrandShowcaseCard({ name, description, href, logo }: Props) {
   const inner = (
     <>
       <div className="mb-6 flex h-32 w-full items-center justify-center rounded-2xl bg-gradient-to-b from-slate-50 to-slate-100/90 px-8 transition-colors group-hover:from-blue-50/90 group-hover:to-indigo-50/50 md:h-36">
-        {showFallback ? (
+        {hasLogo ? (
+          <SafeImage
+            src={logo}
+            alt={name}
+            className="max-h-24 w-auto max-w-[220px] object-contain object-center md:max-h-32"
+            wrapperClassName="flex h-full w-full items-center justify-center"
+            skeletonClassName="min-h-0 rounded-2xl"
+            fallbackText={initials(name)}
+            fallbackClassName="min-h-0 rounded-2xl border-0 bg-transparent py-0"
+          />
+        ) : (
           <span className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-emerald-600 text-xl font-bold text-white shadow-inner">
             {initials(name)}
           </span>
-        ) : (
-          <img
-            src={logo}
-            alt=""
-            className="max-h-24 w-auto max-w-[220px] object-contain object-center md:max-h-32"
-            onError={() => setImgOk(false)}
-            loading="lazy"
-            decoding="async"
-          />
         )}
       </div>
       <h3 className="text-lg font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-blue-950 md:text-xl">

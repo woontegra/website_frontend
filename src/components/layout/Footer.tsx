@@ -2,18 +2,23 @@ import { Link } from 'react-router-dom'
 import { footerNav } from '../../data/navigation'
 import { useSiteSettings } from '../../contexts/SiteSettingsContext'
 import { LAYOUT_CONTAINER_CLASS } from '../../lib/layoutConstants'
-import { resolveImageUrl } from '../../lib/resolveImageUrl'
+import { SafeLogo } from '../ui/SafeLogo'
 
 export function Footer() {
-  const { logo, siteName } = useSiteSettings()
-  const logoSrc = resolveImageUrl(logo)
+  const { logo, siteName, loaded: settingsLoaded } = useSiteSettings()
   return (
     <footer className="bg-slate-50 border-t border-gray-200">
       <div className={`${LAYOUT_CONTAINER_CLASS} py-16 md:py-20`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-14">
           <div className="lg:col-span-2">
             <Link to="/" className="inline-block" aria-label="Woontegra Ana Sayfa">
-              <img src={logoSrc} alt={siteName} className="h-16 w-auto md:h-20" />
+              <SafeLogo
+                src={logo}
+                alt={siteName}
+                loading={!settingsLoaded}
+                className="h-16 w-auto max-w-full object-contain md:h-20"
+                textClassName="text-2xl font-bold tracking-tight text-slate-900"
+              />
             </Link>
             <p className="mt-5 text-slate-500 text-sm max-w-xs leading-relaxed">
               Yazılım, dijital ticaret ve teknoloji çözümlerinde tek çatı. Modern altyapı, güvenilir üretim.

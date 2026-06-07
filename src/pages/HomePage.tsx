@@ -5,13 +5,14 @@ import { defaultHomeData } from '../data/defaultHomeData'
 import { useHeroSection } from '../hooks/useHeroSection'
 import { usePageSection } from '../hooks/usePageSection'
 import { getBrandImage } from '../lib/brandImage'
+import { resolvePageImage } from '../lib/resolveImageUrl'
 import type { BrandsSectionData } from '../types/sections'
 import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef } from 'react'
 
 export function HomePage() {
-  const { heroData } = useHeroSection('home', defaultHomeData)
-  const { data: brandsData } = usePageSection<BrandsSectionData>('home', 'brands', defaultHomeData)
+  const { heroData, loaded: heroLoaded } = useHeroSection('home', defaultHomeData)
+  const { data: brandsData, loaded: brandsLoaded } = usePageSection<BrandsSectionData>('home', 'brands', defaultHomeData)
   const brandsScrollRef = useRef<HTMLDivElement>(null)
 
   const heroTag = heroData?.tag || 'Teknoloji & Yazılım'
@@ -20,7 +21,7 @@ export function HomePage() {
   const heroSubtitle =
     heroData?.subtitle ||
     'Woontegra, yazılım geliştirme, e-ticaret sistemleri ve SaaS ürünleri ile işletmeler için sürdürülebilir dijital altyapılar kurar.'
-  const heroImage = heroData?.image || siteImages.homeHero
+  const heroImage = resolvePageImage(heroLoaded, heroData?.image, siteImages.homeHero)
 
   const scrollBrands = (direction: 'left' | 'right') => {
     if (brandsScrollRef.current) {
@@ -151,28 +152,28 @@ export function HomePage() {
               {[
                 { 
                   name: 'Bilirkişi', 
-                  image: getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi),
+                  image: getBrandImage(brandsData, 'bilirkisi', siteImages.brandBilirkisi, brandsLoaded),
                   desc: 'Hukuk ve aktüerya alanında kullanılan profesyonel hesaplama yazılımıdır.',
                   gradient: 'from-blue-600 to-purple-600',
                   url: 'https://www.bilirkisihesap.com/'
                 },
                 { 
                   name: 'Optimoon', 
-                  image: getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon),
+                  image: getBrandImage(brandsData, 'optimoon', siteImages.brandOptimoon, brandsLoaded),
                   desc: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır.',
                   gradient: 'from-purple-600 to-pink-600',
                   url: 'https://optimoon.com/'
                 },
                 { 
                   name: 'Datça Tropikal', 
-                  image: getBrandImage(brandsData, 'datça', siteImages.brandDatca),
+                  image: getBrandImage(brandsData, 'datça', siteImages.brandDatca, brandsLoaded),
                   desc: 'Yerel üretim ve doğal ürünlerin satışını gerçekleştiren markamızdır.',
                   gradient: 'from-green-600 to-teal-600',
                   url: 'https://datcatropikal.com/'
                 },
                 { 
                   name: 'Mercan Danışmanlık', 
-                  image: getBrandImage(brandsData, 'mercan', siteImages.brandMercan),
+                  image: getBrandImage(brandsData, 'mercan', siteImages.brandMercan, brandsLoaded),
                   desc: 'Marka tescil ve patent danışmanlık süreçlerini yöneten markamızdır.',
                   gradient: 'from-orange-600 to-red-600',
                   url: 'https://mercandanismanlik.com/'
@@ -190,7 +191,9 @@ export function HomePage() {
                       src={brand.image}
                       alt={brand.name}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      fallbackClassName="h-full w-full min-h-0 rounded-none"
+                      wrapperClassName="h-full"
+                      skeletonClassName="min-h-0 rounded-none"
+                      fallbackClassName="h-full w-full min-h-0 rounded-none border-0"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   </div>

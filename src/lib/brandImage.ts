@@ -4,14 +4,16 @@ export function getBrandImage(
   brands: BrandsSectionData | null | undefined,
   matchKey: string,
   fallback: string,
-): string {
-  if (!brands?.items?.length) return fallback
-
+  loaded = true,
+): string | undefined {
   const key = matchKey.toLowerCase()
-  const item = brands.items.find((b) => {
+  const item = brands?.items?.find((b) => {
     const name = b.name.toLowerCase()
     return name.includes(key) || key.includes(name.split(' ')[0])
   })
 
-  return item?.image?.trim() || fallback
+  const fromApi = item?.image?.trim()
+
+  if (!loaded) return fromApi || undefined
+  return fromApi || fallback
 }

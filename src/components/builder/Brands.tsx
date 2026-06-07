@@ -1,5 +1,6 @@
 import { useNode } from '@craftjs/core'
 import { BrandsSettings } from './settings/BrandsSettings'
+import { SafeImage } from '../ui/SafeImage'
 
 export interface BrandsProps {
   title?: string
@@ -51,7 +52,14 @@ export const Brands = ({
               className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all"
             >
               <div className="relative h-48 overflow-hidden">
-                <img src={brand.image} alt={brand.name} className="w-full h-full object-cover" />
+                <SafeImage
+                  src={brand.image}
+                  alt={brand.name}
+                  className="h-full w-full object-cover"
+                  wrapperClassName="h-full"
+                  skeletonClassName="min-h-0 rounded-none"
+                  fallbackClassName="min-h-0 rounded-none border-0"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent" />
               </div>
               <div className="p-6">
