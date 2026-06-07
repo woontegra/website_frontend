@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { mainNav } from '../../data/navigation'
 import { fetchPublicMenu, type PublicMenuItem } from '../../api/menus'
@@ -31,6 +31,7 @@ function NavItem({ href, label, active, onClick }: { href: string; label: string
 }
 
 export function Navbar() {
+  const [logoFailed, setLogoFailed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
@@ -49,6 +50,8 @@ export function Navbar() {
       setCmsNav(items.length > 0 ? items : null)
     })
   }, [])
+
+  const onLogoError = useCallback(() => setLogoFailed(true), [])
 
   const isActive = (href: string) => {
     if (href === '/' || href === '#') return location.pathname === '/'
@@ -71,16 +74,19 @@ export function Navbar() {
             className="flex max-w-[200px] shrink-0 items-center min-[1200px]:max-w-[260px]"
             aria-label="Woontegra Ana Sayfa"
           >
-            <img
-              src={HEADER_LOGO_SRC}
-              alt={HEADER_LOGO_ALT}
-              width={HEADER_LOGO_WIDTH}
-              height={HEADER_LOGO_HEIGHT}
-              className="block h-14 w-[180px] max-w-full object-contain object-left min-[1200px]:h-[4.25rem]"
-              loading="eager"
-              fetchPriority="high"
-              decoding="sync"
-            />
+            {!logoFailed ? (
+              <img
+                src={HEADER_LOGO_SRC}
+                alt={HEADER_LOGO_ALT}
+                width={HEADER_LOGO_WIDTH}
+                height={HEADER_LOGO_HEIGHT}
+                className="block h-14 w-[180px] max-w-full object-contain object-left min-[1200px]:h-[4.25rem]"
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
+                onError={onLogoError}
+              />
+            ) : null}
           </Link>
 
           <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">

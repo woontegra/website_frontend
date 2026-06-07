@@ -1,9 +1,9 @@
 import {
-  frontendImages,
   HEADER_LOGO_ALT,
   HEADER_LOGO_HEIGHT,
   HEADER_LOGO_WIDTH,
+  PUBLIC_LOGO_SRC,
 } from '../data/frontendImages'
 
 export { HEADER_LOGO_ALT, HEADER_LOGO_WIDTH, HEADER_LOGO_HEIGHT }
-export const HEADER_LOGO_SRC = frontendImages.logo
+export const HEADER_LOGO_SRC = PUBLIC_LOGO_SRC

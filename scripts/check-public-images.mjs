@@ -1,10 +1,9 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '..')
 const publicImagesDir = join(rootDir, 'public', 'images')
-const assetsDir = join(rootDir, 'src', 'assets')
 
 const sources = [
   join(rootDir, 'src', 'data', 'siteImages.ts'),
@@ -22,6 +21,35 @@ for (const filePath of sources) {
   }
 }
 
+function detectFormat(buffer) {
+  if (buffer.length < 4) return 'invalid'
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return 'jpeg'
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return 'png'
+  if (buffer.toString('utf8', 0, Math.min(80, buffer.length)).includes('<svg')) return 'svg'
+  if (buffer.toString('utf8', 0, Math.min(40, buffer.length)).startsWith('data:image')) return 'stub-text'
+  return 'unknown'
+}
+
+function validateAsset(filePath, label) {
+  if (!existsSync(filePath)) return `${label}: dosya yok (${filePath})`
+  const buffer = readFileSync(filePath)
+  const format = detectFormat(buffer)
+  const ext = extname(filePath).toLowerCase()
+  if (format === 'stub-text') {
+    return `${label}: geçersiz stub dosya (içerik data:image metni, gerçek görsel değil)`
+  }
+  if ((ext === '.jpg' || ext === '.jpeg') && format !== 'jpeg') {
+    return `${label}: .jpg/.jpeg uzantılı ama JPEG değil (format: ${format})`
+  }
+  if (ext === '.png' && format !== 'png') {
+    return `${label}: .png uzantılı ama PNG değil (format: ${format})`
+  }
+  if (ext === '.svg' && format !== 'svg') {
+    return `${label}: .svg uzantılı ama SVG değil`
+  }
+  return null
+}
+
 const frontendImagesSource = readFileSync(join(rootDir, 'src', 'data', 'frontendImages.ts'), 'utf8')
 const assetImportPattern = /from\s+['"](\.\.\/assets\/[^'"]+)['"]/g
 const assetImports = new Set()
@@ -31,26 +59,23 @@ for (const match of frontendImagesSource.matchAll(assetImportPattern)) {
 
 const errors = []
 
+const logoPath = join(rootDir, 'public', 'logo.svg')
+const logoError = validateAsset(logoPath, 'Header logosu (public/logo.svg)')
+if (logoError) errors.push(logoError)
+
 for (const relImport of assetImports) {
-  const assetPath = join(rootDir, 'src', 'data', relImport.replace(/^\.\.\//, '../').replace(/\//g, '/'))
-  const resolved = join(rootDir, 'src', 'data', '..', relImport.replace(/^\.\.\//, ''))
   const filePath = join(rootDir, 'src', relImport.replace(/^\.\.\//, ''))
-  if (!existsSync(filePath)) {
-    errors.push(`Eksik frontend asset: src/${relImport.replace(/^\.\.\//, '')}`)
-  }
+  const label = `frontend asset ${relImport}`
+  const err = validateAsset(filePath, label)
+  if (err) errors.push(err)
 }
 
 for (const imagePath of paths) {
   const relativePath = imagePath.replace(/^\/images\//, '')
   const filePath = join(publicImagesDir, ...relativePath.split('/'))
-
   if (!existsSync(filePath)) {
     errors.push(`Eksik görsel: public/images/${relativePath} (kodda: ${imagePath})`)
   }
-}
-
-if (!existsSync(join(assetsDir, 'logos', 'woontegra-logo.svg'))) {
-  errors.push('Eksik header logosu: src/assets/logos/woontegra-logo.svg')
 }
 
 if (errors.length > 0) {
@@ -62,5 +87,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Görsel dosyaları hazır: ${paths.size} public path, ${assetImports.size} frontend asset doğrulandı.`,
+  `Görsel dosyaları hazır: public logo.svg, ${assetImports.size} frontend asset, ${paths.size} public path doğrulandı.`,
 )
