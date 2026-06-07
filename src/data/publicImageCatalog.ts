@@ -65,7 +65,7 @@ export const PUBLIC_IMAGE_CATALOG: PublicImageItem[] = [
   // Hizmetler
   { title: 'Hizmet kartı 1', path: '/images/service-1.jpg', category: 'services', alt: 'Hizmetler bölümü görsel 1' },
   { title: 'Hizmet kartı 2', path: '/images/service-2.jpg', category: 'services', alt: 'Hizmetler bölümü görsel 2' },
-  { title: 'Hizmet kartı 3', path: '/images/service-3.jpg', category: 'services', alt: 'Hizmetler bölümü görsel 3' },
+  { title: 'Hizmet kartı 3', path: '/images/service-3.jpeg', category: 'services', alt: 'Hizmetler bölümü görsel 3' },
 
   // Çözümler
   { title: 'Çözümler sistemi', path: '/images/cozumler-sistem.jpg', category: 'solutions', alt: 'Çözümler sayfası sistem görseli' },
