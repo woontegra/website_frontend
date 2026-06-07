@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { adminApi, resolveMediaSrc } from '../../api/cms'
-import { MediaLibraryModal } from '../../components/admin/MediaLibraryModal'
+import { adminApi } from '../../api/cms'
+import { ManagedImageField } from '../../components/admin/ManagedImageField'
 import { RichTextEditor } from '../../components/admin/RichTextEditor'
 
 type Cat = { id: string; slug: string; name: string }
@@ -25,8 +25,6 @@ export function AdminPostEditPage() {
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
-  const [mediaOpen, setMediaOpen] = useState(false)
-
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
@@ -99,8 +97,6 @@ export function AdminPostEditPage() {
 
   if (loading) return <p className="text-slate-500">Yükleniyor…</p>
 
-  const img = featuredImage ? resolveMediaSrc(featuredImage) : ''
-
   return (
     <div className="mx-auto max-w-4xl">
       <Link to="/admin/yazilar" className="mb-6 inline-block text-sm font-medium text-slate-600 hover:text-slate-900">
@@ -169,24 +165,11 @@ export function AdminPostEditPage() {
           <label className="mb-2 block text-sm font-medium text-slate-700">İçerik</label>
           <RichTextEditor value={bodyHtml} onChange={setBodyHtml} />
         </div>
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-700">Öne çıkan görsel</label>
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMediaOpen(true)}
-              className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium hover:bg-slate-200"
-            >
-              Medyadan seç
-            </button>
-            {img ? <img src={img} alt="" className="h-16 rounded-lg border object-cover" /> : null}
-            {featuredImage ? (
-              <button type="button" className="text-sm text-red-600" onClick={() => setFeaturedImage('')}>
-                Kaldır
-              </button>
-            ) : null}
-          </div>
-        </div>
+        <ManagedImageField
+          label="Öne çıkan görsel"
+          value={featuredImage}
+          onChange={setFeaturedImage}
+        />
         <div className="flex justify-end border-t border-slate-100 pt-6">
           <button
             type="button"
@@ -199,7 +182,6 @@ export function AdminPostEditPage() {
         </div>
       </div>
 
-      <MediaLibraryModal open={mediaOpen} onClose={() => setMediaOpen(false)} onPick={(u) => { setFeaturedImage(u); setMediaOpen(false) }} />
     </div>
   )
 }

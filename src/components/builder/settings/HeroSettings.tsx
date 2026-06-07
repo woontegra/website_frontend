@@ -1,4 +1,5 @@
 import { useNode } from '@craftjs/core'
+import { ManagedImageField } from '../../admin/ManagedImageField'
 
 export const HeroSettings = () => {
   const {
@@ -46,16 +47,11 @@ export const HeroSettings = () => {
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
         />
       </div>
-      <div>
-        <label className="block text-sm font-semibold text-slate-900 mb-2">Arka Plan Görseli</label>
-        <input
-          type="text"
-          value={props.backgroundImage}
-          onChange={(e) => setProp((props: any) => (props.backgroundImage = e.target.value))}
-          placeholder="/images/hero.jpg"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
-        />
-      </div>
+      <ManagedImageField
+        label="Arka Plan Görseli"
+        value={props.backgroundImage ?? ''}
+        onChange={(url) => setProp((p: { backgroundImage: string }) => (p.backgroundImage = url))}
+      />
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Save, ChevronDown, ChevronUp, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw, Lock } from 'lucide-react'
-import { getApiUrl } from '../../config/api'
+import { Save, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw, Lock } from 'lucide-react'
+import { buildApiUrl } from '../../config/api'
+import { ManagedImageField } from '../../components/admin/ManagedImageField'
+import { SettingsCollapsibleSection } from '../../components/admin/SettingsCollapsibleSection'
 
 interface SiteSettings {
   siteName: string
@@ -153,6 +155,25 @@ export function AdminSettingsPage() {
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [metaAccessTokenInput, setMetaAccessTokenInput] = useState('')
   const [clearMetaAccessToken, setClearMetaAccessToken] = useState(false)
+  const [metaTokenStatus, setMetaTokenStatus] = useState({
+    configured: false,
+    preview: '',
+  })
+
+  const applySettingsFromApi = (data: Record<string, unknown>) => {
+    setSettings((prev) => ({
+      ...prev,
+      ...(data as unknown as SiteSettings),
+      metaPixelId:
+        (data.metaPixelId as string) || (data.facebookPixelId as string) || prev.metaPixelId,
+    }))
+    setMetaTokenStatus({
+      configured: Boolean(data.metaConversionsAccessTokenConfigured),
+      preview: String(data.metaConversionsAccessTokenPreview ?? ''),
+    })
+    setMetaAccessTokenInput('')
+    setClearMetaAccessToken(false)
+  }
 
   useEffect(() => {
     fetchSettings()
@@ -160,21 +181,14 @@ export function AdminSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const API_URL = getApiUrl()
-      const response = await fetch(`${API_URL}/api/settings/admin`, {
+      const response = await fetch(buildApiUrl('/settings/admin'), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
         },
       })
       if (response.ok) {
         const data = await response.json()
-        setSettings({
-          ...settings,
-          ...data,
-          metaPixelId: data.metaPixelId || data.facebookPixelId || '',
-        })
-        setMetaAccessTokenInput('')
-        setClearMetaAccessToken(false)
+        applySettingsFromApi(data)
       }
     } catch (error) {
       console.error('Ayarlar yüklenemedi:', error)
@@ -187,15 +201,18 @@ export function AdminSettingsPage() {
     setSaving(true)
     setMessage(null)
     try {
-      const API_URL = getApiUrl()
       const payload: Record<string, unknown> = {
         ...settings,
         metaPixelId: settings.metaPixelId,
         facebookPixelId: settings.metaPixelId,
       }
 
+      delete payload.metaConversionsAccessToken
       delete payload.metaConversionsAccessTokenConfigured
       delete payload.metaConversionsAccessTokenPreview
+      delete payload.smtpPassword
+      delete payload.smtpPasswordConfigured
+      delete payload.smtpPasswordPreview
 
       if (clearMetaAccessToken) {
         payload.clearMetaConversionsAccessToken = true
@@ -203,7 +220,7 @@ export function AdminSettingsPage() {
         payload.metaConversionsAccessToken = metaAccessTokenInput.trim()
       }
 
-      const response = await fetch(`${API_URL}/api/settings`, {
+      const response = await fetch(buildApiUrl('/settings'), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -214,13 +231,7 @@ export function AdminSettingsPage() {
 
       if (response.ok) {
         const data = await response.json()
-        setSettings({
-          ...settings,
-          ...data,
-          metaPixelId: data.metaPixelId || data.facebookPixelId || settings.metaPixelId,
-        })
-        setMetaAccessTokenInput('')
-        setClearMetaAccessToken(false)
+        applySettingsFromApi(data)
         setMessage({ type: 'success', text: 'Ayarlar kaydedildi!' })
         setTimeout(() => setMessage(null), 3000)
       } else {
@@ -271,8 +282,7 @@ export function AdminSettingsPage() {
 
     setPasswordSaving(true)
     try {
-      const API_URL = getApiUrl()
-      const response = await fetch(`${API_URL}/api/auth/change-password`, {
+      const response = await fetch(buildApiUrl('/auth/change-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -298,8 +308,7 @@ export function AdminSettingsPage() {
 
   const handleClearCache = async () => {
     try {
-      const API_URL = getApiUrl()
-      const response = await fetch(`${API_URL}/api/settings/clear-cache`, {
+      const response = await fetch(buildApiUrl('/settings/clear-cache'), {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
@@ -324,29 +333,6 @@ export function AdminSettingsPage() {
     )
   }
 
-  const Section = ({ id, icon: Icon, title, children }: { id: string, icon: any, title: string, children: React.ReactNode }) => {
-    const isOpen = openSections.includes(id)
-    return (
-      <div className="card">
-        <button
-          onClick={() => toggleSection(id)}
-          className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors rounded-lg"
-        >
-          <div className="flex items-center gap-3">
-            <Icon className="w-5 h-5 text-green-600" />
-            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-          </div>
-          {isOpen ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-        </button>
-        {isOpen && (
-          <div className="p-4 pt-0 compact-space-y">
-            {children}
-          </div>
-        )}
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-4 pb-20">
       {/* HEADER */}
@@ -359,6 +345,7 @@ export function AdminSettingsPage() {
           <p className="text-xs text-slate-600 mt-1">Tüm site ayarlarını buradan yönetin</p>
         </div>
         <button
+          type="button"
           onClick={handleSave}
           disabled={saving}
           className="button flex items-center gap-1.5"
@@ -379,7 +366,13 @@ export function AdminSettingsPage() {
       )}
 
       {/* HESAP */}
-      <Section id="account" icon={Lock} title="Hesap Güvenliği">
+      <SettingsCollapsibleSection
+        id="account"
+        icon={Lock}
+        title="Hesap Güvenliği"
+        isOpen={openSections.includes('account')}
+        onToggle={toggleSection}
+      >
         <form onSubmit={handleChangePassword} className="space-y-3">
           {passwordMessage && (
             <div
@@ -431,10 +424,16 @@ export function AdminSettingsPage() {
             {passwordSaving ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
           </button>
         </form>
-      </Section>
+      </SettingsCollapsibleSection>
 
       {/* GENEL AYARLAR */}
-      <Section id="general" icon={Settings} title="Genel Ayarlar">
+      <SettingsCollapsibleSection
+        id="general"
+        icon={Settings}
+        title="Genel Ayarlar"
+        isOpen={openSections.includes('general')}
+        onToggle={toggleSection}
+      >
         <div>
           <label className="label">Site Adı</label>
           <input
@@ -470,10 +469,16 @@ export function AdminSettingsPage() {
             </select>
           </div>
         </div>
-      </Section>
+      </SettingsCollapsibleSection>
 
       {/* MARKA & GÖRSEL */}
-      <Section id="brand" icon={Palette} title="Marka & Görsel Ayarlar">
+      <SettingsCollapsibleSection
+        id="brand"
+        icon={Palette}
+        title="Marka & Görsel Ayarlar"
+        isOpen={openSections.includes('brand')}
+        onToggle={toggleSection}
+      >
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="label">Primary Color</label>
@@ -514,10 +519,16 @@ export function AdminSettingsPage() {
             </select>
           </div>
         </div>
-      </Section>
+      </SettingsCollapsibleSection>
 
       {/* İLETİŞİM BİLGİLERİ */}
-      <Section id="contact" icon={Mail} title="İletişim Bilgileri">
+      <SettingsCollapsibleSection
+        id="contact"
+        icon={Mail}
+        title="İletişim Bilgileri"
+        isOpen={openSections.includes('contact')}
+        onToggle={toggleSection}
+      >
         <div>
           <label className="label">E-posta</label>
           <input
@@ -556,10 +567,16 @@ export function AdminSettingsPage() {
             className="textarea w-full"
           />
         </div>
-      </Section>
+      </SettingsCollapsibleSection>
 
       {/* SEO AYARLARI */}
-      <Section id="seo" icon={Globe} title="SEO Ayarları">
+      <SettingsCollapsibleSection
+        id="seo"
+        icon={Globe}
+        title="SEO Ayarları"
+        isOpen={openSections.includes('seo')}
+        onToggle={toggleSection}
+      >
         <div>
           <label className="label">Varsayılan Title</label>
           <input
@@ -585,11 +602,16 @@ export function AdminSettingsPage() {
               type="text"
               value={newKeyword}
               onChange={(e) => setNewKeyword(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  addKeyword()
+                }
+              }}
               placeholder="Keyword ekle ve Enter'a bas"
               className="input flex-1"
             />
-            <button onClick={addKeyword} className="button-secondary">Ekle</button>
+            <button type="button" onClick={addKeyword} className="button-secondary">Ekle</button>
           </div>
           <div className="flex flex-wrap gap-2">
             {settings.defaultKeywords.map((keyword, i) => (
@@ -609,10 +631,16 @@ export function AdminSettingsPage() {
             className="input w-full"
           />
         </div>
-      </Section>
+      </SettingsCollapsibleSection>
 
       {/* OPEN GRAPH */}
-      <Section id="og" icon={Globe} title="Open Graph (Facebook)">
+      <SettingsCollapsibleSection
+        id="og"
+        icon={Globe}
+        title="Open Graph (Facebook)"
+        isOpen={openSections.includes('og')}
+        onToggle={toggleSection}
+      >
         <div>
           <label className="label">OG Title</label>
           <input
@@ -631,19 +659,21 @@ export function AdminSettingsPage() {
             className="textarea w-full"
           />
         </div>
-        <div>
-          <label className="label">OG Image URL</label>
-          <input
-            type="url"
-            value={settings.ogImage}
-            onChange={(e) => setSettings({ ...settings, ogImage: e.target.value })}
-            className="input w-full"
-          />
-        </div>
-      </Section>
+        <ManagedImageField
+          label="OG Image"
+          value={settings.ogImage}
+          onChange={(url) => setSettings({ ...settings, ogImage: url })}
+        />
+      </SettingsCollapsibleSection>
 
       {/* TWITTER CARD */}
-      <Section id="twitter" icon={Globe} title="Twitter Card">
+      <SettingsCollapsibleSection
+        id="twitter"
+        icon={Globe}
+        title="Twitter Card"
+        isOpen={openSections.includes('twitter')}
+        onToggle={toggleSection}
+      >
         <div>
           <label className="label">Twitter Title</label>
           <input
@@ -662,19 +692,21 @@ export function AdminSettingsPage() {
             className="textarea w-full"
           />
         </div>
-        <div>
-          <label className="label">Twitter Image URL</label>
-          <input
-            type="url"
-            value={settings.twitterImage}
-            onChange={(e) => setSettings({ ...settings, twitterImage: e.target.value })}
-            className="input w-full"
-          />
-        </div>
-      </Section>
+        <ManagedImageField
+          label="Twitter Image"
+          value={settings.twitterImage}
+          onChange={(url) => setSettings({ ...settings, twitterImage: url })}
+        />
+      </SettingsCollapsibleSection>
 
       {/* ANALİTİK */}
-      <Section id="analytics" icon={BarChart} title="Analitik & Tracking">
+      <SettingsCollapsibleSection
+        id="analytics"
+        icon={BarChart}
+        title="Analitik & Tracking"
+        isOpen={openSections.includes('analytics')}
+        onToggle={toggleSection}
+      >
         <div className="space-y-6">
           <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Google</h3>
@@ -750,12 +782,10 @@ export function AdminSettingsPage() {
 
             <div>
               <label className="label">Meta Conversions API Access Token</label>
-              {settings.metaConversionsAccessTokenConfigured && !clearMetaAccessToken && (
+              {metaTokenStatus.configured && !clearMetaAccessToken && (
                 <p className="mb-2 text-xs font-medium text-emerald-700">
                   Token kayıtlı
-                  {settings.metaConversionsAccessTokenPreview
-                    ? ` (${settings.metaConversionsAccessTokenPreview})`
-                    : ''}
+                  {metaTokenStatus.preview ? ` (${metaTokenStatus.preview})` : ''}
                 </p>
               )}
               {clearMetaAccessToken && (
@@ -763,25 +793,30 @@ export function AdminSettingsPage() {
                   Kayıt sonrası token silinecek.
                 </p>
               )}
-              <input
-                type="password"
+              <textarea
                 value={metaAccessTokenInput}
                 onChange={(e) => {
                   setMetaAccessTokenInput(e.target.value)
                   setClearMetaAccessToken(false)
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.preventDefault()
+                }}
+                onPaste={(e) => e.stopPropagation()}
                 placeholder={
-                  settings.metaConversionsAccessTokenConfigured
+                  metaTokenStatus.configured
                     ? 'Yeni token girerek güncelleyin'
                     : 'EAAxxxxxxxx...'
                 }
-                autoComplete="new-password"
-                className="input w-full"
+                autoComplete="off"
+                spellCheck={false}
+                rows={3}
+                className="input w-full resize-y font-mono text-sm leading-relaxed"
               />
               <p className="mt-1 text-xs text-slate-500">
                 Bu token yalnızca sunucu tarafında kullanılır. Güvenlik nedeniyle kaydedildikten sonra tam değer görüntülenmez.
               </p>
-              {settings.metaConversionsAccessTokenConfigured && (
+              {metaTokenStatus.configured && (
                 <button
                   type="button"
                   onClick={() => {
@@ -848,16 +883,23 @@ export function AdminSettingsPage() {
             </div>
           </div>
         </div>
-      </Section>
+      </SettingsCollapsibleSection>
 
       {/* SİSTEM AYARLARI */}
-      <Section id="system" icon={Wrench} title="Sistem Ayarları">
+      <SettingsCollapsibleSection
+        id="system"
+        icon={Wrench}
+        title="Sistem Ayarları"
+        isOpen={openSections.includes('system')}
+        onToggle={toggleSection}
+      >
         <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
           <div>
             <label className="block text-sm font-semibold text-slate-700">Bakım Modu</label>
             <p className="text-xs text-gray-500 mt-0.5">Site ziyaretçilere kapalı olur</p>
           </div>
           <button
+            type="button"
             onClick={() => {
               const newMode = !settings.maintenanceMode
               setSettings({ ...settings, maintenanceMode: newMode })
@@ -896,6 +938,7 @@ export function AdminSettingsPage() {
 
         <div className="pt-3 border-t border-gray-200">
           <button
+            type="button"
             onClick={handleClearCache}
             className="button-outline w-full flex items-center justify-center gap-1.5"
           >
@@ -903,7 +946,7 @@ export function AdminSettingsPage() {
             Cache Temizle
           </button>
         </div>
-      </Section>
+      </SettingsCollapsibleSection>
     </div>
   )
 }

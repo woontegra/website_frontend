@@ -1,5 +1,6 @@
 import type { BrandsSectionData, BrandItem } from '../../../types/sections'
 import { Plus, Trash2, GripVertical } from 'lucide-react'
+import { ManagedImageField } from '../ManagedImageField'
 
 interface BrandsEditorProps {
   data: BrandsSectionData
@@ -94,15 +95,12 @@ export function BrandsEditor({ data, onChange }: BrandsEditorProps) {
                       className="textarea w-full"
                     />
                   </div>
-                  <div>
-                    <input
-                      type="text"
-                      value={item.image}
-                      onChange={(e) => updateItem(index, 'image', e.target.value)}
-                      placeholder="Görsel URL"
-                      className="input w-full"
-                    />
-                  </div>
+                  <ManagedImageField
+                    label="Marka Görseli"
+                    value={item.image}
+                    onChange={(url) => updateItem(index, 'image', url)}
+                    compact
+                  />
                 </div>
                 <button
                   onClick={() => removeItem(index)}

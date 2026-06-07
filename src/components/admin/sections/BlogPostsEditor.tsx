@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, Star } from 'lucide-react'
 import type { BlogPostsSectionData, BlogPost } from '../../../types/sections'
+import { ManagedImageField } from '../ManagedImageField'
 
 interface BlogPostsEditorProps {
   data: BlogPostsSectionData
@@ -184,14 +185,12 @@ export function BlogPostsEditor({ data, onChange }: BlogPostsEditorProps) {
                   />
                 </div>
 
-                <div>
-                  <label className="label-sm">Görsel URL</label>
-                  <input
-                    type="text"
+                <div className="col-span-2">
+                  <ManagedImageField
+                    label="Kapak Görseli"
                     value={post.image}
-                    onChange={(e) => updatePost(post.id, 'image', e.target.value)}
-                    className="input-sm w-full"
-                    placeholder="/images/blog/..."
+                    onChange={(url) => updatePost(post.id, 'image', url)}
+                    compact
                   />
                 </div>
 

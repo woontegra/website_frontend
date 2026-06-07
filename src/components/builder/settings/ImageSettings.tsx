@@ -1,4 +1,5 @@
 import { useNode } from '@craftjs/core'
+import { ManagedImageField } from '../../admin/ManagedImageField'
 
 export const ImageSettings = () => {
   const {
@@ -10,21 +11,11 @@ export const ImageSettings = () => {
 
   return (
     <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-semibold text-slate-900 mb-2">Görsel URL</label>
-        <input
-          type="text"
-          value={props.src}
-          onChange={(e) => setProp((props: any) => (props.src = e.target.value))}
-          placeholder="/images/example.jpg"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
-        />
-        {props.src && (
-          <div className="mt-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
-            <img src={props.src} alt="Preview" className="max-h-32 mx-auto rounded" />
-          </div>
-        )}
-      </div>
+      <ManagedImageField
+        label="Görsel"
+        value={props.src ?? ''}
+        onChange={(url) => setProp((p: { src: string }) => (p.src = url))}
+      />
       <div>
         <label className="block text-sm font-semibold text-slate-900 mb-2">Alt Metin</label>
         <input

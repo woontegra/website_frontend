@@ -1,4 +1,5 @@
 import type { HeroSectionData } from '../../../types/sections'
+import { ManagedImageField } from '../ManagedImageField'
 
 interface HeroEditorProps {
   data: HeroSectionData
@@ -74,21 +75,12 @@ export function HeroEditor({ data, onChange }: HeroEditorProps) {
         </div>
       </div>
 
-      <div>
-        <label className="label">
-          Görsel URL (opsiyonel)
-        </label>
-        <input
-          type="text"
-          value={data.image || ''}
-          onChange={(e) => handleChange('image', e.target.value)}
-          placeholder="/images/about-hero.jpg"
-          className="input w-full"
-        />
-        <p className="text-xs text-slate-500 mt-1">
-          Görseli /public/images/ klasörüne yükle ve yolunu buraya yaz
-        </p>
-      </div>
+      <ManagedImageField
+        label="Hero Görseli (opsiyonel)"
+        value={data.image || ''}
+        onChange={(url) => handleChange('image', url)}
+        hint="Yüklenen görseller kalıcı medya sistemine kaydedilir (Cloudinary)."
+      />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { resolveMediaSrc } from '../../api/cms'
+import { resolveImageUrl } from '../../lib/resolveImageUrl'
 
 type Variant = 'light' | 'dark'
 
@@ -16,7 +16,7 @@ export function HeroFloatingCards({
   imageHeight?: string
   variant?: Variant
 }) {
-  const src = imageUrl ? resolveMediaSrc(imageUrl) : ''
+  const src = imageUrl ? resolveImageUrl(imageUrl) : ''
   const style = imageHeight ? { height: imageHeight, minHeight: imageHeight } : undefined
   const isDark = variant === 'dark'
 
@@ -42,6 +42,9 @@ export function HeroFloatingCards({
           alt=""
           className="pointer-events-none absolute inset-0 h-full w-full rounded-3xl object-cover opacity-[0.1]"
           aria-hidden
+          onError={(event) => {
+            event.currentTarget.style.display = 'none'
+          }}
         />
       ) : null}
 

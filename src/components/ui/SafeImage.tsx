@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ImageOff } from 'lucide-react'
+import { resolveImageUrl } from '../../lib/resolveImageUrl'
 
 type SafeImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
   src?: string | null
@@ -18,8 +19,9 @@ export function SafeImage({
   ...props
 }: SafeImageProps) {
   const [hasError, setHasError] = useState(false)
+  const resolvedSrc = src ? resolveImageUrl(src) : ''
 
-  if (!src || hasError) {
+  if (!resolvedSrc || hasError) {
     return (
       <div
         className={`flex min-h-[120px] flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-8 text-center text-slate-500 ${fallbackClassName || className}`}
@@ -34,7 +36,7 @@ export function SafeImage({
 
   return (
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       className={className}
       onError={(event) => {

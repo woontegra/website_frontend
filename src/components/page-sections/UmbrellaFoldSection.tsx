@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { resolveImageUrl } from '../../lib/resolveImageUrl'
 
 /**
  * Ana sayfa — Woontegra çatı marka alanı (panelden: kicker, başlık, gövde, CTA, görsel URL)
@@ -81,7 +82,7 @@ export default function UmbrellaFoldSection(p: Record<string, unknown>) {
         <div className="relative mx-auto w-full max-w-lg lg:mx-0 lg:justify-self-end">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-amber-100/60 bg-amber-50/50 shadow-xl shadow-amber-900/8 ring-1 ring-amber-200/50 backdrop-blur-sm">
             {imageUrl ? (
-              <img src={imageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+              <img src={resolveImageUrl(imageUrl)} alt="" className="h-full w-full object-cover" loading="lazy" />
             ) : (
               <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-amber-100/90 via-orange-50/70 to-rose-50/60 p-8 text-center">
                 <div className="flex flex-wrap justify-center gap-2">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { brandsApi, type Brand } from '../../api/brands'
 import { Trash2, Plus, Edit2, ExternalLink } from 'lucide-react'
+import { ManagedImageField } from '../../components/admin/ManagedImageField'
 
 export function AdminBrandsPage() {
   const [brands, setBrands] = useState<Brand[]>([])
@@ -127,32 +128,12 @@ export function AdminBrandsPage() {
                 className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-slate-900 focus:outline-none focus:border-green-500 transition-colors text-lg"
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Logo URL veya Yol
-              </label>
-              <input
-                type="text"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                placeholder="/images/brand-name.jpg veya https://example.com/logo.png"
-                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-slate-900 focus:outline-none focus:border-green-500 transition-colors text-lg"
-                required
-              />
-              {formData.image && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <p className="text-xs text-gray-600 mb-2 font-semibold">Önizleme:</p>
-                  <img 
-                    src={formData.image} 
-                    alt="Preview" 
-                    className="max-h-32 rounded-lg border border-gray-300"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            <ManagedImageField
+              label="Marka Logosu"
+              value={formData.image}
+              onChange={(url) => setFormData({ ...formData, image: url })}
+              hint="Logo kalıcı medya sistemine yüklenir."
+            />
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Web Sitesi (Opsiyonel)

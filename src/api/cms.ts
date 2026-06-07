@@ -1,12 +1,9 @@
-import { getApiUrl } from '../config/api'
+import { buildApiUrl } from '../config/api'
+import { resolveImageUrl } from '../lib/resolveImageUrl'
 
-export const apiBase = () => getApiUrl()
-
-/** /uploads/... veya tam URL → tarayıcıda kullanılabilir adres */
+/** @deprecated resolveImageUrl kullanın */
 export function resolveMediaSrc(url: string): string {
-  if (!url) return ''
-  if (/^https?:\/\//i.test(url)) return url
-  return `${apiBase()}${url.startsWith('/') ? url : `/${url}`}`
+  return resolveImageUrl(url)
 }
 
 export function getAdminToken(): string | null {
@@ -18,7 +15,7 @@ export async function adminApi<T>(
   options: RequestInit = {}
 ): Promise<{ success: boolean; data?: T; message?: string }> {
   const token = getAdminToken()
-  const res = await fetch(`${apiBase()}/api/admin/cms${path}`, {
+  const res = await fetch(buildApiUrl(`/admin/cms${path}`), {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +34,7 @@ export async function adminPagesWriteApi<T>(
   options: RequestInit = {}
 ): Promise<{ success: boolean; data?: T; message?: string }> {
   const token = getAdminToken()
-  const res = await fetch(`${apiBase()}/api/pages${path}`, {
+  const res = await fetch(buildApiUrl(`/pages${path}`), {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -69,7 +66,7 @@ export async function adminUploadMedia(
   const token = getAdminToken()
   const fd = new FormData()
   fd.append('file', file)
-  const res = await fetch(`${apiBase()}/api/admin/cms/media/upload`, {
+  const res = await fetch(buildApiUrl('/admin/cms/media/upload'), {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: fd,
