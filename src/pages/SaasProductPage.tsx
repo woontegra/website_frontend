@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Cloud, Database, Lock, Layers, Zap, BarChart3, Users, CreditCard, Code, Activity } from 'lucide-react'
 
 export function SaasProductPage() {
@@ -28,14 +30,10 @@ export function SaasProductPage() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/saas-dashboard.jpg" 
-                  alt="SaaS Dashboard" 
+                <SafeImage
+                  src={siteImages.saasDashboard}
+                  alt="SaaS Dashboard"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-slate-700 to-gray-800 rounded-2xl p-12 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-6xl mb-4">⚡</div><div class="text-2xl font-semibold">SaaS Platform</div></div></div>'
-                  }}
                 />
               </div>
             </div>

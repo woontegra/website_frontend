@@ -38,8 +38,17 @@ interface SiteSettings {
   robotsTxt: string
   googleAnalyticsId: string
   googleTagManagerId: string
+  googleAdsConversionId: string
+  googleAdsConversionLabel: string
+  metaPixelId: string
+  metaTestEventCode: string
+  metaBrowserPixelEnabled: boolean
+  metaConversionsApiEnabled: boolean
+  metaConversionsAccessTokenConfigured?: boolean
+  metaConversionsAccessTokenPreview?: string
   facebookPixelId: string
   tiktokPixelId: string
+  tiktokPixelEnabled: boolean
   hotjarId: string
   customHeadScript: string
   customFooterScript: string
@@ -111,8 +120,15 @@ export function AdminSettingsPage() {
     robotsTxt: '',
     googleAnalyticsId: '',
     googleTagManagerId: '',
+    googleAdsConversionId: '',
+    googleAdsConversionLabel: '',
+    metaPixelId: '',
+    metaTestEventCode: '',
+    metaBrowserPixelEnabled: true,
+    metaConversionsApiEnabled: false,
     facebookPixelId: '',
     tiktokPixelId: '',
+    tiktokPixelEnabled: true,
     hotjarId: '',
     customHeadScript: '',
     customFooterScript: '',
@@ -135,6 +151,8 @@ export function AdminSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordSaving, setPasswordSaving] = useState(false)
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [metaAccessTokenInput, setMetaAccessTokenInput] = useState('')
+  const [clearMetaAccessToken, setClearMetaAccessToken] = useState(false)
 
   useEffect(() => {
     fetchSettings()
@@ -150,7 +168,13 @@ export function AdminSettingsPage() {
       })
       if (response.ok) {
         const data = await response.json()
-        setSettings({ ...settings, ...data })
+        setSettings({
+          ...settings,
+          ...data,
+          metaPixelId: data.metaPixelId || data.facebookPixelId || '',
+        })
+        setMetaAccessTokenInput('')
+        setClearMetaAccessToken(false)
       }
     } catch (error) {
       console.error('Ayarlar yüklenemedi:', error)
@@ -164,16 +188,39 @@ export function AdminSettingsPage() {
     setMessage(null)
     try {
       const API_URL = getApiUrl()
+      const payload: Record<string, unknown> = {
+        ...settings,
+        metaPixelId: settings.metaPixelId,
+        facebookPixelId: settings.metaPixelId,
+      }
+
+      delete payload.metaConversionsAccessTokenConfigured
+      delete payload.metaConversionsAccessTokenPreview
+
+      if (clearMetaAccessToken) {
+        payload.clearMetaConversionsAccessToken = true
+      } else if (metaAccessTokenInput.trim()) {
+        payload.metaConversionsAccessToken = metaAccessTokenInput.trim()
+      }
+
       const response = await fetch(`${API_URL}/api/settings`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('woontegra_token')}`,
         },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {
+        const data = await response.json()
+        setSettings({
+          ...settings,
+          ...data,
+          metaPixelId: data.metaPixelId || data.facebookPixelId || settings.metaPixelId,
+        })
+        setMetaAccessTokenInput('')
+        setClearMetaAccessToken(false)
         setMessage({ type: 'success', text: 'Ayarlar kaydedildi!' })
         setTimeout(() => setMessage(null), 3000)
       } else {
@@ -628,44 +675,177 @@ export function AdminSettingsPage() {
 
       {/* ANALİTİK */}
       <Section id="analytics" icon={BarChart} title="Analitik & Tracking">
-        <div>
-          <label className="label">Google Analytics ID</label>
-          <input
-            type="text"
-            value={settings.googleAnalyticsId}
-            onChange={(e) => setSettings({ ...settings, googleAnalyticsId: e.target.value })}
-            placeholder="G-XXXXXXXXXX"
-            className="input w-full"
-          />
-        </div>
-        <div>
-          <label className="label">Google Tag Manager ID</label>
-          <input
-            type="text"
-            value={settings.googleTagManagerId}
-            onChange={(e) => setSettings({ ...settings, googleTagManagerId: e.target.value })}
-            placeholder="GTM-XXXXXXX"
-            className="input w-full"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="label">Facebook Pixel ID</label>
-            <input
-              type="text"
-              value={settings.facebookPixelId}
-              onChange={(e) => setSettings({ ...settings, facebookPixelId: e.target.value })}
-              className="input w-full"
-            />
+        <div className="space-y-6">
+          <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Google</h3>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="label">Google Analytics Measurement ID</label>
+                <input
+                  type="text"
+                  value={settings.googleAnalyticsId}
+                  onChange={(e) => setSettings({ ...settings, googleAnalyticsId: e.target.value })}
+                  placeholder="G-XXXXXXXXXX"
+                  className="input w-full"
+                />
+              </div>
+              <div>
+                <label className="label">Google Tag Manager ID</label>
+                <input
+                  type="text"
+                  value={settings.googleTagManagerId}
+                  onChange={(e) => setSettings({ ...settings, googleTagManagerId: e.target.value })}
+                  placeholder="GTM-XXXXXXX"
+                  className="input w-full"
+                />
+              </div>
+              <div>
+                <label className="label">Google Ads Conversion ID</label>
+                <input
+                  type="text"
+                  value={settings.googleAdsConversionId}
+                  onChange={(e) => setSettings({ ...settings, googleAdsConversionId: e.target.value })}
+                  placeholder="AW-XXXXXXXXX"
+                  className="input w-full"
+                />
+              </div>
+              <div>
+                <label className="label">Google Ads Conversion Label</label>
+                <input
+                  type="text"
+                  value={settings.googleAdsConversionLabel}
+                  onChange={(e) => setSettings({ ...settings, googleAdsConversionLabel: e.target.value })}
+                  placeholder="AbCdEfGhIjKlMnOpQr"
+                  className="input w-full"
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="label">TikTok Pixel ID</label>
-            <input
-              type="text"
-              value={settings.tiktokPixelId}
-              onChange={(e) => setSettings({ ...settings, tiktokPixelId: e.target.value })}
-              className="input w-full"
-            />
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Meta / Facebook</h3>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="label">Meta Pixel ID</label>
+                <input
+                  type="text"
+                  value={settings.metaPixelId}
+                  onChange={(e) => setSettings({ ...settings, metaPixelId: e.target.value })}
+                  placeholder="123456789012345"
+                  className="input w-full"
+                />
+              </div>
+              <div>
+                <label className="label">Meta Test Event Code</label>
+                <input
+                  type="text"
+                  value={settings.metaTestEventCode}
+                  onChange={(e) => setSettings({ ...settings, metaTestEventCode: e.target.value })}
+                  placeholder="TEST12345"
+                  className="input w-full"
+                />
+                <p className="mt-1 text-xs text-slate-500">Events Manager test modu için kullanılır.</p>
+              </div>
+            </div>
+
+            <div>
+              <label className="label">Meta Conversions API Access Token</label>
+              {settings.metaConversionsAccessTokenConfigured && !clearMetaAccessToken && (
+                <p className="mb-2 text-xs font-medium text-emerald-700">
+                  Token kayıtlı
+                  {settings.metaConversionsAccessTokenPreview
+                    ? ` (${settings.metaConversionsAccessTokenPreview})`
+                    : ''}
+                </p>
+              )}
+              {clearMetaAccessToken && (
+                <p className="mb-2 text-xs font-medium text-amber-700">
+                  Kayıt sonrası token silinecek.
+                </p>
+              )}
+              <input
+                type="password"
+                value={metaAccessTokenInput}
+                onChange={(e) => {
+                  setMetaAccessTokenInput(e.target.value)
+                  setClearMetaAccessToken(false)
+                }}
+                placeholder={
+                  settings.metaConversionsAccessTokenConfigured
+                    ? 'Yeni token girerek güncelleyin'
+                    : 'EAAxxxxxxxx...'
+                }
+                autoComplete="new-password"
+                className="input w-full"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Bu token yalnızca sunucu tarafında kullanılır. Güvenlik nedeniyle kaydedildikten sonra tam değer görüntülenmez.
+              </p>
+              {settings.metaConversionsAccessTokenConfigured && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setClearMetaAccessToken(true)
+                    setMetaAccessTokenInput('')
+                  }}
+                  className="mt-2 text-xs font-medium text-red-600 hover:text-red-700"
+                >
+                  Tokenı temizle
+                </button>
+              )}
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+                <span className="text-sm font-medium text-slate-700">Meta Browser Pixel</span>
+                <input
+                  type="checkbox"
+                  checked={settings.metaBrowserPixelEnabled}
+                  onChange={(e) =>
+                    setSettings({ ...settings, metaBrowserPixelEnabled: e.target.checked })
+                  }
+                  className="h-4 w-4 rounded border-slate-300 text-green-600 focus:ring-green-500"
+                />
+              </label>
+              <label className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+                <span className="text-sm font-medium text-slate-700">Meta Conversions API</span>
+                <input
+                  type="checkbox"
+                  checked={settings.metaConversionsApiEnabled}
+                  onChange={(e) =>
+                    setSettings({ ...settings, metaConversionsApiEnabled: e.target.checked })
+                  }
+                  className="h-4 w-4 rounded border-slate-300 text-green-600 focus:ring-green-500"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">TikTok</h3>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="label">TikTok Pixel ID</label>
+                <input
+                  type="text"
+                  value={settings.tiktokPixelId}
+                  onChange={(e) => setSettings({ ...settings, tiktokPixelId: e.target.value })}
+                  placeholder="CXXXXXXXXXXXXXXX"
+                  className="input w-full"
+                />
+              </div>
+              <label className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5 self-end">
+                <span className="text-sm font-medium text-slate-700">TikTok Pixel Aktif</span>
+                <input
+                  type="checkbox"
+                  checked={settings.tiktokPixelEnabled}
+                  onChange={(e) =>
+                    setSettings({ ...settings, tiktokPixelEnabled: e.target.checked })
+                  }
+                  className="h-4 w-4 rounded border-slate-300 text-green-600 focus:ring-green-500"
+                />
+              </label>
+            </div>
           </div>
         </div>
       </Section>

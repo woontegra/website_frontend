@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, FileText, Search, Shield, Scale, Award, FileCheck } from 'lucide-react'
 
 export function TrademarkPatentPage() {
@@ -28,14 +30,10 @@ export function TrademarkPatentPage() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/trademark-document.jpg" 
-                  alt="Marka Tescil Belgesi" 
+                <SafeImage
+                  src={siteImages.trademarkDocument}
+                  alt="Marka Tescil Belgesi"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-slate-600 to-gray-700 rounded-2xl p-12 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-6xl mb-4">⚖️</div><div class="text-2xl font-semibold">Marka & Patent Tescil</div></div></div>'
-                  }}
                 />
               </div>
             </div>

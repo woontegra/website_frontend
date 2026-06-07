@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight } from 'lucide-react'
 
 export function SolutionsPage() {
@@ -19,14 +21,10 @@ export function SolutionsPage() {
             
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/solutions-system.jpg" 
-                  alt="Dijital Sistemler" 
+                <SafeImage
+                  src={siteImages.solutionsHero}
+                  alt="Dijital Sistemler"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-slate-700 to-gray-800 rounded-3xl p-16 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-7xl mb-6">⚡</div><div class="text-3xl font-semibold">Dijital Yapılar</div></div></div>'
-                  }}
                 />
               </div>
             </div>
@@ -75,14 +73,10 @@ export function SolutionsPage() {
             
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <img 
-                  src="/images/bilirkisi-screenshot.jpg" 
-                  alt="Bilirkişi Hesaplama" 
+                <SafeImage
+                  src={siteImages.bilirkisiHesapHero}
+                  alt="Bilirkişi Hesaplama"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-3xl p-16 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-7xl mb-6">⚖️</div><div class="text-3xl font-semibold">Bilirkişi Hesaplama</div></div></div>'
-                  }}
                 />
               </div>
             </div>
@@ -96,14 +90,10 @@ export function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="relative order-2 lg:order-1">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <img 
-                  src="/images/optimoon-products.jpg" 
-                  alt="Optimoon Ürünleri" 
+                <SafeImage
+                  src={siteImages.optimoonProducts}
+                  alt="Optimoon Ürünleri"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-16 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-7xl mb-6">💎</div><div class="text-3xl font-semibold">Optimoon</div></div></div>'
-                  }}
                 />
               </div>
             </div>
@@ -153,14 +143,10 @@ export function SolutionsPage() {
             
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <img 
-                  src="/images/datca-products.jpg" 
-                  alt="Datça Tropikal Ürünleri" 
+                <SafeImage
+                  src={siteImages.datcaProducts}
+                  alt="Datça Tropikal Ürünleri"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-3xl p-16 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-7xl mb-6">🌿</div><div class="text-3xl font-semibold">Datça Tropikal</div></div></div>'
-                  }}
                 />
               </div>
             </div>
@@ -174,14 +160,10 @@ export function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="relative order-2 lg:order-1">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
-                <img 
-                  src="/images/mercan-services.jpg" 
-                  alt="Mercan Danışmanlık" 
+                <SafeImage
+                  src={siteImages.mercanServices}
+                  alt="Mercan Danışmanlık"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl p-16 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-7xl mb-6">📋</div><div class="text-3xl font-semibold">Mercan Danışmanlık</div></div></div>'
-                  }}
                 />
               </div>
             </div>
@@ -207,39 +189,17 @@ export function SolutionsPage() {
         </div>
       </section>
 
-      {/* YAPI MESAJI */}
-      <section className="py-32 bg-slate-900">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center space-y-10">
-            <h2 className="text-5xl font-bold text-white leading-tight">
-              Sadece Hizmet Değil, Gerçek Sistemler
-            </h2>
-            <div className="space-y-8 text-xl text-gray-300 leading-relaxed">
-              <p>
-                Woontegra, sadece müşteriler için proje geliştiren bir yapı değildir.
-              </p>
-              <p>
-                Kendi markalarını yöneten, kendi sistemlerini test eden ve bu deneyimi projelere yansıtan bir teknoloji yapısıdır.
-              </p>
-              <p className="text-2xl font-semibold text-white">
-                Bu yaklaşım sayesinde geliştirilen çözümler, gerçek kullanım üzerinden şekillenir.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
-      <section className="py-32 bg-gradient-to-br from-slate-800 via-gray-800 to-slate-900">
+      <section className="py-32 bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-5xl font-bold text-white mb-8">
-            Sizin İçin Nasıl Bir Sistem Kuralım?
+            Kendi Dijital Yapınızı Kurmaya Hazır mısınız?
           </h2>
-          <p className="text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
-            İhtiyacınızı anlatın, sizin için en doğru yapıyı birlikte oluşturalım.
+          <p className="text-xl text-gray-300 mb-12">
+            Woontegra ile fikirden canlı ürüne kadar tüm süreci birlikte planlayalım.
           </p>
-          <Button variant="outline" to="/iletisim" className="text-lg px-12 py-4 border-white/30 text-white hover:bg-white hover:text-slate-900 transition-all">
-            İletişime Geç
+          <Button variant="green" to="/teklif-al" className="text-lg px-12 py-4">
+            Teklif Al
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>

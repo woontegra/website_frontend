@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Code, Database, Settings, ShoppingCart, Users, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { defaultSoftwareDevData } from '../data/allPagesData'
@@ -59,9 +61,9 @@ export function SoftwareDevelopmentPage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <img 
-                src={image || "/images/software-dashboard.jpg"}
-                alt="Yazılım Dashboard" 
+              <SafeImage
+                src={image || siteImages.softwareHero}
+                alt="Yazılım Dashboard"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />
             </div>

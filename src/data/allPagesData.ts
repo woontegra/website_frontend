@@ -1,4 +1,5 @@
 import type { PageData } from '../types/sections'
+import { siteImages } from './siteImages'
 
 // ABOUT PAGE - Gerçek içerik
 export const defaultAboutData: PageData = {
@@ -54,10 +55,10 @@ export const defaultAboutData: PageData = {
         title: 'Aktif Olarak Yönettiğimiz Markalar',
         subtitle: 'Woontegra, sadece hizmet sunan bir yapı değil, aynı zamanda kendi markalarını oluşturan ve yöneten bir sistemdir.',
         items: [
-          { name: 'Bilirkişi', description: 'Hukuk ve aktüerya alanında kullanılan profesyonel hesaplama yazılımıdır.', image: '/images/brand-bilirkisi.jpg' },
-          { name: 'Optimoon', description: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır.', image: '/images/brand-optimoon.jpg' },
-          { name: 'Datça Tropikal', description: 'Yerel üretim ve doğal ürünlerin satışını gerçekleştiren markamızdır.', image: '/images/brand-datca.jpg' },
-          { name: 'Mercan Danışmanlık', description: 'Marka tescil ve patent danışmanlık süreçlerini yöneten markamızdır.', image: '/images/brand-mercan.jpg' },
+          { name: 'Bilirkişi', description: 'Hukuk ve aktüerya alanında kullanılan profesyonel hesaplama yazılımıdır.', image: siteImages.brandBilirkisi },
+          { name: 'Optimoon', description: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır.', image: siteImages.brandOptimoon },
+          { name: 'Datça Tropikal', description: 'Yerel üretim ve doğal ürünlerin satışını gerçekleştiren markamızdır.', image: siteImages.brandDatca },
+          { name: 'Mercan Danışmanlık', description: 'Marka tescil ve patent danışmanlık süreçlerini yöneten markamızdır.', image: siteImages.brandMercan },
         ],
       },
     },
@@ -218,10 +219,10 @@ export const defaultSolutionsData: PageData = {
     { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Çözümlerimiz', title: 'Geliştirdiğimiz Dijital Yapılar', subtitle: 'Woontegra sadece hizmet sunmaz, kendi ürünlerini geliştirir ve markalarını aktif olarak yönetir', button1Text: 'Ürünleri İncele', button2Text: 'İletişim' }},
     { id: 'text-1', type: 'text-content', order: 2, data: { title: 'Aktif Projelerimiz', paragraphs: ['Woontegra, yazılım geliştirme ve dijital sistem kurmanın ötesinde, kendi markalarını oluşturan ve yöneten bir yapı kurmuştur.', 'Aşağıda yer alan projeler, aktif olarak geliştirilen ve yönetilen sistemlerdir.'] }},
     { id: 'brands-1', type: 'brands', order: 3, data: { title: 'Ürünlerimiz', subtitle: 'Her biri farklı sektörde deneyim kazandığımız projeler', items: [
-      { name: 'Bilirkişi Hesaplama Programı', description: 'Hukuk ve aktüerya alanında kullanılan profesyonel bir hesaplama yazılımıdır', image: '/images/bilirkisi-screenshot.jpg' },
-      { name: 'Optimoon', description: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır', image: '/images/optimoon-products.jpg' },
-      { name: 'Datça Tropikal', description: 'Datça bölgesine ait doğal ve yerel ürünlerin satışını gerçekleştiren e-ticaret markasıdır', image: '/images/datca-products.jpg' },
-      { name: 'Mercan Danışmanlık', description: 'Marka tescil ve patent başvurularını profesyonel şekilde yöneten danışmanlık markasıdır', image: '/images/mercan-trademark.jpg' },
+      { name: 'Bilirkişi Hesaplama Programı', description: 'Hukuk ve aktüerya alanında kullanılan profesyonel bir hesaplama yazılımıdır', image: siteImages.bilirkisiHesapHero },
+      { name: 'Optimoon', description: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır', image: siteImages.optimoonProducts },
+      { name: 'Datça Tropikal', description: 'Datça bölgesine ait doğal ve yerel ürünlerin satışını gerçekleştiren e-ticaret markasıdır', image: siteImages.datcaProducts },
+      { name: 'Mercan Danışmanlık', description: 'Marka tescil ve patent başvurularını profesyonel şekilde yöneten danışmanlık markasıdır', image: siteImages.mercanServices },
     ]}},
     { id: 'cta-1', type: 'cta', order: 4, data: { title: 'Kendi Dijital Yapınızı Kurmak İster misiniz?', subtitle: 'Sizin için de özel çözümler geliştirebiliriz', buttonText: 'İletişime Geç' }},
   ],
@@ -241,13 +242,13 @@ export const defaultBlogData: PageData = {
         subtitle: 'Dijital dünyada edindiğimiz deneyimleri paylaşıyoruz',
         categories: ['Tümü', 'Yazılım', 'E-Ticaret', 'SaaS', 'Marka & Patent', 'Dijital Büyüme'],
         posts: [
-          { id: '1', slug: 'dijital-donusum-rehberi', title: 'Dijital Dönüşüm Rehberi: İşletmenizi Geleceğe Taşıyın', excerpt: 'Dijital dönüşüm sadece teknoloji değil, iş yapış şeklinizi değiştirmektir.', category: 'Dijital Büyüme', image: '/images/blog/digital-transformation.jpg', date: '20 Mart 2026', featured: true },
-          { id: '2', slug: 'saas-urun-geliştirme-rehberi', title: 'SaaS Ürün Geliştirme Rehberi', excerpt: 'Başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımlar.', category: 'SaaS', image: '/images/blog/saas-guide.jpg', date: '15 Mart 2026' },
-          { id: '3', slug: 'e-ticaret-optimizasyonu', title: 'E-Ticaret Optimizasyonu', excerpt: 'Dönüşüm oranlarını artırmak için uygulanabilir stratejiler.', category: 'E-Ticaret', image: '/images/blog/ecommerce-opt.jpg', date: '12 Mart 2026' },
-          { id: '4', slug: 'marka-tescil-sureci', title: 'Marka Tescil Süreci', excerpt: 'Markanızı koruma altına almak için izlemeniz gereken adımlar.', category: 'Marka & Patent', image: '/images/blog/trademark.jpg', date: '10 Mart 2026' },
-          { id: '5', slug: 'modern-web-teknolojileri', title: 'Modern Web Teknolojileri', excerpt: 'Güncel web geliştirme araçları ve framework seçimi.', category: 'Yazılım', image: '/images/blog/web-tech.jpg', date: '8 Mart 2026' },
-          { id: '6', slug: 'dijital-pazarlama-stratejileri', title: 'Dijital Pazarlama Stratejileri', excerpt: 'Online varlığınızı güçlendirmek için etkili yöntemler.', category: 'Dijital Büyüme', image: '/images/blog/digital-marketing.jpg', date: '5 Mart 2026' },
-          { id: '7', slug: 'api-tasarimi-best-practices', title: 'API Tasarımı Best Practices', excerpt: 'Ölçeklenebilir ve güvenli API geliştirme prensipleri.', category: 'Yazılım', image: '/images/blog/api-design.jpg', date: '3 Mart 2026' },
+          { id: '1', slug: 'dijital-donusum-rehberi', title: 'Dijital Dönüşüm Rehberi: İşletmenizi Geleceğe Taşıyın', excerpt: 'Dijital dönüşüm sadece teknoloji değil, iş yapış şeklinizi değiştirmektir.', category: 'Dijital Büyüme', image: siteImages.blog.digitalTransformation, date: '20 Mart 2026', featured: true },
+          { id: '2', slug: 'saas-urun-geliştirme-rehberi', title: 'SaaS Ürün Geliştirme Rehberi', excerpt: 'Başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımlar.', category: 'SaaS', image: siteImages.blog.saasGuide, date: '15 Mart 2026' },
+          { id: '3', slug: 'e-ticaret-optimizasyonu', title: 'E-Ticaret Optimizasyonu', excerpt: 'Dönüşüm oranlarını artırmak için uygulanabilir stratejiler.', category: 'E-Ticaret', image: siteImages.blog.ecommerceOptimization, date: '12 Mart 2026' },
+          { id: '4', slug: 'marka-tescil-sureci', title: 'Marka Tescil Süreci', excerpt: 'Markanızı koruma altına almak için izlemeniz gereken adımlar.', category: 'Marka & Patent', image: siteImages.blog.trademark, date: '10 Mart 2026' },
+          { id: '5', slug: 'modern-web-teknolojileri', title: 'Modern Web Teknolojileri', excerpt: 'Güncel web geliştirme araçları ve framework seçimi.', category: 'Yazılım', image: siteImages.blog.webTech, date: '8 Mart 2026' },
+          { id: '6', slug: 'dijital-pazarlama-stratejileri', title: 'Dijital Pazarlama Stratejileri', excerpt: 'Online varlığınızı güçlendirmek için etkili yöntemler.', category: 'Dijital Büyüme', image: siteImages.blog.digitalMarketing, date: '5 Mart 2026' },
+          { id: '7', slug: 'api-tasarimi-best-practices', title: 'API Tasarımı Best Practices', excerpt: 'Ölçeklenebilir ve güvenli API geliştirme prensipleri.', category: 'Yazılım', image: siteImages.blog.apiDesign, date: '3 Mart 2026' },
         ]
       }
     },

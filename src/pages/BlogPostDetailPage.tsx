@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Share2, Facebook, Twitter, Linkedin } from 'lucide-react'
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 
 // Mock data - replace with API call
 const blogPost = {
@@ -8,7 +10,7 @@ const blogPost = {
   category: 'SaaS',
   date: '15 Mart 2026',
   readTime: '8 dk okuma',
-  image: '/images/blog/saas-guide.jpg',
+  image: siteImages.blog.saasGuide,
   content: `
     <h2>Giriş</h2>
     <p>SaaS (Software as a Service) ürün geliştirmek, modern yazılım dünyasının en popüler iş modellerinden biridir. Bu rehberde, başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımları ele alacağız.</p>
@@ -44,13 +46,11 @@ export function BlogPostDetailPage() {
     <div className="bg-white">
       {/* HERO IMAGE */}
       <section className="relative h-96 bg-gradient-to-br from-slate-200 to-gray-300">
-        <img
+        <SafeImage
           src={blogPost.image}
           alt={blogPost.title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none'
-          }}
+          className="h-full w-full object-cover"
+          fallbackClassName="h-full w-full min-h-0 rounded-none"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </section>

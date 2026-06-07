@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Eye, Layout, Monitor, Smartphone, TrendingUp, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { defaultWebDesignData } from '../data/allPagesData'
@@ -59,9 +61,9 @@ export function WebDesignPage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <img 
-                src={image || "/images/website-mockup.jpg"}
-                alt="Web Tasarım Örneği" 
+              <SafeImage
+                src={image || siteImages.webDesignHero}
+                alt="Web Tasarım Örneği"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />
             </div>

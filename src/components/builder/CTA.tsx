@@ -2,6 +2,7 @@ import { useNode } from '@craftjs/core'
 import { CTASettings } from './settings/CTASettings'
 import { Button } from '../ui/Button'
 import { ArrowRight } from 'lucide-react'
+import { siteImages } from '../../data/siteImages'
 
 export interface CTAProps {
   title?: string
@@ -16,7 +17,7 @@ export const CTA = ({
   subtitle = 'Uzman ekibimizle tanışın ve dijital dönüşüm yolculuğunuza bugün başlayın',
   buttonText = 'Ücretsiz Görüşme Talep Edin',
   buttonLink = '/iletisim',
-  backgroundImage = '/images/cta-bg.jpg',
+  backgroundImage = siteImages.ctaBackground,
 }: CTAProps) => {
   const {
     connectors: { connect, drag },
@@ -54,7 +55,7 @@ CTA.craft = {
     subtitle: 'Uzman ekibimizle tanışın ve dijital dönüşüm yolculuğunuza bugün başlayın',
     buttonText: 'Ücretsiz Görüşme Talep Edin',
     buttonLink: '/iletisim',
-    backgroundImage: '/images/cta-bg.jpg',
+    backgroundImage: siteImages.ctaBackground,
   },
   related: {
     settings: CTASettings,

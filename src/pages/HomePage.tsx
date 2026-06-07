@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef } from 'react'
 
@@ -49,9 +51,9 @@ export function HomePage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <img 
-                src="/images/hero-dashboard.jpg" 
-                alt="Woontegra Teknoloji" 
+              <SafeImage
+                src={siteImages.homeHero}
+                alt="Woontegra Teknoloji"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />
             </div>
@@ -134,28 +136,28 @@ export function HomePage() {
               {[
                 { 
                   name: 'Bilirkişi', 
-                  image: '/images/brand-bilirkisi.jpg',
+                  image: siteImages.brandBilirkisi,
                   desc: 'Hukuk ve aktüerya alanında kullanılan profesyonel hesaplama yazılımıdır.',
                   gradient: 'from-blue-600 to-purple-600',
                   url: 'https://www.bilirkisihesap.com/'
                 },
                 { 
                   name: 'Optimoon', 
-                  image: '/images/brand-optimoon.jpg',
+                  image: siteImages.brandOptimoon,
                   desc: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır.',
                   gradient: 'from-purple-600 to-pink-600',
                   url: 'https://optimoon.com/'
                 },
                 { 
                   name: 'Datça Tropikal', 
-                  image: '/images/brand-datca.jpg',
+                  image: siteImages.brandDatca,
                   desc: 'Yerel üretim ve doğal ürünlerin satışını gerçekleştiren markamızdır.',
                   gradient: 'from-green-600 to-teal-600',
                   url: 'https://datcatropikal.com/'
                 },
                 { 
                   name: 'Mercan Danışmanlık', 
-                  image: '/images/brand-mercan.jpg',
+                  image: siteImages.brandMercan,
                   desc: 'Marka tescil ve patent danışmanlık süreçlerini yöneten markamızdır.',
                   gradient: 'from-orange-600 to-red-600',
                   url: 'https://mercandanismanlik.com/'
@@ -169,16 +171,11 @@ export function HomePage() {
                   className="group relative bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex-shrink-0 w-[calc(33.333%-16px)] min-w-[300px] snap-start cursor-pointer"
                 >
                   <div className="relative h-72 overflow-hidden bg-slate-100">
-                    <img 
-                      src={brand.image} 
+                    <SafeImage
+                      src={brand.image}
                       alt={brand.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement
-                        target.style.display = 'none'
-                        const parent = target.parentElement!
-                        parent.innerHTML = `<div class="w-full h-full bg-gradient-to-br ${brand.gradient} flex items-center justify-center"><div class="text-white text-center"><div class="text-5xl mb-3">🚀</div><div class="text-2xl font-bold">${brand.name}</div></div></div>`
-                      }}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      fallbackClassName="h-full w-full min-h-0 rounded-none"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   </div>

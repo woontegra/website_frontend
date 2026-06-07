@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, Compass, LineChart, ShoppingBag, Settings, Cpu, TrendingUp } from 'lucide-react'
 
 export function DigitalConsultingPage() {
@@ -28,14 +30,10 @@ export function DigitalConsultingPage() {
             
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src="/images/consulting-dashboard.jpg" 
-                  alt="Dijital Analiz" 
+                <SafeImage
+                  src={siteImages.consultingDashboard}
+                  alt="Dijital Analiz"
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<div class="bg-gradient-to-br from-blue-600 to-teal-600 rounded-2xl p-12 flex items-center justify-center h-96"><div class="text-white text-center"><div class="text-6xl mb-4">📊</div><div class="text-2xl font-semibold">Dijital Danışmanlık</div></div></div>'
-                  }}
                 />
               </div>
             </div>

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 
 // Mock data - replace with API call
 const categories = ['Tümü', 'Yazılım', 'E-Ticaret', 'SaaS', 'Marka & Patent', 'Dijital Büyüme']
@@ -13,7 +15,7 @@ const blogPosts = [
     title: 'SaaS Ürün Geliştirme Rehberi',
     excerpt: 'Başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımlar.',
     category: 'SaaS',
-    image: '/images/blog/saas-guide.jpg',
+    image: siteImages.blog.saasGuide,
     date: '15 Mart 2026',
   },
   {
@@ -22,7 +24,7 @@ const blogPosts = [
     title: 'E-Ticaret Optimizasyonu',
     excerpt: 'Dönüşüm oranlarını artırmak için uygulanabilir stratejiler.',
     category: 'E-Ticaret',
-    image: '/images/blog/ecommerce-opt.jpg',
+    image: siteImages.blog.ecommerceOptimization,
     date: '12 Mart 2026',
   },
   {
@@ -31,7 +33,7 @@ const blogPosts = [
     title: 'Marka Tescil Süreci',
     excerpt: 'Markanızı koruma altına almak için izlemeniz gereken adımlar.',
     category: 'Marka & Patent',
-    image: '/images/blog/trademark.jpg',
+    image: siteImages.blog.trademark,
     date: '10 Mart 2026',
   },
   {
@@ -40,7 +42,7 @@ const blogPosts = [
     title: 'Modern Web Teknolojileri',
     excerpt: 'Güncel web geliştirme araçları ve framework seçimi.',
     category: 'Yazılım',
-    image: '/images/blog/web-tech.jpg',
+    image: siteImages.blog.webTech,
     date: '8 Mart 2026',
   },
   {
@@ -49,7 +51,7 @@ const blogPosts = [
     title: 'Dijital Pazarlama Stratejileri',
     excerpt: 'Online varlığınızı güçlendirmek için etkili yöntemler.',
     category: 'Dijital Büyüme',
-    image: '/images/blog/digital-marketing.jpg',
+    image: siteImages.blog.digitalMarketing,
     date: '5 Mart 2026',
   },
   {
@@ -58,7 +60,7 @@ const blogPosts = [
     title: 'API Tasarımı Best Practices',
     excerpt: 'Ölçeklenebilir ve güvenli API geliştirme prensipleri.',
     category: 'Yazılım',
-    image: '/images/blog/api-design.jpg',
+    image: siteImages.blog.apiDesign,
     date: '3 Mart 2026',
   },
 ]
@@ -68,7 +70,7 @@ const featuredPost = {
   title: 'Dijital Dönüşüm Rehberi: İşletmenizi Geleceğe Taşıyın',
   excerpt: 'Dijital dönüşüm sadece teknoloji değil, iş yapış şeklinizi değiştirmektir. Bu kapsamlı rehberde, işletmenizi dijital çağa hazırlamanın tüm adımlarını bulacaksınız.',
   category: 'Dijital Büyüme',
-  image: '/images/blog/digital-transformation.jpg',
+  image: siteImages.blog.digitalTransformation,
   date: '20 Mart 2026',
 }
 
@@ -128,13 +130,11 @@ export function BlogPage() {
                 className="group bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
               >
                 <div className="aspect-video bg-gradient-to-br from-slate-200 to-gray-300 relative overflow-hidden">
-                  <img
+                  <SafeImage
                     src={post.image}
                     alt={post.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
+                    className="h-full w-full object-cover"
+                    fallbackClassName="h-full w-full min-h-0 rounded-none"
                   />
                 </div>
                 <div className="p-6">
@@ -173,13 +173,11 @@ export function BlogPage() {
           >
             <div className="grid lg:grid-cols-2 gap-0">
               <div className="aspect-video lg:aspect-auto bg-gradient-to-br from-slate-200 to-gray-300 relative overflow-hidden">
-                <img
+                <SafeImage
                   src={featuredPost.image}
                   alt={featuredPost.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                  }}
+                  className="h-full w-full object-cover"
+                  fallbackClassName="h-full w-full min-h-0 rounded-none"
                 />
               </div>
               <div className="p-12 flex flex-col justify-center">

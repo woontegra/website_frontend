@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight, CheckCircle, CreditCard, Package, ShoppingBag, ShoppingCart, Tag, TrendingUp, Truck, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { defaultEcommerceData } from '../data/allPagesData'
@@ -63,9 +65,9 @@ export function EcommercePage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <img 
-                src={image || "/images/ecommerce-screenshot.jpg"}
-                alt="E-Ticaret Sistemi" 
+              <SafeImage
+                src={image || siteImages.ecommerceHero}
+                alt="E-Ticaret Sistemi"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />
             </div>

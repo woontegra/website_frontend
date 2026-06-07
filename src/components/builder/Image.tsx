@@ -1,5 +1,7 @@
 import { useNode } from '@craftjs/core'
 import { ImageSettings } from './settings/ImageSettings'
+import { SafeImage } from '../ui/SafeImage'
+import { siteImages } from '../../data/siteImages'
 
 export interface ImageProps {
   src?: string
@@ -10,7 +12,7 @@ export interface ImageProps {
 }
 
 export const Image = ({
-  src = '/images/hero-dashboard.jpg',
+  src = siteImages.homeHero,
   alt = 'Image',
   width = '100%',
   height = 'auto',
@@ -31,9 +33,10 @@ export const Image = ({
         overflow: 'hidden',
       }}
     >
-      <img
+      <SafeImage
         src={src}
         alt={alt}
+        className="w-full"
         style={{
           width: '100%',
           height,
@@ -47,7 +50,7 @@ export const Image = ({
 Image.craft = {
   displayName: 'Image',
   props: {
-    src: '/images/hero-dashboard.jpg',
+    src: siteImages.homeHero,
     alt: 'Image',
     width: '100%',
     height: 'auto',

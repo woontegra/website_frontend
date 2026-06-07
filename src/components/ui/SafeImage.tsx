@@ -1,0 +1,47 @@
+import { useState } from 'react'
+import { ImageOff } from 'lucide-react'
+
+type SafeImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
+  src?: string | null
+  alt: string
+  fallbackClassName?: string
+  fallbackText?: string
+}
+
+export function SafeImage({
+  src,
+  alt,
+  className = '',
+  fallbackClassName = '',
+  fallbackText = 'Görsel hazırlanıyor',
+  onError,
+  ...props
+}: SafeImageProps) {
+  const [hasError, setHasError] = useState(false)
+
+  if (!src || hasError) {
+    return (
+      <div
+        className={`flex min-h-[120px] flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-8 text-center text-slate-500 ${fallbackClassName || className}`}
+        role="img"
+        aria-label={alt || fallbackText}
+      >
+        <ImageOff className="h-8 w-8 shrink-0 opacity-60" aria-hidden />
+        <span className="text-sm font-medium">{fallbackText}</span>
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={(event) => {
+        setHasError(true)
+        onError?.(event)
+      }}
+      {...props}
+    />
+  )
+}

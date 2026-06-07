@@ -1,4 +1,6 @@
 import { Button } from '../components/ui/Button'
+import { SafeImage } from '../components/ui/SafeImage'
+import { siteImages } from '../data/siteImages'
 import { ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { defaultAboutData } from '../data/allPagesData'
@@ -54,9 +56,9 @@ export function AboutPage() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <img 
-                src={image || "/images/about-hero.jpg"}
-                alt="Hakkımızda" 
+              <SafeImage
+                src={image || siteImages.aboutHero}
+                alt="Hakkımızda"
                 className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
               />
             </div>
@@ -178,13 +180,10 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-blue-600 to-purple-600">
-                  <img 
-                    src="/images/brand-bilirkisi.jpg" 
+                  <SafeImage
+                    src={siteImages.brandBilirkisi}
                     alt="Bilirkişi"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
                   />
                 </div>
                 <div className="p-8 flex flex-col justify-center">
@@ -213,13 +212,10 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="lg:order-2 relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-purple-600 to-pink-600">
-                  <img 
-                    src="/images/brand-optimoon.jpg" 
+                  <SafeImage
+                    src={siteImages.brandOptimoon}
                     alt="Optimoon"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
                   />
                 </div>
                 <div className="lg:order-1 p-8 flex flex-col justify-center">
@@ -248,13 +244,10 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-green-600 to-teal-600">
-                  <img 
-                    src="/images/brand-datca.jpg" 
+                  <SafeImage
+                    src={siteImages.brandDatca}
                     alt="Datça Tropikal"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
                   />
                 </div>
                 <div className="p-8 flex flex-col justify-center">
@@ -283,13 +276,10 @@ export function AboutPage() {
             >
               <div className="grid lg:grid-cols-2 gap-0">
                 <div className="lg:order-2 relative h-64 lg:h-auto overflow-hidden bg-gradient-to-br from-orange-600 to-red-600">
-                  <img 
-                    src="/images/brand-mercan.jpg" 
+                  <SafeImage
+                    src={siteImages.brandMercan}
                     alt="Mercan Danışmanlık"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
                   />
                 </div>
                 <div className="lg:order-1 p-8 flex flex-col justify-center">
