@@ -1,7 +1,9 @@
 import { Outlet } from 'react-router-dom'
+import { ScrollToTop } from '../components/ScrollToTop'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { MaintenancePage } from '../pages/MaintenancePage'
+import { CookieConsentBanner } from '../components/cookie/CookieConsentBanner'
 import { SiteTracking } from '../components/tracking/SiteTracking'
 import { SiteSettingsProvider } from '../contexts/SiteSettingsContext'
 import { SURFACE_PAGE_ROOT } from '../lib/sectionSurfaces'
@@ -27,11 +29,13 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <SiteSettingsProvider>
+      <ScrollToTop />
       <div className="flex min-h-screen flex-col bg-white">
         <SiteTracking />
         <Navbar />
         <main className={`w-full flex-1 ${SURFACE_PAGE_ROOT}`}>{children ?? <Outlet />}</main>
         <Footer />
+        <CookieConsentBanner />
       </div>
     </SiteSettingsProvider>
   )

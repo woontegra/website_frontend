@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Edit, Save, RotateCcw } from 'lucide-react'
-import type { PageData, PageSection } from '../../types/sections'
+import type { PageData, PageSection, SectionType } from '../../types/sections'
 import {
   fetchPageSections,
   readLegacyPageSections,
@@ -12,10 +12,28 @@ interface PageSectionsProps {
   pageSlug: string
   defaultData: PageData
   storageKey: string
+  excludeSectionTypes?: SectionType[]
+  topNotice?: ReactNode
 }
 
-export function PageSections({ pageSlug, defaultData, storageKey }: PageSectionsProps) {
-  const [pageData, setPageData] = useState<PageData>(defaultData)
+function withoutExcludedSections(data: PageData, excludeSectionTypes: SectionType[] = []): PageData {
+  if (!excludeSectionTypes.length) return data
+  const excluded = new Set(excludeSectionTypes)
+  return {
+    ...data,
+    sections: data.sections.filter((section) => !excluded.has(section.type)),
+  }
+}
+
+export function PageSections({
+  pageSlug,
+  defaultData,
+  storageKey,
+  excludeSectionTypes = [],
+  topNotice,
+}: PageSectionsProps) {
+  const sanitizedDefault = withoutExcludedSections(defaultData, excludeSectionTypes)
+  const [pageData, setPageData] = useState<PageData>(sanitizedDefault)
   const [editingSection, setEditingSection] = useState<PageSection | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [loading, setLoading] = useState(true)
@@ -48,20 +66,20 @@ export function PageSections({ pageSlug, defaultData, storageKey }: PageSections
       if (cancelled) return
 
       if (fromApi) {
-        setPageData(fromApi)
+        setPageData(withoutExcludedSections(fromApi, excludeSectionTypes))
         setLoading(false)
         return
       }
 
       const legacy = readLegacyPageSections(storageKey)
       if (legacy) {
-        setPageData(legacy)
+        setPageData(withoutExcludedSections(legacy, excludeSectionTypes))
         setMessage({
           type: 'success',
           text: 'Eski tarayıcı kaydı yüklendi. Kalıcı kayıt için "Tümünü Kaydet"e basın.',
         })
       } else {
-        setPageData(defaultData)
+        setPageData(sanitizedDefault)
       }
       setLoading(false)
     }
@@ -70,26 +88,26 @@ export function PageSections({ pageSlug, defaultData, storageKey }: PageSections
     return () => {
       cancelled = true
     }
-  }, [pageSlug, storageKey, defaultData])
+  }, [pageSlug, storageKey, sanitizedDefault, excludeSectionTypes])
 
   const handleSaveSection = async (updatedSection: PageSection) => {
     const newSections = pageData.sections.map((section) =>
       section.id === updatedSection.id ? updatedSection : section,
     )
-    const newPageData = { ...pageData, sections: newSections }
+    const newPageData = withoutExcludedSections({ ...pageData, sections: newSections }, excludeSectionTypes)
     const ok = await persist(newPageData, 'Bölüm sunucuya kaydedildi!')
     if (ok) setEditingSection(null)
   }
 
   const handleSaveAll = async () => {
-    await persist(pageData, 'Tüm değişiklikler sunucuya kaydedildi!')
+    await persist(withoutExcludedSections(pageData, excludeSectionTypes), 'Tüm değişiklikler sunucuya kaydedildi!')
   }
 
   const handleReset = async () => {
     if (!confirm('Tüm değişiklikler silinecek ve varsayılan içerik yüklenecek. Emin misiniz?')) {
       return
     }
-    await persist(defaultData, 'Varsayılan içerik kaydedildi!')
+    await persist(sanitizedDefault, 'Varsayılan içerik kaydedildi!')
   }
 
   const getSectionIcon = (type: string) => {
@@ -205,6 +223,8 @@ export function PageSections({ pageSlug, defaultData, storageKey }: PageSections
           {message.text}
         </div>
       ) : null}
+
+      {topNotice}
 
       <div className="grid gap-3">
         {pageData.sections

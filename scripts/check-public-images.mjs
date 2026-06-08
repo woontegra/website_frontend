@@ -59,9 +59,16 @@ for (const match of frontendImagesSource.matchAll(assetImportPattern)) {
 
 const errors = []
 
-const logoPath = join(rootDir, 'public', 'logo.svg')
-const logoError = validateAsset(logoPath, 'Header logosu (public/logo.svg)')
-if (logoError) errors.push(logoError)
+const headerLogoPath = join(rootDir, 'src', 'assets', 'logos', 'woontegra-logo.png')
+const headerLogoError = validateAsset(headerLogoPath, 'Header logosu (src/assets/logos/woontegra-logo.png)')
+if (headerLogoError) errors.push(headerLogoError)
+
+const sifreKasasiShotPath = join(rootDir, 'src', 'assets', 'images', 'woontegra-sifre-kasasi-ekran.png')
+const sifreKasasiShotError = validateAsset(
+  sifreKasasiShotPath,
+  'Şifre Kasası ekran görüntüsü (src/assets/images/woontegra-sifre-kasasi-ekran.png)',
+)
+if (sifreKasasiShotError) errors.push(sifreKasasiShotError)
 
 for (const relImport of assetImports) {
   const filePath = join(rootDir, 'src', relImport.replace(/^\.\.\//, ''))
@@ -87,5 +94,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Görsel dosyaları hazır: public logo.svg, ${assetImports.size} frontend asset, ${paths.size} public path doğrulandı.`,
+  `Görsel dosyaları hazır: header woontegra-logo.png, ${assetImports.size} frontend asset, ${paths.size} public path doğrulandı.`,
 )

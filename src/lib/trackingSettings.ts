@@ -1,4 +1,5 @@
 import { getApiBase } from '../config/api'
+import { getCookieConsent } from './cookieConsent'
 
 export type PublicTrackingSettings = {
   googleAnalyticsId: string
@@ -25,9 +26,19 @@ const EMPTY: PublicTrackingSettings = {
 let cached: PublicTrackingSettings | null = null
 let inflight: Promise<PublicTrackingSettings> | null = null
 
-/** İleride çerez onayı buraya bağlanacak; şimdilik mevcut davranış: doğrudan yükle. */
 export function canLoadAnalytics(): boolean {
-  return true
+  const consent = getCookieConsent()
+  return consent?.analytics === true
+}
+
+export function canLoadMarketing(): boolean {
+  const consent = getCookieConsent()
+  return consent?.marketing === true
+}
+
+export function canLoadFunctional(): boolean {
+  const consent = getCookieConsent()
+  return consent?.functional === true
 }
 
 export async function fetchTrackingSettings(): Promise<PublicTrackingSettings> {

@@ -1,42 +1,49 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { mainNav } from '../../data/navigation'
-import { fetchPublicMenu, type PublicMenuItem } from '../../api/menus'
+import { useMenuItems, type MenuItemConfig } from '../../hooks/useMenuItems'
 import { Button } from '../ui/Button'
-import {
-  HEADER_LOGO_ALT,
-  HEADER_LOGO_HEIGHT,
-  HEADER_LOGO_SRC,
-  HEADER_LOGO_WIDTH,
-} from '../../config/siteLogo'
+import { SiteLogo } from '../ui/SiteLogo'
 
 const NAV_CONTAINER_CLASS = 'mx-auto max-w-[1280px] px-4 sm:px-5 min-[1200px]:px-6'
 
-function NavItem({ href, label, active, onClick }: { href: string; label: string; active: boolean; onClick?: () => void }) {
+function NavLinkItem({
+  item,
+  active,
+  onClick,
+}: {
+  item: MenuItemConfig
+  active: boolean
+  onClick?: () => void
+}) {
   const cls = `whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
     active ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
   }`
-  if (href.startsWith('http')) {
+  if (item.href.startsWith('http')) {
     return (
-      <a href={href} className={cls} onClick={onClick} target="_blank" rel="noopener noreferrer">
-        {label}
+      <a
+        href={item.href}
+        className={cls}
+        onClick={onClick}
+        target={item.openInNewTab ? '_blank' : undefined}
+        rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+      >
+        {item.label}
       </a>
     )
   }
   return (
-    <Link to={href} className={cls} onClick={onClick}>
-      {label}
+    <Link to={item.href} className={cls} onClick={onClick}>
+      {item.label}
     </Link>
   )
 }
 
 export function Navbar() {
-  const [logoFailed, setLogoFailed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
-  const [cmsNav, setCmsNav] = useState<PublicMenuItem[] | null>(null)
+  const { items: navItems, headerButtons } = useMenuItems()
   const location = useLocation()
 
   useEffect(() => {
@@ -45,18 +52,152 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => {
-    fetchPublicMenu('header').then((items) => {
-      setCmsNav(items.length > 0 ? items : null)
-    })
-  }, [])
-
-  const onLogoError = useCallback(() => setLogoFailed(true), [])
-
   const isActive = (href: string) => {
     if (href === '/' || href === '#') return location.pathname === '/'
     if (href.startsWith('http')) return false
     return location.pathname === href || location.pathname.startsWith(`${href}/`)
+  }
+
+  const renderDesktopItem = (item: MenuItemConfig) => {
+    const hasChildren = item.children && item.children.length > 0
+    if (hasChildren) {
+      return (
+        <div
+          key={item.id}
+          className="relative"
+          onMouseEnter={() => setMegaOpen(item.id)}
+          onMouseLeave={() => setMegaOpen(null)}
+        >
+          <button
+            type="button"
+            className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors cursor-default ${
+              isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
+            }`}
+          >
+            {item.label}
+          </button>
+          {megaOpen === item.id && (
+            <div className="absolute left-0 top-full pt-1">
+              <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
+                {item.children!.map((child) => (
+                  <Link
+                    key={child.id}
+                    to={child.href}
+                    className={`block px-4 py-2.5 text-sm transition-colors ${
+                      isActive(child.href)
+                        ? 'bg-accent-blue-soft/50 text-accent-blue'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                    onClick={() => setMegaOpen(null)}
+                    target={child.openInNewTab ? '_blank' : undefined}
+                    rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    if (item.href.startsWith('http')) {
+      return (
+        <a
+          key={item.id}
+          href={item.href}
+          className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
+            isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
+          }`}
+          target={item.openInNewTab ? '_blank' : undefined}
+          rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+        >
+          {item.label}
+        </a>
+      )
+    }
+
+    return (
+      <Link
+        key={item.id}
+        to={item.href}
+        className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
+          isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
+        }`}
+      >
+        {item.label}
+      </Link>
+    )
+  }
+
+  const renderMobileItem = (item: MenuItemConfig) => {
+    const hasChildren = item.children && item.children.length > 0
+    if (hasChildren) {
+      return (
+        <div key={item.id}>
+          <button
+            type="button"
+            onClick={() => setMobileSubmenuOpen(mobileSubmenuOpen === item.id ? null : item.id)}
+            className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium ${
+              isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
+            }`}
+          >
+            <span>{item.label}</span>
+            <svg
+              className={`h-4 w-4 transition-transform ${mobileSubmenuOpen === item.id ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {mobileSubmenuOpen === item.id && (
+            <div className="animate-fade-in">
+              {item.children!.map((child) => (
+                <Link
+                  key={child.id}
+                  to={child.href}
+                  className="block py-2 pl-8 pr-4 text-sm text-slate-600 hover:text-slate-900"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    if (item.href.startsWith('http')) {
+      return (
+        <a
+          key={item.id}
+          href={item.href}
+          className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-700"
+          onClick={() => setMobileOpen(false)}
+          target={item.openInNewTab ? '_blank' : undefined}
+          rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+        >
+          {item.label}
+        </a>
+      )
+    }
+
+    return (
+      <Link
+        key={item.id}
+        to={item.href}
+        className={`block rounded-lg px-4 py-3 text-sm font-medium ${
+          isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
+        }`}
+        onClick={() => setMobileOpen(false)}
+      >
+        {item.label}
+      </Link>
+    )
   }
 
   return (
@@ -68,90 +209,36 @@ export function Navbar() {
       }`}
     >
       <div className={NAV_CONTAINER_CLASS}>
-        <div className="flex min-h-[4.5rem] items-center justify-between gap-2 py-1.5 min-[1200px]:min-h-[5rem] min-[1200px]:gap-3">
+        <div className="flex items-center justify-between gap-2 py-2 min-[1200px]:gap-3">
           <Link
             to="/"
-            className="flex max-w-[200px] shrink-0 items-center min-[1200px]:max-w-[260px]"
+            className="flex shrink-0 items-center"
             aria-label="Woontegra Ana Sayfa"
           >
-            {!logoFailed ? (
-              <img
-                src={HEADER_LOGO_SRC}
-                alt={HEADER_LOGO_ALT}
-                width={HEADER_LOGO_WIDTH}
-                height={HEADER_LOGO_HEIGHT}
-                className="block h-14 w-[180px] max-w-full object-contain object-left min-[1200px]:h-[4.25rem]"
-                loading="eager"
-                fetchPriority="high"
-                decoding="sync"
-                onError={onLogoError}
-              />
-            ) : null}
+            <SiteLogo placement="navbar" />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">
-            {cmsNav
-              ? cmsNav.map((item) => (
-                  <NavItem key={item.id} href={item.href} label={item.label} active={isActive(item.href)} />
-                ))
-              : mainNav.map((item) => (
-                  <div
-                    key={item.href}
-                    className="relative"
-                    onMouseEnter={() => item.children && setMegaOpen(item.href)}
-                    onMouseLeave={() => setMegaOpen(null)}
-                  >
-                    {item.children ? (
-                      <>
-                        <button
-                          className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors cursor-default ${
-                            isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                        {megaOpen === item.href && (
-                          <div className="absolute left-0 top-full pt-1">
-                            <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
-                              {item.children.map((child) => (
-                                <Link
-                                  key={child.href}
-                                  to={child.href}
-                                  className={`block px-4 py-2.5 text-sm transition-colors ${
-                                    isActive(child.href)
-                                      ? 'bg-accent-blue-soft/50 text-accent-blue'
-                                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                                  }`}
-                                  onClick={() => setMegaOpen(null)}
-                                >
-                                  {child.label}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <Link
-                        to={item.href}
-                        className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
-                          isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    )}
-                  </div>
-                ))}
+            {navItems.map(renderDesktopItem)}
           </nav>
 
           <div className="hidden shrink-0 items-center gap-1.5 min-[1200px]:flex">
-            <Button variant="ghost" size="sm" to="/teklif-al" className="whitespace-nowrap !px-3.5 !py-2 text-[14px]">
-              Teklif Al
-            </Button>
-            <Button size="sm" to="/iletisim" className="whitespace-nowrap !px-3.5 !py-2 text-[14px]">
-              İletişim
-            </Button>
+            {headerButtons.map((btn, index) =>
+              btn.isButton ? (
+                <Button
+                  key={btn.id}
+                  variant={index === 0 ? 'ghost' : 'primary'}
+                  size="sm"
+                  to={btn.href.startsWith('http') ? undefined : btn.href}
+                  href={btn.href.startsWith('http') ? btn.href : undefined}
+                  className="whitespace-nowrap !px-3.5 !py-2 text-[14px]"
+                >
+                  {btn.label}
+                </Button>
+              ) : (
+                <NavLinkItem key={btn.id} item={btn} active={isActive(btn.href)} />
+              ),
+            )}
           </div>
 
           <button
@@ -173,71 +260,21 @@ export function Navbar() {
         {mobileOpen && (
           <div className="animate-fade-in border-t border-gray-200 py-4 min-[1200px]:hidden">
             <nav className="flex flex-col gap-1">
-              {cmsNav
-                ? cmsNav.map((item) => (
-                    <NavItem
-                      key={item.id}
-                      href={item.href}
-                      label={item.label}
-                      active={isActive(item.href)}
-                      onClick={() => setMobileOpen(false)}
-                    />
-                  ))
-                : mainNav.map((item) => (
-                    <div key={item.href}>
-                      {item.children && item.children.length > 0 ? (
-                        <>
-                          <button
-                            onClick={() => setMobileSubmenuOpen(mobileSubmenuOpen === item.href ? null : item.href)}
-                            className={`w-full flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium ${
-                              isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
-                            }`}
-                          >
-                            <span>{item.label}</span>
-                            <svg
-                              className={`w-4 h-4 transition-transform ${mobileSubmenuOpen === item.href ? 'rotate-180' : ''}`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-                          {mobileSubmenuOpen === item.href && (
-                            <div className="animate-fade-in">
-                              {item.children.map((child) => (
-                                <Link
-                                  key={child.href}
-                                  to={child.href}
-                                  className="block py-2 pl-8 pr-4 text-sm text-slate-600 hover:text-slate-900"
-                                  onClick={() => setMobileOpen(false)}
-                                >
-                                  {child.label}
-                                </Link>
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <Link
-                          to={item.href}
-                          className={`block rounded-lg px-4 py-3 text-sm font-medium ${
-                            isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
-                          }`}
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          {item.label}
-                        </Link>
-                      )}
-                    </div>
-                  ))}
+              {navItems.map(renderMobileItem)}
               <div className="mt-4 flex gap-2 border-t border-gray-200 px-4 pt-4">
-                <Button variant="outline" size="sm" to="/teklif-al" className="flex-1">
-                  Teklif Al
-                </Button>
-                <Button size="sm" to="/iletisim" className="flex-1">
-                  İletişim
-                </Button>
+                {headerButtons.map((btn, index) => (
+                  <Button
+                    key={btn.id}
+                    variant={index === 0 ? 'outline' : 'primary'}
+                    size="sm"
+                    to={btn.href.startsWith('http') ? undefined : btn.href}
+                    href={btn.href.startsWith('http') ? btn.href : undefined}
+                    className="flex-1"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {btn.label}
+                  </Button>
+                ))}
               </div>
             </nav>
           </div>

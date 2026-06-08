@@ -1,10 +1,12 @@
 import { WOONTEGRA_META_PIXEL_FALLBACK } from '../config/tracking'
+import { canLoadMarketing } from './trackingSettings'
 import { fetchTrackingSettings } from './trackingSettings'
 
 declare global {
   interface Window {
     fbq?: FbqFunction
     _fbq?: FbqFunction
+    __woontegraMetaPixelId?: string
   }
 }
 
@@ -45,37 +47,47 @@ function bootstrapFbq(): void {
   }
 }
 
+/**
+ * Meta Pixel ID çözümleme önceliği:
+ * 1. GET /api/settings/tracking → metaPixelId (admin panel)
+ * 2. VITE_META_PIXEL_ID (yalnızca API boşsa)
+ * 3. WOONTEGRA_META_PIXEL_FALLBACK (son çare)
+ */
 export async function resolveMetaPixelId(): Promise<string> {
-  const envPixel = import.meta.env.VITE_META_PIXEL_ID?.trim()
-  if (envPixel) return envPixel
-
   try {
     const settings = await fetchTrackingSettings()
-    if (settings.metaBrowserPixelEnabled !== false && settings.metaPixelId) {
-      return settings.metaPixelId
-    }
+    if (settings.metaBrowserPixelEnabled === false) return ''
+    if (settings.metaPixelId) return settings.metaPixelId
   } catch {
-    /* API yoksa fallback */
+    /* API yoksa env/fallback */
   }
+
+  const envPixel = import.meta.env.VITE_META_PIXEL_ID?.trim()
+  if (envPixel) return envPixel
 
   return WOONTEGRA_META_PIXEL_FALLBACK
 }
 
 export function initMetaPixel(pixelId: string): boolean {
-  if (!pixelId || initializedPixelId === pixelId) return false
+  if (!pixelId || !canLoadMarketing() || initializedPixelId === pixelId) return false
 
   bootstrapFbq()
   window.fbq?.('init', pixelId)
   window.fbq?.('track', 'PageView')
   initializedPixelId = pixelId
+  window.__woontegraMetaPixelId = pixelId
   return true
 }
 
 export function trackMetaPageView(): void {
-  if (!initializedPixelId || !window.fbq) return
+  if (!canLoadMarketing() || !initializedPixelId || !window.fbq) return
   window.fbq('track', 'PageView')
 }
 
 export function isMetaPixelInitialized(): boolean {
   return initializedPixelId !== null
+}
+
+export function getInitializedMetaPixelId(): string | null {
+  return initializedPixelId
 }

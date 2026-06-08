@@ -1,56 +1,190 @@
 import { ContactForm } from '../components/forms/ContactForm'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { PageHero } from '../components/page/PageHero'
+import { CTASection } from '../components/page/CTASection'
+import { SectionHeader } from '../components/ui/SectionHeader'
+import { defaultContactData } from '../data/allPagesData'
+import { formatCompanyAddress } from '../data/legalCompanyInfo'
+import { frontendImages } from '../data/frontendImages'
+import { useHeroSection } from '../hooks/useHeroSection'
+import { useLegalCompanyInfo } from '../hooks/useLegalCompanyInfo'
+import { usePageSection } from '../hooks/usePageSection'
+import { buildWhatsAppUrl, formatPhoneForTel } from '../lib/companyContact'
+import { LAYOUT_CONTAINER_CLASS } from '../lib/layoutConstants'
+import { Mail, MapPin, MessageSquare, Phone, Wrench } from 'lucide-react'
+import { SURFACE_MUTED } from '../lib/sectionSurfaces'
+import type { ContactFormSectionData } from '../types/sections'
+
+const SUPPORT_TOPICS = [
+  { icon: Wrench, title: 'Yazılım & Web Projeleri', desc: 'Kurumsal site, özel yazılım ve SaaS geliştirme talepleri.' },
+  { icon: MessageSquare, title: 'E-Ticaret & Operasyon', desc: 'Mağaza kurulumu, entegrasyon ve dijital operasyon süreçleri.' },
+  { icon: Mail, title: 'Danışmanlık & Destek', desc: 'Strateji, süreç iyileştirme ve mevcut sistem desteği.' },
+] as const
 
 export function ContactPage() {
-  const email = localStorage.getItem('contact_email') || 'info@woontegra.com'
-  const phone = localStorage.getItem('contact_phone') || '0531 586 17 55'
-  const address = localStorage.getItem('contact_address') || 'İskele Mahallesi Bademli Caddesi 43/6 Datça-Muğla'
+  const company = useLegalCompanyInfo()
+  const { heroData } = useHeroSection('contact', defaultContactData)
+  const { data: contactForm } = usePageSection<ContactFormSectionData>('contact', 'contact-form', defaultContactData)
+
+  const email = company.email?.trim()
+  const phone = company.phone?.trim()
+  const address = formatCompanyAddress(company) || company.address?.trim()
+  const whatsappUrl = company.whatsapp?.trim() ? buildWhatsAppUrl(company.whatsapp) : null
+
+  const contactCards = [
+    email
+      ? {
+          key: 'email',
+          title: 'E-posta',
+          value: email,
+          href: `mailto:${email}`,
+          icon: Mail,
+          iconClass: 'bg-blue-50 text-blue-600',
+          valueClass: 'text-emerald-700',
+        }
+      : null,
+    phone
+      ? {
+          key: 'phone',
+          title: 'Telefon',
+          value: phone,
+          href: `tel:${formatPhoneForTel(phone)}`,
+          icon: Phone,
+          iconClass: 'bg-emerald-50 text-emerald-600',
+          valueClass: 'text-emerald-700',
+        }
+      : null,
+    whatsappUrl
+      ? {
+          key: 'whatsapp',
+          title: 'WhatsApp',
+          value: company.whatsapp,
+          href: whatsappUrl,
+          icon: MessageSquare,
+          iconClass: 'bg-green-50 text-green-600',
+          valueClass: 'text-emerald-700',
+        }
+      : null,
+    address
+      ? {
+          key: 'address',
+          title: 'Adres',
+          value: address,
+          href: null,
+          icon: MapPin,
+          iconClass: 'bg-violet-50 text-violet-600',
+          valueClass: 'text-slate-600 leading-relaxed',
+        }
+      : null,
+  ].filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">İletişim</h1>
-          <p className="text-lg text-gray-600">
-            Projeleriniz için bizimle iletişime geçin. Size en kısa sürede dönüş yapacağız.
-          </p>
-        </div>
+    <div className="bg-white">
+      <PageHero
+        eyebrow={heroData?.tag || 'İletişim'}
+        title={heroData?.title || 'Projenizi Konuşalım'}
+        description={
+          heroData?.subtitle ||
+          'Yazılım, e-ticaret veya dijital operasyon ihtiyaçlarınız için ekibimiz size en kısa sürede dönüş yapar.'
+        }
+        image={frontendImages.pages.contact}
+        imageAlt="Woontegra iletişim"
+        highlights={[{ title: 'Hızlı geri dönüş' }, { title: 'Ücretsiz ön değerlendirme' }]}
+      />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-6 h-6 text-blue-600" />
+      {contactCards.length > 0 ? (
+        <section className={`${SURFACE_MUTED} py-20 md:py-24`}>
+          <div className={LAYOUT_CONTAINER_CLASS}>
+            <div
+              className={`grid gap-6 ${
+                contactCards.length >= 4
+                  ? 'md:grid-cols-2 xl:grid-cols-4'
+                  : contactCards.length === 3
+                    ? 'md:grid-cols-3'
+                    : 'md:grid-cols-2'
+              }`}
+            >
+              {contactCards.map((card) => {
+                const Icon = card!.icon
+                const inner = (
+                  <>
+                    <div
+                      className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${card!.iconClass}`}
+                    >
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-semibold text-slate-900">{card!.title}</h3>
+                    <p className={`mt-2 text-sm ${card!.valueClass}`}>{card!.value}</p>
+                  </>
+                )
+
+                if (card!.href) {
+                  return (
+                    <a
+                      key={card!.key}
+                      href={card!.href}
+                      className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition hover:border-emerald-200 hover:shadow-md"
+                      target={card!.href.startsWith('http') ? '_blank' : undefined}
+                      rel={card!.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    >
+                      {inner}
+                    </a>
+                  )
+                }
+
+                return (
+                  <div key={card!.key} className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                    {inner}
+                  </div>
+                )
+              })}
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">E-posta</h3>
-            <a href={`mailto:${email}`} className="text-blue-600 hover:underline">
-              {email}
-            </a>
           </div>
+        </section>
+      ) : null}
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Phone className="w-6 h-6 text-green-600" />
+      <section className="py-20 md:py-24">
+        <div className={LAYOUT_CONTAINER_CLASS}>
+          <div className="grid gap-12 lg:grid-cols-5">
+            <div className="lg:col-span-3">
+              <SectionHeader
+                eyebrow="Form"
+                title={contactForm?.title || 'Mesaj Gönderin'}
+                subtitle={contactForm?.subtitle || 'Projenizi kısaca anlatın; size uygun çözümü birlikte planlayalım.'}
+                centered={false}
+              />
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-10">
+                <ContactForm />
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Telefon</h3>
-            <a href={`tel:${phone.replace(/\s/g, '')}`} className="text-green-600 hover:underline">
-              {phone}
-            </a>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MapPin className="w-6 h-6 text-purple-600" />
+            <div className="lg:col-span-2">
+              <SectionHeader
+                eyebrow="Destek"
+                title="Çalışma Alanları"
+                subtitle="Hangi konularda destek veriyoruz?"
+                centered={false}
+              />
+              <div className="space-y-4">
+                {SUPPORT_TOPICS.map((topic) => (
+                  <div key={topic.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <topic.icon className="mb-3 h-6 w-6 text-emerald-600" aria-hidden />
+                    <h3 className="font-semibold text-slate-900">{topic.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-slate-600">{topic.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Adres</h3>
-            <p className="text-gray-600">{address}</p>
           </div>
         </div>
+      </section>
 
-        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Mesaj Gönderin</h2>
-          <ContactForm />
-        </div>
-      </div>
+      <CTASection
+        title="Teklif almak ister misiniz?"
+        description="Proje kapsamınızı paylaşın; size özel bir yol haritası ve teklif hazırlayalım."
+        buttonText="Teklif Al"
+        buttonTo="/teklif-al"
+        secondaryButtonText="SSS"
+        secondaryButtonTo="/sss"
+      />
     </div>
   )
 }

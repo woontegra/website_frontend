@@ -9,7 +9,7 @@ import { TextContentEditor } from './sections/TextContentEditor'
 import { ContactInfoEditor } from './sections/ContactInfoEditor'
 import { ServiceFeaturesEditor } from './sections/ServiceFeaturesEditor'
 import { FAQEditor } from './sections/FAQEditor'
-import { BlogPostsEditor } from './sections/BlogPostsEditor'
+import { BlogPostsManageNotice } from './BlogPostsManageNotice'
 
 interface SectionEditorModalProps {
   section: PageSection
@@ -80,7 +80,7 @@ export function SectionEditorModal({ section, onSave, onClose }: SectionEditorMo
       case 'faq-list':
         return <FAQEditor data={editedData as any} onChange={setEditedData} />
       case 'blog-posts':
-        return <BlogPostsEditor data={editedData as any} onChange={setEditedData} />
+        return <BlogPostsManageNotice />
       default:
         return <div className="text-sm text-slate-600">Bu bölüm için editor henüz hazır değil.</div>
     }

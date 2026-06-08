@@ -5,6 +5,11 @@ import {
   fetchPublicSiteSettings,
   type PublicSiteSettings,
 } from '../api/siteSettings'
+import {
+  DEFAULT_FOOTER_LOGO_HEIGHT,
+  DEFAULT_MOBILE_LOGO_HEIGHT,
+  DEFAULT_NAVBAR_LOGO_HEIGHT,
+} from '../lib/logoSize'
 import { isValidImageSrc, resolveImageUrl } from '../lib/resolveImageUrl'
 
 export type SiteSettingsState = PublicSiteSettings & {
@@ -17,6 +22,10 @@ const defaultSettings: SiteSettingsState = {
   contactPhone: '',
   contactAddress: '',
   logo: '',
+  logoUpdatedAt: '',
+  navbarLogoHeight: DEFAULT_NAVBAR_LOGO_HEIGHT,
+  footerLogoHeight: DEFAULT_FOOTER_LOGO_HEIGHT,
+  mobileLogoHeight: DEFAULT_MOBILE_LOGO_HEIGHT,
   favicon: '',
   primaryColor: '#22c55e',
   secondaryColor: '#0ea5e9',
@@ -78,6 +87,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
       setSettings({
         ...data,
         logo: data.logo?.trim() || DEFAULT_SITE_LOGO,
+        logoUpdatedAt: data.logoUpdatedAt?.trim() || '',
         favicon: data.favicon?.trim() || DEFAULT_SITE_FAVICON,
         loaded: true,
       })

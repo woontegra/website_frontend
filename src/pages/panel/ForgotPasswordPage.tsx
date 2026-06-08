@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
-import { HEADER_LOGO_ALT, HEADER_LOGO_SRC } from '../../config/siteLogo'
+import { SiteLogo } from '../../components/ui/SiteLogo'
 import { Button } from '../../components/ui/Button'
 
 const inputClass = 'w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-heading placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue'
@@ -20,7 +20,7 @@ export function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
-            <img src={HEADER_LOGO_SRC} alt={HEADER_LOGO_ALT} className="mx-auto block h-12 w-auto" loading="eager" decoding="sync" />
+            <SiteLogo className="mx-auto block h-12 w-auto" />
           </Link>
           <p className="mt-2 text-surface-600">Şifre sıfırlama</p>
         </div>

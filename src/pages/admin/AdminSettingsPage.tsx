@@ -1,16 +1,30 @@
 import { useState, useEffect } from 'react'
-import { Save, Settings, Palette, Mail, Globe, BarChart, Wrench, X, RefreshCw, Lock } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Save, Settings, Palette, Globe, BarChart, Wrench, X, RefreshCw, Lock, Building2, ArrowRight } from 'lucide-react'
 import { buildApiUrl } from '../../config/api'
 import { adminFetch } from '../../lib/adminAuth'
 import { ManagedImageField } from '../../components/admin/ManagedImageField'
 import { SiteAssetField } from '../../components/admin/SiteAssetField'
-import { DEFAULT_SITE_FAVICON, DEFAULT_SITE_LOGO } from '../../api/siteSettings'
+import { DEFAULT_SITE_FAVICON, DEFAULT_SITE_LOGO, fetchPublicSiteSettings } from '../../api/siteSettings'
+import { buildBrandedAssetUrl } from '../../lib/siteBrandingUrl'
+import {
+  clampLogoHeight,
+  DEFAULT_FOOTER_LOGO_HEIGHT,
+  DEFAULT_MOBILE_LOGO_HEIGHT,
+  DEFAULT_NAVBAR_LOGO_HEIGHT,
+  LOGO_HEIGHT_MAX,
+  LOGO_HEIGHT_MIN,
+} from '../../lib/logoSize'
 import { SettingsCollapsibleSection } from '../../components/admin/SettingsCollapsibleSection'
+import { AdminCookieScanSection } from '../../components/admin/AdminCookieScanSection'
 
 interface SiteSettings {
   siteName: string
   siteDescription: string
   logo: string
+  navbarLogoHeight: string
+  footerLogoHeight: string
+  mobileLogoHeight: string
   favicon: string
   darkModeLogo: string
   language: string
@@ -89,10 +103,14 @@ const BUTTON_STYLE_OPTIONS = [
 ]
 
 export function AdminSettingsPage() {
+  const [logoUpdatedAt, setLogoUpdatedAt] = useState('')
   const [settings, setSettings] = useState<SiteSettings>({
     siteName: 'Woontegra',
     siteDescription: 'Yazılım, e-ticaret ve dijital sistemler',
     logo: DEFAULT_SITE_LOGO,
+    navbarLogoHeight: String(DEFAULT_NAVBAR_LOGO_HEIGHT),
+    footerLogoHeight: String(DEFAULT_FOOTER_LOGO_HEIGHT),
+    mobileLogoHeight: String(DEFAULT_MOBILE_LOGO_HEIGHT),
     favicon: DEFAULT_SITE_FAVICON,
     darkModeLogo: '',
     language: 'tr',
@@ -163,10 +181,33 @@ export function AdminSettingsPage() {
     preview: '',
   })
 
+  const refreshLogoUpdatedAt = async () => {
+    const pub = await fetchPublicSiteSettings()
+    setLogoUpdatedAt(pub.logoUpdatedAt)
+  }
+
+  const parseLogoHeightField = (value: unknown, fallback: number) =>
+    String(clampLogoHeight(value, fallback))
+
   const applySettingsFromApi = (data: Record<string, unknown>) => {
+    if (typeof data.logoUpdatedAt === 'string') {
+      setLogoUpdatedAt(data.logoUpdatedAt)
+    }
     setSettings((prev) => ({
       ...prev,
       ...(data as unknown as SiteSettings),
+      navbarLogoHeight: parseLogoHeightField(
+        data.navbarLogoHeight,
+        Number.parseInt(prev.navbarLogoHeight, 10) || DEFAULT_NAVBAR_LOGO_HEIGHT,
+      ),
+      footerLogoHeight: parseLogoHeightField(
+        data.footerLogoHeight,
+        Number.parseInt(prev.footerLogoHeight, 10) || DEFAULT_FOOTER_LOGO_HEIGHT,
+      ),
+      mobileLogoHeight: parseLogoHeightField(
+        data.mobileLogoHeight,
+        Number.parseInt(prev.mobileLogoHeight, 10) || DEFAULT_MOBILE_LOGO_HEIGHT,
+      ),
       metaPixelId:
         (data.metaPixelId as string) || (data.facebookPixelId as string) || prev.metaPixelId,
     }))
@@ -212,6 +253,7 @@ export function AdminSettingsPage() {
       delete payload.smtpPassword
       delete payload.smtpPasswordConfigured
       delete payload.smtpPasswordPreview
+      delete payload.logoUpdatedAt
 
       if (clearMetaAccessToken) {
         payload.clearMetaConversionsAccessToken = true
@@ -355,6 +397,24 @@ export function AdminSettingsPage() {
         </div>
       )}
 
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+            <div>
+              <h2 className="text-sm font-semibold text-emerald-900">Firma ve iletişim bilgileri</h2>
+              <p className="mt-1 text-sm text-emerald-800">
+                Telefon, e-posta, adres ve yasal bilgiler artık <strong>Firma Bilgileri</strong> sayfasından yönetilir.
+              </p>
+            </div>
+          </div>
+          <Link to="/admin/firma-bilgileri" className="button inline-flex items-center gap-1.5 self-start">
+            Firma Bilgilerini Düzenle
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
+
       {/* HESAP */}
       <SettingsCollapsibleSection
         id="account"
@@ -481,7 +541,11 @@ export function AdminSettingsPage() {
               label="Site Logosu"
               kind="logo"
               value={settings.logo}
-              onChange={(url) => setSettings({ ...settings, logo: url })}
+              cacheVersion={logoUpdatedAt}
+              onChange={(url) => {
+                setSettings({ ...settings, logo: url })
+                void refreshLogoUpdatedAt()
+              }}
               hint="Navbar ve footer’da görünür."
             />
             <SiteAssetField
@@ -491,6 +555,110 @@ export function AdminSettingsPage() {
               onChange={(url) => setSettings({ ...settings, favicon: url })}
               hint="Tarayıcı sekmesi ikonu."
             />
+          </div>
+
+          <div className="space-y-3 border-t border-slate-200 pt-4">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-800">Logo Boyutları</h4>
+              <p className="mt-1 text-xs text-slate-500">
+                Logo yüksekliği piksel cinsindendir. Genişlik otomatik korunur.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <label className="label" htmlFor="navbarLogoHeight">
+                  Navbar Logo Yüksekliği
+                </label>
+                <input
+                  id="navbarLogoHeight"
+                  name="navbarLogoHeight"
+                  type="number"
+                  min={LOGO_HEIGHT_MIN}
+                  max={LOGO_HEIGHT_MAX}
+                  value={settings.navbarLogoHeight}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      navbarLogoHeight: parseLogoHeightField(e.target.value, DEFAULT_NAVBAR_LOGO_HEIGHT),
+                    })
+                  }
+                  className="input w-full"
+                />
+              </div>
+              <div>
+                <label className="label" htmlFor="footerLogoHeight">
+                  Footer Logo Yüksekliği
+                </label>
+                <input
+                  id="footerLogoHeight"
+                  name="footerLogoHeight"
+                  type="number"
+                  min={LOGO_HEIGHT_MIN}
+                  max={LOGO_HEIGHT_MAX}
+                  value={settings.footerLogoHeight}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      footerLogoHeight: parseLogoHeightField(e.target.value, DEFAULT_FOOTER_LOGO_HEIGHT),
+                    })
+                  }
+                  className="input w-full"
+                />
+              </div>
+              <div>
+                <label className="label" htmlFor="mobileLogoHeight">
+                  Mobil Logo Yüksekliği
+                </label>
+                <input
+                  id="mobileLogoHeight"
+                  name="mobileLogoHeight"
+                  type="number"
+                  min={LOGO_HEIGHT_MIN}
+                  max={LOGO_HEIGHT_MAX}
+                  value={settings.mobileLogoHeight}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      mobileLogoHeight: parseLogoHeightField(e.target.value, DEFAULT_MOBILE_LOGO_HEIGHT),
+                    })
+                  }
+                  className="input w-full"
+                />
+              </div>
+            </div>
+
+            {settings.logo ? (
+              <div className="rounded-lg border border-slate-200 bg-white p-4">
+                <p className="mb-3 text-xs font-medium text-slate-600">Canlı önizleme</p>
+                <div className="flex flex-wrap items-end gap-6">
+                  {[
+                    {
+                      label: 'Navbar (masaüstü)',
+                      height: clampLogoHeight(settings.navbarLogoHeight, DEFAULT_NAVBAR_LOGO_HEIGHT),
+                    },
+                    {
+                      label: 'Navbar (mobil)',
+                      height: clampLogoHeight(settings.mobileLogoHeight, DEFAULT_MOBILE_LOGO_HEIGHT),
+                    },
+                    {
+                      label: 'Footer',
+                      height: clampLogoHeight(settings.footerLogoHeight, DEFAULT_FOOTER_LOGO_HEIGHT),
+                    },
+                  ].map((item) => (
+                    <div key={item.label} className="flex flex-col items-start gap-1">
+                      <span className="text-[11px] text-slate-500">{item.label}</span>
+                      <img
+                        src={buildBrandedAssetUrl(settings.logo, logoUpdatedAt)}
+                        alt={`${item.label} önizleme`}
+                        className="w-auto max-w-[180px] object-contain object-left"
+                        style={{ height: `${item.height}px` }}
+                      />
+                      <span className="text-[10px] text-slate-400">{item.height}px</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -533,54 +701,6 @@ export function AdminSettingsPage() {
               {BUTTON_STYLE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </div>
-        </div>
-      </SettingsCollapsibleSection>
-
-      {/* İLETİŞİM BİLGİLERİ */}
-      <SettingsCollapsibleSection
-        id="contact"
-        icon={Mail}
-        title="İletişim Bilgileri"
-        isOpen={openSections.includes('contact')}
-        onToggle={toggleSection}
-      >
-        <div>
-          <label className="label">E-posta</label>
-          <input
-            type="email"
-            value={settings.contactEmail}
-            onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
-            className="input w-full"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="label">Telefon</label>
-            <input
-              type="tel"
-              value={settings.contactPhone}
-              onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value })}
-              className="input w-full"
-            />
-          </div>
-          <div>
-            <label className="label">WhatsApp</label>
-            <input
-              type="tel"
-              value={settings.contactWhatsApp}
-              onChange={(e) => setSettings({ ...settings, contactWhatsApp: e.target.value })}
-              className="input w-full"
-            />
-          </div>
-        </div>
-        <div>
-          <label className="label">Adres</label>
-          <textarea
-            value={settings.contactAddress}
-            onChange={(e) => setSettings({ ...settings, contactAddress: e.target.value })}
-            rows={2}
-            className="textarea w-full"
-          />
         </div>
       </SettingsCollapsibleSection>
 
@@ -897,6 +1017,8 @@ export function AdminSettingsPage() {
               </label>
             </div>
           </div>
+
+          <AdminCookieScanSection />
         </div>
       </SettingsCollapsibleSection>
 

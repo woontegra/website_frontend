@@ -198,6 +198,21 @@ export const defaultTrademarkData: PageData = {
   ],
 }
 
+// GAME DEV PAGE
+export const defaultGameDevData: PageData = {
+  slug: 'game-dev',
+  sections: [
+    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Oyun Geliştirme', title: 'Dijital Oyun ve Ürün Geliştirme', subtitle: 'Fikirden yayına, mobil ve web platformları için oyun ve dijital ürün geliştirme hizmeti sunuyoruz.', button1Text: 'Projeni Anlat', button2Text: 'İletişim', image: siteImages.gameScene }},
+    { id: 'features-1', type: 'service-features', order: 2, data: { title: 'Oyun Geliştirme Hizmetlerimiz', subtitle: 'Mobil, web ve hibrit platformlar', features: [
+      { title: 'Mobil Oyunlar', description: 'iOS ve Android oyunları', icon: 'Smartphone' },
+      { title: 'Web Oyunları', description: 'Tarayıcı tabanlı oyunlar', icon: 'Monitor' },
+      { title: 'Prototip & MVP', description: 'Hızlı oynanabilir prototipler', icon: 'Zap' },
+      { title: 'Backend & API', description: 'Skor ve çok oyunculu altyapı', icon: 'Cpu' },
+    ]}},
+    { id: 'cta-1', type: 'cta', order: 3, data: { title: 'Oyun Projenizi Başlatın', subtitle: 'Fikrinizi oynanabilir bir ürüne dönüştürmek için iletişime geçin.', buttonText: 'Teklif Al' }},
+  ],
+}
+
 // CONSULTING PAGE
 export const defaultConsultingData: PageData = {
   slug: 'consulting',
@@ -229,31 +244,32 @@ export const defaultSolutionsData: PageData = {
   ],
 }
 
-// BLOG PAGE
+// BLOG PAGE — yazı listesi blogPosts page-content key üzerinden (/admin/blog-yazilari)
 export const defaultBlogData: PageData = {
   slug: 'blog',
   sections: [
-    { id: 'hero-1', type: 'hero', order: 1, data: { tag: 'Blog', title: 'Bilgi, Deneyim ve Dijital İçerikler', subtitle: 'Yazılım, e-ticaret ve dijital sistemler hakkında güncel içerikler ve rehberler', button1Text: 'Tüm Yazılar', button2Text: 'Kategoriler' }},
-    { 
-      id: 'blog-posts-1', 
-      type: 'blog-posts', 
-      order: 2, 
-      data: { 
-        title: 'Blog Yazıları',
-        subtitle: 'Dijital dünyada edindiğimiz deneyimleri paylaşıyoruz',
-        categories: ['Tümü', 'Yazılım', 'E-Ticaret', 'SaaS', 'Marka & Patent', 'Dijital Büyüme'],
-        posts: [
-          { id: '1', slug: 'dijital-donusum-rehberi', title: 'Dijital Dönüşüm Rehberi: İşletmenizi Geleceğe Taşıyın', excerpt: 'Dijital dönüşüm sadece teknoloji değil, iş yapış şeklinizi değiştirmektir.', category: 'Dijital Büyüme', image: siteImages.blog.digitalTransformation, date: '20 Mart 2026', featured: true },
-          { id: '2', slug: 'saas-urun-gelistirme-rehberi', title: 'SaaS Ürün Geliştirme Rehberi', excerpt: 'Başarılı bir SaaS ürünü geliştirmek için bilmeniz gereken temel adımlar.', category: 'SaaS', image: siteImages.blog.saasGuide, date: '15 Mart 2026' },
-          { id: '3', slug: 'e-ticaret-optimizasyonu', title: 'E-Ticaret Optimizasyonu', excerpt: 'Dönüşüm oranlarını artırmak için uygulanabilir stratejiler.', category: 'E-Ticaret', image: siteImages.blog.ecommerceOptimization, date: '12 Mart 2026' },
-          { id: '4', slug: 'marka-tescil-sureci', title: 'Marka Tescil Süreci', excerpt: 'Markanızı koruma altına almak için izlemeniz gereken adımlar.', category: 'Marka & Patent', image: siteImages.blog.trademark, date: '10 Mart 2026' },
-          { id: '5', slug: 'modern-web-teknolojileri', title: 'Modern Web Teknolojileri', excerpt: 'Güncel web geliştirme araçları ve framework seçimi.', category: 'Yazılım', image: siteImages.blog.webTech, date: '8 Mart 2026' },
-          { id: '6', slug: 'dijital-pazarlama-stratejileri', title: 'Dijital Pazarlama Stratejileri', excerpt: 'Online varlığınızı güçlendirmek için etkili yöntemler.', category: 'Dijital Büyüme', image: siteImages.blog.digitalMarketing, date: '5 Mart 2026' },
-          { id: '7', slug: 'api-tasarimi-best-practices', title: 'API Tasarımı Best Practices', excerpt: 'Ölçeklenebilir ve güvenli API geliştirme prensipleri.', category: 'Yazılım', image: siteImages.blog.apiDesign, date: '3 Mart 2026' },
-        ]
-      }
+    {
+      id: 'hero-1',
+      type: 'hero',
+      order: 1,
+      data: {
+        tag: 'Blog',
+        title: 'Bilgi, Deneyim ve Dijital İçerikler',
+        subtitle: 'Yazılım, e-ticaret ve dijital sistemler hakkında güncel içerikler ve rehberler',
+        button1Text: 'Tüm Yazılar',
+        button2Text: 'Kategoriler',
+      },
     },
-    { id: 'cta-1', type: 'cta', order: 3, data: { title: 'Blog Yazılarımızdan Haberdar Olun', subtitle: 'Yeni içeriklerimizden haberdar olmak için bizi takip edin', buttonText: 'İletişime Geç' }},
+    {
+      id: 'cta-1',
+      type: 'cta',
+      order: 2,
+      data: {
+        title: 'Blog Yazılarımızdan Haberdar Olun',
+        subtitle: 'Yeni içeriklerimizden haberdar olmak için bizi takip edin',
+        buttonText: 'İletişime Geç',
+      },
+    },
   ],
 }
 

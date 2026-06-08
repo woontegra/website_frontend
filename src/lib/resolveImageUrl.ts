@@ -14,7 +14,6 @@ const IMAGE_PATH_ALIASES: Record<string, string> = {
   '/brands/datca.png': '/images/brand-datca.jpg',
   '/brands/mercan.png': '/images/brand-mercan.jpg',
   '/brands/bilirkisi.png': '/images/brand-bilirkisi.jpg',
-  '/logo.png': '/logo.svg',
 }
 
 const INVALID_LITERALS = new Set(['null', 'undefined', 'none', 'false', 'n/a', 'na'])

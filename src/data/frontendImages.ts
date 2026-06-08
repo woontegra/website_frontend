@@ -2,32 +2,51 @@
  * Yalnızca projede gerçekten var olan ve geçerli formatlı dosyalar import edilir.
  * Stub .jpg dosyaları (data:image/svg+xml metin içeren) kullanılmaz.
  */
-export const PUBLIC_LOGO_SRC = '/logo.svg'
-
 import heroDashboard from '../assets/images/hero-dashboard.jpg'
+import aboutHeroImage from '../assets/images/about/hakkimizda-hero.jpg'
+import yazilimHero from '../assets/images/services/yazilim-hero.png'
+import webTasarimHero from '../assets/images/services/web-tasarim-hero.png'
+import consultingHero from '../assets/images/services/danismanlik-hero.png'
 import eTicaretHero from '../assets/images/e-ticaret.jpeg'
-import brandBilirkisi from '../assets/images/brand-bilirkisi.jpg'
-import brandOptimoon from '../assets/images/brand-optimoon.jpg'
-import brandDatca from '../assets/images/brand-datca.jpg'
-import brandMercan from '../assets/images/brand-mercan.jpg'
-import sifreKasasiEkran from '../assets/images/sifre-kasasi-ekran.png'
+import brandBilirkisi from '../assets/brand/marka-bilirkisi.jpg'
+import brandOptimoon from '../assets/brand/marka-optimoon.jpg'
+import brandDatca from '../assets/brand/marka-datca.jpg'
+import brandMercan from '../assets/brand/marka-mercan.jpg'
+import woontegraSifreKasasiEkran from '../assets/images/woontegra-sifre-kasasi-ekran.png'
+import servicesHero from '../assets/images/pages/services-hero.jpg'
+import solutionsHero from '../assets/images/pages/solutions-hero.jpg'
+import toolsHero from '../assets/images/pages/tools-hero.jpg'
+import blogHero from '../assets/images/pages/blog-hero.jpg'
+import contactHero from '../assets/images/pages/contact-hero.jpg'
+import faqHero from '../assets/images/pages/faq-hero.jpg'
+import ecommerceSystem from '../assets/images/solutions/ecommerce-system.jpg'
 
 export const frontendImages = {
-  logo: PUBLIC_LOGO_SRC,
   homeHero: heroDashboard,
-  softwareHero: heroDashboard,
+  softwareHero: yazilimHero,
   ecommerceHero: eTicaretHero,
-  webDesignHero: heroDashboard,
-  aboutHero: heroDashboard,
-  sifreKasasiScreenshot: sifreKasasiEkran,
-  solutionsHero: heroDashboard,
+  webDesignHero: webTasarimHero,
+  aboutHero: aboutHeroImage,
+  sifreKasasiScreenshot: woontegraSifreKasasiEkran,
+  solutionsHero: solutionsHero,
+  pages: {
+    services: servicesHero,
+    solutions: solutionsHero,
+    tools: toolsHero,
+    blog: blogHero,
+    contact: contactHero,
+    faq: faqHero,
+  },
+  solutions: {
+    ecommerce: ecommerceSystem,
+  },
   bilirkisiHesapHero: heroDashboard,
   optimoonProducts: brandOptimoon,
   datcaProducts: brandDatca,
   mercanServices: brandMercan,
-  saasDashboard: heroDashboard,
+  saasDashboard: woontegraSifreKasasiEkran,
   gameScene: heroDashboard,
-  consultingDashboard: heroDashboard,
+  consultingDashboard: consultingHero,
   trademarkDocument: heroDashboard,
   ctaBackground: heroDashboard,
   service1: heroDashboard,
@@ -50,10 +69,6 @@ export const frontendImages = {
     default: heroDashboard,
   },
 } as const
-
-export const HEADER_LOGO_ALT = 'Woontegra'
-export const HEADER_LOGO_WIDTH = 180
-export const HEADER_LOGO_HEIGHT = 40
 
 export const blogCoverBySlug: Record<string, string> = {
   'dijital-donusum-rehberi': frontendImages.blog.digitalTransformation,

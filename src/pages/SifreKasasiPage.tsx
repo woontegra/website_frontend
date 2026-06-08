@@ -12,27 +12,25 @@ import {
   ZoomIn,
 } from 'lucide-react'
 import { Button } from '../components/ui/Button'
-import { StaticImage } from '../components/ui/StaticImage'
-import { frontendImages } from '../data/frontendImages'
 import { Card } from '../components/ui/Card'
 import { FAQItem } from '../components/ui/FAQItem'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { fetchSifreKasasiStats, type SifreKasasiDownloadStats } from '../api/downloads'
-
-const SEO_TITLE = 'Woontegra Şifre Kasası | Ücretsiz Windows Şifre Yönetim Aracı'
-const SEO_DESCRIPTION =
-  'Giriş URL\'lerinizi, kullanıcı adlarınızı, şifrelerinizi ve notlarınızı yerel ve şifreli şekilde saklayabileceğiniz ücretsiz Windows masaüstü aracı.'
+import { fetchSifreKasasiPageContent } from '../api/sifreKasasiPageContent'
+import {
+  DEFAULT_SIFRE_KASASI_SCREENSHOT,
+  defaultSifreKasasiPageContent,
+  type SifreKasasiPageContent,
+} from '../data/sifreKasasiPage'
+import { CTASection } from '../components/page/CTASection'
 
 const PAGE_CONTAINER_CLASS = 'mx-auto max-w-[1200px] px-6 md:px-8 lg:px-10'
 const HERO_CONTAINER_CLASS = 'mx-auto max-w-[1440px] px-6 md:px-10 xl:px-12'
 
-const APP_VERSION = '1.0.0'
-const APP_PLATFORM = 'Windows'
 const SETUP_DOWNLOAD_URL =
   'https://websitebackend-production-ab6e.up.railway.app/api/public/downloads/sifre-kasasi/setup'
 const PORTABLE_DOWNLOAD_URL =
   'https://websitebackend-production-ab6e.up.railway.app/api/public/downloads/sifre-kasasi/portable'
-const APP_SCREENSHOT_URL = frontendImages.sifreKasasiScreenshot
 
 const SECURITY_CARDS = [
   {
@@ -94,20 +92,28 @@ const FAQ_ITEMS = [
   },
 ]
 
-function usePageSeo() {
+function usePageSeo(seoTitle: string, seoDescription: string) {
   useEffect(() => {
-    document.title = SEO_TITLE
+    document.title = seoTitle
     let meta = document.querySelector('meta[name="description"]')
     if (!meta) {
       meta = document.createElement('meta')
       meta.setAttribute('name', 'description')
       document.head.appendChild(meta)
     }
-    meta.setAttribute('content', SEO_DESCRIPTION)
-  }, [])
+    meta.setAttribute('content', seoDescription)
+  }, [seoTitle, seoDescription])
 }
 
-function VersionInfo({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
+function VersionInfo({
+  version,
+  platform,
+  variant = 'light',
+}: {
+  version: string
+  platform: string
+  variant?: 'light' | 'dark'
+}) {
   const badgeClass =
     variant === 'dark'
       ? 'border-white/15 bg-white/10 text-slate-200'
@@ -118,25 +124,29 @@ function VersionInfo({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
     <div className="flex flex-wrap items-center gap-3">
       <span className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm md:text-base ${badgeClass}`}>
         <span className={`font-semibold ${labelClass}`}>Sürüm:</span>
-        <span>{APP_VERSION}</span>
+        <span>{version}</span>
       </span>
       <span className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm md:text-base ${badgeClass}`}>
         <span className={`font-semibold ${labelClass}`}>Platform:</span>
-        <span>{APP_PLATFORM}</span>
+        <span>{platform}</span>
       </span>
     </div>
   )
 }
 
-function TrustNote() {
+function TrustNote({ text }: { text: string }) {
+  const parts = text.split('. ')
+  const lead = parts[0]?.endsWith('.') ? parts[0] : `${parts[0]}.`
+  const rest = parts.slice(1).join('. ')
+
   return (
     <div className="flex items-start gap-3 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-4 backdrop-blur-sm">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20">
         <ShieldCheck className="h-5 w-5 text-emerald-300" />
       </div>
       <p className="text-sm leading-relaxed text-emerald-50 md:text-base">
-        <span className="font-semibold text-white">Ücretsizdir.</span> Verileriniz bilgisayarınızda kalır.
-        Woontegra sunucularına gönderilmez.
+        <span className="font-semibold text-white">{lead}</span>
+        {rest ? ` ${rest}` : ''}
       </p>
     </div>
   )
@@ -150,11 +160,13 @@ function DownloadStatsBox({
   stats,
   loading,
   failed,
+  labels,
   compact = false,
 }: {
   stats: SifreKasasiDownloadStats | null
   loading: boolean
   failed: boolean
+  labels: Pick<SifreKasasiPageContent, 'statsTotalLabel' | 'statsSetupLabel' | 'statsPortableLabel' | 'statsFallbackText'>
   compact?: boolean
 }) {
   if (loading) {
@@ -173,7 +185,7 @@ function DownloadStatsBox({
       <div
         className={`rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 backdrop-blur-sm ${compact ? 'px-4 py-3' : 'px-5 py-4'}`}
       >
-        Yeni yayınlandı
+        {labels.statsFallbackText}
       </div>
     )
   }
@@ -183,18 +195,16 @@ function DownloadStatsBox({
       <div className="rounded-xl border border-white/15 bg-white/8 px-4 py-3 backdrop-blur-sm">
         <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
           <div>
-            <p className="text-xs font-medium text-slate-400">Toplam indirme</p>
-            <p className="text-2xl font-bold tracking-tight text-white">
-              {formatDownloadCount(stats.total)}
-            </p>
+            <p className="text-xs font-medium text-slate-400">{labels.statsTotalLabel}</p>
+            <p className="text-2xl font-bold tracking-tight text-white">{formatDownloadCount(stats.total)}</p>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400">
             <span>
-              Kurulum:{' '}
+              {labels.statsSetupLabel}:{' '}
               <span className="font-semibold text-slate-200">{formatDownloadCount(stats.setup)}</span>
             </span>
             <span>
-              Portable:{' '}
+              {labels.statsPortableLabel}:{' '}
               <span className="font-semibold text-slate-200">{formatDownloadCount(stats.portable)}</span>
             </span>
           </div>
@@ -205,16 +215,16 @@ function DownloadStatsBox({
 
   return (
     <div className="rounded-2xl border border-white/15 bg-white/8 px-5 py-4 backdrop-blur-sm">
-      <p className="text-sm font-medium text-slate-300">Toplam indirme</p>
-      <p className="mt-1 text-3xl font-bold tracking-tight text-white">
-        {formatDownloadCount(stats.total)}
-      </p>
+      <p className="text-sm font-medium text-slate-300">{labels.statsTotalLabel}</p>
+      <p className="mt-1 text-3xl font-bold tracking-tight text-white">{formatDownloadCount(stats.total)}</p>
       <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-400">
         <span>
-          Kurulum: <span className="font-semibold text-slate-200">{formatDownloadCount(stats.setup)}</span>
+          {labels.statsSetupLabel}:{' '}
+          <span className="font-semibold text-slate-200">{formatDownloadCount(stats.setup)}</span>
         </span>
         <span>
-          Portable: <span className="font-semibold text-slate-200">{formatDownloadCount(stats.portable)}</span>
+          {labels.statsPortableLabel}:{' '}
+          <span className="font-semibold text-slate-200">{formatDownloadCount(stats.portable)}</span>
         </span>
       </div>
     </div>
@@ -227,13 +237,11 @@ function DownloadCountLabel({ count, loading }: { count: number | null; loading:
   }
   if (count === null) return null
   return (
-    <p className="mt-3 text-sm text-surface-500">
-      {formatDownloadCount(count)} kez indirildi
-    </p>
+    <p className="mt-3 text-sm text-surface-500">{formatDownloadCount(count)} kez indirildi</p>
   )
 }
 
-function AppScreenshot() {
+function AppScreenshot({ screenshotSrc }: { screenshotSrc: string }) {
   const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
@@ -262,10 +270,12 @@ function AppScreenshot() {
           className="group relative w-full overflow-visible rounded-2xl border border-white/15 text-left shadow-2xl shadow-black/40 focus:outline-none focus:ring-2 focus:ring-accent-blue/50"
           aria-label="Uygulama ekran görüntüsünü büyüt"
         >
-          <StaticImage
-            src={APP_SCREENSHOT_URL}
+          <img
+            src={screenshotSrc}
             alt="Woontegra Şifre Kasası uygulama ekranı"
             className="block h-auto w-full rounded-2xl object-contain"
+            loading="eager"
+            decoding="sync"
           />
           <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-slate-200">
             <ZoomIn className="h-3.5 w-3.5" />
@@ -290,8 +300,8 @@ function AppScreenshot() {
           >
             <X className="h-5 w-5" />
           </button>
-          <StaticImage
-            src={APP_SCREENSHOT_URL}
+          <img
+            src={screenshotSrc}
             alt="Woontegra Şifre Kasası uygulama ekranı — büyük görünüm"
             className="max-h-[90vh] max-w-[min(1200px,95vw)] object-contain"
             onClick={(event) => event.stopPropagation()}
@@ -303,10 +313,14 @@ function AppScreenshot() {
 }
 
 export function SifreKasasiPage() {
-  usePageSeo()
+  const [page, setPage] = useState<SifreKasasiPageContent>(defaultSifreKasasiPageContent)
   const [stats, setStats] = useState<SifreKasasiDownloadStats | null>(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [statsFailed, setStatsFailed] = useState(false)
+
+  const heroScreenshot = DEFAULT_SIFRE_KASASI_SCREENSHOT
+
+  usePageSeo(page.seoTitle, page.seoDescription)
 
   const loadStats = useCallback(async () => {
     const data = await fetchSifreKasasiStats()
@@ -324,9 +338,21 @@ export function SifreKasasiPage() {
     loadStats()
   }, [loadStats])
 
+  useEffect(() => {
+    void fetchSifreKasasiPageContent().then(setPage)
+  }, [])
+
+  if (!page.enabled) {
+    return (
+      <div className={`${PAGE_CONTAINER_CLASS} py-24 text-center`}>
+        <h1 className="text-3xl font-bold text-heading">{page.title}</h1>
+        <p className="mt-4 text-lg text-surface-600">Bu sayfa şu an yayında değil.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-white">
-      {/* Hero */}
       <section className="relative overflow-x-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 py-24 lg:min-h-[760px] lg:py-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_35%,rgba(37,99,235,0.22),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_65%,rgba(34,197,94,0.18),transparent_55%)]" />
@@ -335,27 +361,24 @@ export function SifreKasasiPage() {
             <div className="flex max-w-[520px] flex-col gap-6 text-white lg:gap-7">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-5 py-2 text-sm font-medium text-emerald-100">
                 <Shield className="h-4 w-4 text-emerald-300" />
-                Ücretsiz Windows Aracı — Yerel ve Şifreli
+                {page.badge}
               </div>
               <div className="space-y-5">
                 <h1 className="text-4xl font-bold leading-[1.12] tracking-tight md:text-5xl xl:text-6xl xl:leading-[1.08]">
-                  Woontegra Şifre Kasası
+                  {page.title}
                 </h1>
                 <p className="text-xl font-medium leading-relaxed text-slate-200 md:text-2xl md:leading-snug">
-                  Giriş bilgilerinizi güvenli, düzenli ve kolay erişilebilir şekilde saklayın.
+                  {page.subtitle}
                 </p>
-                <p className="text-base leading-8 text-slate-400 md:text-lg">
-                  Şifrelerinizi, giriş URL&apos;lerinizi, kullanıcı adlarınızı ve notlarınızı Excel dosyaları
-                  yerine yerel ve şifreli bir masaüstü uygulamasında yönetin.
-                </p>
+                <p className="text-base leading-8 text-slate-400 md:text-lg">{page.description}</p>
               </div>
 
-              <VersionInfo variant="dark" />
+              <VersionInfo version={page.version} platform={page.platform} variant="dark" />
 
               <div className="flex flex-col gap-3">
                 <Button variant="hero" size="xl" href={SETUP_DOWNLOAD_URL} target="_self" className="w-full sm:w-auto">
                   <Download className="mr-2 h-5 w-5" />
-                  Windows Kurulum Sürümünü İndir
+                  {page.setupButtonText}
                 </Button>
                 <Button
                   variant="outline"
@@ -365,29 +388,29 @@ export function SifreKasasiPage() {
                   className="w-full border-white/35 text-white hover:bg-white hover:text-slate-900 sm:w-auto"
                 >
                   <Download className="mr-2 h-5 w-5" />
-                  Portable Sürümü İndir
+                  {page.portableButtonText}
                 </Button>
               </div>
 
               <div className="flex flex-col gap-3">
-                <TrustNote />
+                <TrustNote text={page.trustNote} />
                 <DownloadStatsBox
                   stats={stats}
                   loading={statsLoading}
                   failed={statsFailed}
+                  labels={page}
                   compact
                 />
               </div>
             </div>
 
             <div className="grid w-full overflow-visible lg:justify-items-end">
-              <AppScreenshot />
+              <AppScreenshot screenshotSrc={heroScreenshot} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Güvenlik Kartları */}
       <section className="bg-slate-50 py-20 md:py-24">
         <div className={PAGE_CONTAINER_CLASS}>
           <SectionHeader
@@ -408,10 +431,34 @@ export function SifreKasasiPage() {
         </div>
       </section>
 
-      {/* Özellikler */}
       <section className="py-20 md:py-24">
         <div className={PAGE_CONTAINER_CLASS}>
-          <SectionHeader title="Öne Çıkan Özellikler" />
+          <SectionHeader
+            eyebrow="Kullanım"
+            title="Nasıl Çalışır?"
+            subtitle="Kurulumdan günlük kullanıma kadar basit ve yerel bir akış."
+          />
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              { step: '1', title: 'İndirin', desc: 'Kurulum veya portable sürümü bilgisayarınıza alın.' },
+              { step: '2', title: 'Ana şifre belirleyin', desc: 'Kasa dosyanızı koruyacak ana şifrenizi oluşturun.' },
+              { step: '3', title: 'Kayıtlarınızı yönetin', desc: 'Giriş bilgilerinizi ekleyin, yedek alın ve güvenle kullanın.' },
+            ].map((item) => (
+              <div key={item.step} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-sm font-bold text-white">
+                  {item.step}
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-50 py-20 md:py-24">
+        <div className={PAGE_CONTAINER_CLASS}>
+          <SectionHeader eyebrow="Özellikler" title="Öne Çıkan Özellikler" />
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((feature) => (
               <li
@@ -426,7 +473,6 @@ export function SifreKasasiPage() {
         </div>
       </section>
 
-      {/* İndirme Kartları */}
       <section className="bg-slate-50 py-20 md:py-24">
         <div className={PAGE_CONTAINER_CLASS}>
           <SectionHeader
@@ -434,7 +480,7 @@ export function SifreKasasiPage() {
             subtitle="İhtiyacınıza uygun sürümü seçerek hemen kullanmaya başlayın."
           />
           <div className="mb-10 flex justify-center">
-            <VersionInfo />
+            <VersionInfo version={page.version} platform={page.platform} />
           </div>
           <div className="grid gap-8 md:grid-cols-2">
             <Card
@@ -476,7 +522,6 @@ export function SifreKasasiPage() {
         </div>
       </section>
 
-      {/* Önemli Bilgilendirme */}
       <section className="py-20 md:py-24">
         <div className={PAGE_CONTAINER_CLASS}>
           <Card hover={false} className="border-amber-200 bg-amber-50/60 p-8 md:p-10">
@@ -508,10 +553,9 @@ export function SifreKasasiPage() {
         </div>
       </section>
 
-      {/* SSS */}
       <section className="bg-slate-50 py-20 md:py-24">
         <div className={PAGE_CONTAINER_CLASS}>
-          <SectionHeader title="Sık Sorulan Sorular" />
+          <SectionHeader eyebrow="SSS" title="Sık Sorulan Sorular" />
           <div className="space-y-4">
             {FAQ_ITEMS.map((item) => (
               <FAQItem key={item.question} question={item.question} answer={item.answer} />
@@ -519,6 +563,13 @@ export function SifreKasasiPage() {
           </div>
         </div>
       </section>
+
+      <CTASection
+        title="Woontegra Şifre Kasası'nı indirin"
+        description="Ücretsiz, yerel ve şifreli şifre yönetimi için hemen başlayın."
+        buttonText="Kurulum Sürümünü İndir"
+        buttonHref={SETUP_DOWNLOAD_URL}
+      />
     </div>
   )
 }

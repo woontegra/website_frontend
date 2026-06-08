@@ -1,9 +1,4 @@
-import {
-  HEADER_LOGO_ALT,
-  HEADER_LOGO_HEIGHT,
-  HEADER_LOGO_WIDTH,
-  PUBLIC_LOGO_SRC,
-} from '../data/frontendImages'
+export { DEFAULT_NAVBAR_LOGO_HEIGHT as HEADER_LOGO_HEIGHT } from '../lib/logoSize'
 
-export { HEADER_LOGO_ALT, HEADER_LOGO_WIDTH, HEADER_LOGO_HEIGHT }
-export const HEADER_LOGO_SRC = PUBLIC_LOGO_SRC
+export const HEADER_LOGO_ALT = 'Woontegra'
+export const HEADER_LOGO_WIDTH = 180

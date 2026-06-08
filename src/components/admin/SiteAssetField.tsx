@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AlertCircle, ImageIcon, ImagePlus, Upload, X } from 'lucide-react'
 import { uploadSiteAsset } from '../../api/siteAssets'
-import { resolveImageUrl } from '../../lib/resolveImageUrl'
+import { buildBrandedAssetUrl } from '../../lib/siteBrandingUrl'
 import { getFilenameFromPath } from '../../data/publicImageCatalog'
 import { PublicImagePickerModal } from './PublicImagePickerModal'
 
@@ -11,6 +11,7 @@ type SiteAssetFieldProps = {
   onChange: (url: string) => void
   hint?: string
   kind?: 'logo' | 'favicon'
+  cacheVersion?: string | null
 }
 
 export function SiteAssetField({
@@ -19,6 +20,7 @@ export function SiteAssetField({
   onChange,
   hint,
   kind = 'logo',
+  cacheVersion,
 }: SiteAssetFieldProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -27,7 +29,7 @@ export function SiteAssetField({
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
 
-  const previewSrc = value ? resolveImageUrl(value) : ''
+  const previewSrc = value ? buildBrandedAssetUrl(value, cacheVersion) : ''
   const isFavicon = kind === 'favicon'
 
   useEffect(() => {

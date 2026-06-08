@@ -24,6 +24,14 @@ import { AdminMessagesPage } from '../pages/admin/AdminMessagesPage'
 import { AdminSettingsPage } from '../pages/admin/AdminSettingsPage'
 import { AdminQuotesPage } from '../pages/admin/AdminQuotesPage'
 import { AdminContentEditPage } from '../pages/admin/AdminContentEditPage'
+import { AdminMenuPage } from '../pages/admin/AdminMenuPage'
+import { AdminFooterPage } from '../pages/admin/AdminFooterPage'
+import { AdminServiceCardsPage } from '../pages/admin/AdminServiceCardsPage'
+import { AdminSolutionCardsPage } from '../pages/admin/AdminSolutionCardsPage'
+import { AdminFreeToolCardsPage } from '../pages/admin/AdminFreeToolCardsPage'
+import { AdminLegalPagesPage } from '../pages/admin/AdminLegalPagesPage'
+import { AdminCompanyInfoPage } from '../pages/admin/AdminCompanyInfoPage'
+import { AdminBlogPostsPage } from '../pages/admin/AdminBlogPostsPage'
 import { SoftwareDevelopmentPage } from '../pages/SoftwareDevelopmentPage'
 import { WebDesignPage } from '../pages/WebDesignPage'
 import { EcommercePage } from '../pages/EcommercePage'
@@ -38,6 +46,13 @@ import { FaqPage } from '../pages/FAQPage'
 import { QuotePage } from '../pages/QuotePage'
 import { TestPage } from '../pages/TestPage'
 import { SifreKasasiPage } from '../pages/SifreKasasiPage'
+import { ServicesPage } from '../pages/ServicesPage'
+import { UcretsizAraclarPage } from '../pages/UcretsizAraclarPage'
+import { CookiePolicyPage } from '../pages/legal/CookiePolicyPage'
+import { KvkkAydinlatmaPage } from '../pages/legal/KvkkAydinlatmaPage'
+import { GizlilikPolitikasiPage } from '../pages/legal/GizlilikPolitikasiPage'
+import { AcikRizaMetniPage } from '../pages/legal/AcikRizaMetniPage'
+import { KullanimSartlariPage } from '../pages/legal/KullanimSartlariPage'
 import { RequireAdmin } from '../components/admin/RequireAdmin'
 
 function CmsSlugRoute() {
@@ -56,6 +71,7 @@ export const router = createBrowserRouter([
       { path: 'iletisim', element: <ContactPage /> },
       { path: 'sss', element: <FaqPage /> },
       { path: 'teklif-al', element: <QuotePage /> },
+      { path: 'hizmetler', element: <ServicesPage /> },
       { path: 'hizmetler/yazilim-gelistirme', element: <SoftwareDevelopmentPage /> },
       { path: 'hizmetler/web-tasarim', element: <WebDesignPage /> },
       { path: 'hizmetler/e-ticaret', element: <EcommercePage /> },
@@ -70,6 +86,14 @@ export const router = createBrowserRouter([
       { path: 'cozumler/bilirkisi-hesaplama', element: <DynamicPage slug="bilirkisi-hesaplama" /> },
       { path: 'cozumler/:slug', element: <CozumDetailRoute /> },
       { path: 'ucretsiz-araclar/sifre-kasasi', element: <SifreKasasiPage /> },
+      { path: 'ucretsiz-araclar', element: <UcretsizAraclarPage /> },
+      { path: 'kvkk-aydinlatma-metni', element: <KvkkAydinlatmaPage /> },
+      { path: 'gizlilik-politikasi', element: <GizlilikPolitikasiPage /> },
+      { path: 'cerez-politikasi', element: <CookiePolicyPage /> },
+      { path: 'acik-riza-metni', element: <AcikRizaMetniPage /> },
+      { path: 'kullanim-sartlari', element: <KullanimSartlariPage /> },
+      { path: 'kvkk', element: <Navigate to="/kvkk-aydinlatma-metni" replace /> },
+      { path: 'gizlilik', element: <Navigate to="/gizlilik-politikasi" replace /> },
       { path: ':slug', element: <CmsSlugRoute /> },
     ],
   },
@@ -114,13 +138,20 @@ export const router = createBrowserRouter([
               { path: 'yazilar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'yazilar/:postId', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'kategoriler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
-              { path: 'menuler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'menuler', element: <AdminMenuPage /> },
+              { path: 'footer', element: <AdminFooterPage /> },
+              { path: 'hizmet-kartlari', element: <AdminServiceCardsPage /> },
+              { path: 'cozum-kartlari', element: <AdminSolutionCardsPage /> },
+              { path: 'ucretsiz-arac-kartlari', element: <AdminFreeToolCardsPage /> },
               { path: 'medya', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'hizmetler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'markalar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'mesajlar', element: <AdminMessagesPage /> },
               { path: 'teklifler', element: <AdminQuotesPage /> },
               { path: 'icerik-duzenle', element: <AdminContentEditPage /> },
+              { path: 'blog-yazilari', element: <AdminBlogPostsPage /> },
+              { path: 'yasal-sayfalar', element: <AdminLegalPagesPage /> },
+              { path: 'firma-bilgileri', element: <AdminCompanyInfoPage /> },
               { path: 'ayarlar', element: <AdminSettingsPage /> },
               { path: 'test-builder', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'cms', element: <Navigate to="/admin/icerik-duzenle" replace /> },

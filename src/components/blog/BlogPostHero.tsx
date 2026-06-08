@@ -1,27 +1,39 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { getBlogCategoryGradient } from '../../lib/blogCategoryStyle'
+import { isValidImageSrc } from '../../lib/resolveImageUrl'
 
 type BlogPostHeroProps = {
-  image: string
+  image?: string | null
   title: string
   category: string
   date: string
+  authorName?: string
   readTime?: string
 }
 
-export function BlogPostHero({ image, title, category, date, readTime = '8 dk okuma' }: BlogPostHeroProps) {
+export function BlogPostHero({
+  image,
+  title,
+  category,
+  date,
+  authorName,
+  readTime = '8 dk okuma',
+}: BlogPostHeroProps) {
   const gradient = getBlogCategoryGradient(category)
+  const showImage = image && isValidImageSrc(image)
 
   return (
     <section className={`relative min-h-[22rem] overflow-hidden bg-gradient-to-br md:min-h-[26rem] ${gradient}`}>
-      <img
-        src={image}
-        alt={title}
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        decoding="sync"
-      />
+      {showImage ? (
+        <img
+          src={image}
+          alt={title}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+          decoding="sync"
+        />
+      ) : null}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_40%,rgba(255,255,255,0.12),transparent_60%)]" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
 
@@ -39,6 +51,12 @@ export function BlogPostHero({ image, title, category, date, readTime = '8 dk ok
             {category}
           </span>
           <span className="text-sm text-white/80">{date}</span>
+          {authorName ? (
+            <>
+              <span className="text-white/50">·</span>
+              <span className="text-sm text-white/80">{authorName}</span>
+            </>
+          ) : null}
           <span className="text-white/50">·</span>
           <span className="text-sm text-white/80">{readTime}</span>
         </div>

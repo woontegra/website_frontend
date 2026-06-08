@@ -8,9 +8,14 @@
     "check:seo": "node scripts/check-seo-files.mjs",
     "check:images": "node scripts/check-public-images.mjs",
     "check:image-integrity": "node scripts/check-image-integrity.mjs",
-    "build": "npm run check:images && tsc -b && vite build",
+    "build": "npm run check:images && npm run check:seo && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "smoke": "node scripts/smoke-site.mjs && node scripts/smoke-admin.mjs",
+    "smoke:site": "node scripts/smoke-site.mjs",
+    "smoke:admin": "node scripts/smoke-admin.mjs",
+    "smoke:full": "node scripts/smoke-admin.mjs && node scripts/smoke-full.mjs",
+    "smoke:production": "node scripts/smoke-production.mjs"
   },
   "dependencies": {
     "@craftjs/core": "^0.2.12",

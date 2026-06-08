@@ -1,37 +1,54 @@
+import { useEffect, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Share2, Facebook, Twitter, Linkedin } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { BlogPostHero } from '../components/blog/BlogPostHero'
-import { defaultBlogData } from '../data/allPagesData'
-import { getBlogPostContent } from '../data/blogPostContent'
-import { getBlogCoverImage } from '../data/frontendImages'
-import { usePageSection } from '../hooks/usePageSection'
-import type { BlogPost, BlogPostsSectionData } from '../types/sections'
-
-function normalizeSlug(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/ı/g, 'i')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-}
-
-function findPostBySlug(posts: BlogPost[], slug: string): BlogPost | undefined {
-  const normalized = normalizeSlug(slug)
-  return posts.find((post) => normalizeSlug(post.slug) === normalized)
-}
+import {
+  findBlogPostBySlug,
+  formatBlogDate,
+  getBlogListCategories,
+  getPublicBlogPosts,
+} from '../data/blogPostsContent'
+import { useBlogPosts } from '../hooks/useBlogPosts'
+import { resolveBlogCoverImage } from '../lib/blogCoverImage'
+import { normalizeBlogSlug } from '../lib/blogSlug'
 
 export function BlogPostDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { data: blogData, loaded } = usePageSection<BlogPostsSectionData>('blog', 'blog-posts', defaultBlogData)
+  const { bundle, loaded } = useBlogPosts()
 
-  const posts = blogData?.posts ?? []
-  const post = slug ? findPostBySlug(posts, slug) : undefined
-  const categories = (blogData?.categories ?? []).filter((c) => c !== 'Tümü')
-  const otherPosts = posts.filter((p) => slug && normalizeSlug(p.slug) !== normalizeSlug(slug)).slice(0, 3)
+  const post = slug ? findBlogPostBySlug(bundle, slug, true) : undefined
+  const publishedPosts = useMemo(() => getPublicBlogPosts(bundle), [bundle])
+  const categories = useMemo(() => getBlogListCategories(bundle).filter((c) => c !== 'Tümü'), [bundle])
+
+  const otherPosts = publishedPosts
+    .filter((item) => slug && normalizeBlogSlug(item.slug) !== normalizeBlogSlug(slug))
+    .slice(0, 3)
+
+  useEffect(() => {
+    if (!post) return
+
+    const title = post.seoTitle?.trim() || `${post.title} | Woontegra`
+    const description = post.seoDescription?.trim() || post.excerpt
+
+    document.title = title
+
+    let meta = document.querySelector('meta[name="description"]')
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.setAttribute('name', 'description')
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute('content', description)
+
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.setAttribute('rel', 'canonical')
+      document.head.appendChild(canonical)
+    }
+    canonical.setAttribute('href', `${window.location.origin}/blog/${post.slug}`)
+  }, [post])
 
   if (!loaded) {
     return (
@@ -43,24 +60,29 @@ export function BlogPostDetailPage() {
 
   if (!post) {
     return (
-      <div className="py-16 text-center">
-        <p className="text-slate-600">Yazı bulunamadı.</p>
-        <Link to="/blog" className="mt-4 inline-block text-green-600 hover:text-green-700">
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center">
+        <h1 className="text-2xl font-bold text-slate-900">Yazı bulunamadı</h1>
+        <p className="mt-3 text-slate-600">
+          Aradığınız blog yazısı yayından kaldırılmış, taslak durumunda veya mevcut değil.
+        </p>
+        <Link to="/blog" className="mt-6 inline-block font-semibold text-emerald-700 hover:text-emerald-800">
           ← Blog'a Dön
         </Link>
       </div>
     )
   }
 
-  const content = getBlogPostContent(post.slug, post.excerpt)
+  const coverImage = resolveBlogCoverImage(post.imageKey, post.slug)
+  const contentHtml = post.content?.trim() || `<p>${post.excerpt}</p>`
 
   return (
     <div className="bg-slate-50">
       <BlogPostHero
-        image={getBlogCoverImage(post.slug)}
+        image={coverImage}
         title={post.title}
         category={post.category}
-        date={post.date}
+        date={formatBlogDate(post.publishedAt)}
+        authorName={post.authorName}
       />
 
       <div className="container mx-auto max-w-7xl px-4 py-12">
@@ -69,22 +91,32 @@ export function BlogPostDetailPage() {
             <article className="rounded-3xl bg-white p-8 shadow-lg md:p-12">
               <div
                 className="prose prose-lg max-w-none prose-headings:text-slate-900 prose-h2:mb-6 prose-h2:mt-12 prose-h2:text-3xl prose-h2:font-bold prose-h3:mb-4 prose-h3:mt-8 prose-h3:text-2xl prose-h3:font-bold prose-p:mb-6 prose-p:leading-relaxed prose-p:text-slate-700"
-                dangerouslySetInnerHTML={{ __html: content }}
+                dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
+
+              {post.tags.length > 0 ? (
+                <div className="mt-10 flex flex-wrap gap-2">
+                  {post.tags.map((tag) => (
+                    <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
 
               <div className="mt-16 border-t border-gray-200 pt-8">
                 <h3 className="mb-4 text-xl font-bold text-slate-900">Paylaş</h3>
                 <div className="flex gap-4">
-                  <button className="rounded-lg bg-blue-600 p-3 text-white transition-colors hover:bg-blue-700">
+                  <button type="button" className="rounded-lg bg-blue-600 p-3 text-white transition-colors hover:bg-blue-700">
                     <Facebook className="h-5 w-5" />
                   </button>
-                  <button className="rounded-lg bg-sky-500 p-3 text-white transition-colors hover:bg-sky-600">
+                  <button type="button" className="rounded-lg bg-sky-500 p-3 text-white transition-colors hover:bg-sky-600">
                     <Twitter className="h-5 w-5" />
                   </button>
-                  <button className="rounded-lg bg-blue-700 p-3 text-white transition-colors hover:bg-blue-800">
+                  <button type="button" className="rounded-lg bg-blue-700 p-3 text-white transition-colors hover:bg-blue-800">
                     <Linkedin className="h-5 w-5" />
                   </button>
-                  <button className="rounded-lg bg-slate-200 p-3 text-slate-700 transition-colors hover:bg-slate-300">
+                  <button type="button" className="rounded-lg bg-slate-200 p-3 text-slate-700 transition-colors hover:bg-slate-300">
                     <Share2 className="h-5 w-5" />
                   </button>
                 </div>
@@ -105,18 +137,22 @@ export function BlogPostDetailPage() {
               <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
                 <h3 className="mb-6 text-2xl font-bold text-slate-900">Diğer Yazılar</h3>
                 <div className="space-y-4">
-                  {otherPosts.map((other) => (
-                    <Link
-                      key={other.id}
-                      to={`/blog/${other.slug}`}
-                      className="block rounded-xl border border-gray-100 p-4 transition-colors hover:bg-slate-50"
-                    >
-                      <div className="mb-2 text-xs font-semibold text-green-600">{other.category}</div>
-                      <h4 className="font-semibold text-slate-900 transition-colors hover:text-green-600">
-                        {other.title}
-                      </h4>
-                    </Link>
-                  ))}
+                  {otherPosts.length ? (
+                    otherPosts.map((other) => (
+                      <Link
+                        key={other.id}
+                        to={`/blog/${other.slug}`}
+                        className="block rounded-xl border border-gray-100 p-4 transition-colors hover:bg-slate-50"
+                      >
+                        <div className="mb-2 text-xs font-semibold text-green-600">{other.category}</div>
+                        <h4 className="font-semibold text-slate-900 transition-colors hover:text-green-600">
+                          {other.title}
+                        </h4>
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500">Başka yayınlanmış yazı bulunmuyor.</p>
+                  )}
                 </div>
               </div>
 

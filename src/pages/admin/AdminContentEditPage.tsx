@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
 import { HomeSections } from '../../components/admin/HomeSections'
+import { AdminSifreKasasiEditor } from '../../components/admin/AdminSifreKasasiEditor'
+import { AdminMarketingPageEditor } from '../../components/admin/AdminMarketingPageEditor'
+import { defaultServicesPageContent } from '../../data/servicesPageContent'
+import { defaultSolutionsPageContent } from '../../data/solutionsPageContent'
+import { defaultUcretsizAraclarPageContent } from '../../data/ucretsizAraclarPageContent'
+import { BlogPostsManageNotice } from '../../components/admin/BlogPostsManageNotice'
 import { PageSections } from '../../components/admin/PageSections'
 import { getApiUrl } from '../../config/api'
 import { 
@@ -391,6 +397,10 @@ const PAGE_CONFIGS = {
   solutions: { title: 'Çözümler', fields: [] },
   blog: { title: 'Blog', fields: [] },
   faq: { title: 'SSS', fields: [] },
+  sifreKasasiPage: { title: '→ Şifre Kasası', category: 'Ücretsiz Araçlar', fields: [] },
+  servicesPage: { title: '→ Hizmetler Landing', category: 'Sayfa Landing', fields: [] },
+  solutionsPage: { title: '→ Çözümler Landing', category: 'Sayfa Landing', fields: [] },
+  ucretsizAraclarPage: { title: '→ Ücretsiz Araçlar Landing', category: 'Sayfa Landing', fields: [] },
 }
 
 export function AdminContentEditPage() {
@@ -460,7 +470,8 @@ export function AdminContentEditPage() {
         <h2 className="text-sm font-semibold text-slate-900 mb-3">Sayfalar</h2>
         <div className="space-y-0.5">
           {Object.entries(PAGE_CONFIGS).map(([key, config]) => {
-            const isServiceCategory = 'category' in config && config.category === 'Hizmetler'
+            const isNestedCategory =
+              'category' in config && (config.category === 'Hizmetler' || config.category === 'Ücretsiz Araçlar')
             
             return (
               <button
@@ -470,7 +481,7 @@ export function AdminContentEditPage() {
                   selectedPage === key
                     ? 'bg-green-600 text-white font-medium'
                     : 'hover:bg-slate-50 text-slate-700'
-                } ${isServiceCategory ? 'pl-6 text-xs' : ''}`}
+                } ${isNestedCategory ? 'pl-6 text-xs' : ''}`}
               >
                 {config.title}
               </button>
@@ -523,9 +534,38 @@ export function AdminContentEditPage() {
         ) : selectedPage === 'solutions' ? (
           <PageSections pageSlug="solutions" defaultData={defaultSolutionsData} storageKey="woontegra_solutions_page" />
         ) : selectedPage === 'blog' ? (
-          <PageSections pageSlug="blog" defaultData={defaultBlogData} storageKey="woontegra_blog_page" />
+          <PageSections
+            pageSlug="blog"
+            defaultData={defaultBlogData}
+            storageKey="woontegra_blog_page"
+            excludeSectionTypes={['blog-posts']}
+            topNotice={<BlogPostsManageNotice />}
+          />
         ) : selectedPage === 'faq' ? (
           <PageSections pageSlug="faq" defaultData={defaultFAQData} storageKey="woontegra_faq_page" />
+        ) : selectedPage === 'sifreKasasiPage' ? (
+          <AdminSifreKasasiEditor />
+        ) : selectedPage === 'servicesPage' ? (
+          <AdminMarketingPageEditor
+            pageKey="servicesPage"
+            pageTitle="Hizmetler Landing"
+            livePath="/hizmetler"
+            defaults={defaultServicesPageContent}
+          />
+        ) : selectedPage === 'solutionsPage' ? (
+          <AdminMarketingPageEditor
+            pageKey="solutionsPage"
+            pageTitle="Çözümler Landing"
+            livePath="/cozumler"
+            defaults={defaultSolutionsPageContent}
+          />
+        ) : selectedPage === 'ucretsizAraclarPage' ? (
+          <AdminMarketingPageEditor
+            pageKey="ucretsizAraclarPage"
+            pageTitle="Ücretsiz Araçlar Landing"
+            livePath="/ucretsiz-araclar"
+            defaults={defaultUcretsizAraclarPageContent}
+          />
         ) : loading ? (
           <div className="card p-8 text-center">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500 mx-auto mb-3"></div>

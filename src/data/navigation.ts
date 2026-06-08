@@ -17,7 +17,7 @@ export const mainNav: NavLink[] = [
     ],
   },
   { label: 'Çözümler', href: '/cozumler' },
-  { label: 'Ücretsiz Araçlar', href: '/ucretsiz-araclar/sifre-kasasi' },
+  { label: 'Ücretsiz Araçlar', href: '/ucretsiz-araclar' },
   { label: 'Blog', href: '/blog' },
   { label: 'SSS', href: '/sss' },
   { label: 'İletişim', href: '/iletisim' },
@@ -39,9 +39,15 @@ export const footerNav = {
     { label: 'Teklif Al', href: '/teklif-al' },
   ],
   yasal: [
-    { label: 'KVKK', href: '/kvkk' },
-    { label: 'Gizlilik Politikası', href: '/gizlilik' },
+    { label: 'KVKK Aydınlatma Metni', href: '/kvkk-aydinlatma-metni' },
+    { label: 'Gizlilik Politikası', href: '/gizlilik-politikasi' },
     { label: 'Çerez Politikası', href: '/cerez-politikasi' },
+    { label: 'Açık Rıza Metni', href: '/acik-riza-metni' },
     { label: 'Kullanım Şartları', href: '/kullanim-sartlari' },
+    { label: 'Çerez Tercihleri', action: 'cookie-preferences' as const },
   ],
 }
+
+export type FooterLink =
+  | { label: string; href: string; action?: undefined }
+  | { label: string; action: 'cookie-preferences'; href?: undefined }

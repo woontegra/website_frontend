@@ -4,8 +4,16 @@ import { clearAdminSession } from '../lib/adminAuth'
 const adminNav = [
   { label: 'Dashboard', href: '/admin' },
   { label: 'İçerik Düzenle', href: '/admin/icerik-duzenle' },
+  { label: 'Menü Yönetimi', href: '/admin/menuler' },
+  { label: 'Footer Yönetimi', href: '/admin/footer' },
+  { label: 'Hizmet Kartları', href: '/admin/hizmet-kartlari' },
+  { label: 'Çözüm Kartları', href: '/admin/cozum-kartlari' },
+  { label: 'Ücretsiz Araç Kartları', href: '/admin/ucretsiz-arac-kartlari' },
+  { label: 'Blog Yazıları', href: '/admin/blog-yazilari' },
   { label: 'Teklifler', href: '/admin/teklifler' },
   { label: 'Mesajlar', href: '/admin/mesajlar' },
+  { label: 'Yasal Sayfalar', href: '/admin/yasal-sayfalar' },
+  { label: 'Firma Bilgileri', href: '/admin/firma-bilgileri' },
   { label: 'Ayarlar', href: '/admin/ayarlar' },
 ]
 

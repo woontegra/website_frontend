@@ -1,133 +1,97 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import { Button } from '../components/ui/Button'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { ArrowRight, BookOpen } from 'lucide-react'
 import { BlogCoverImage } from '../components/blog/BlogCoverImage'
+import { PageHero } from '../components/page/PageHero'
+import { CTASection } from '../components/page/CTASection'
+import { SectionHeader } from '../components/ui/SectionHeader'
 import { defaultBlogData } from '../data/allPagesData'
-import { getBlogCoverImage } from '../data/frontendImages'
+import { formatBlogDate, getBlogListCategories, getPublicBlogPosts } from '../data/blogPostsContent'
+import { frontendImages } from '../data/frontendImages'
+import { useBlogPosts } from '../hooks/useBlogPosts'
 import { useHeroSection } from '../hooks/useHeroSection'
-import { usePageSection } from '../hooks/usePageSection'
-import type { BlogPostsSectionData } from '../types/sections'
+import { resolveBlogCoverImage } from '../lib/blogCoverImage'
+import { LAYOUT_CONTAINER_CLASS } from '../lib/layoutConstants'
+import { SURFACE_MUTED } from '../lib/sectionSurfaces'
 
 export function BlogPage() {
   const { heroData } = useHeroSection('blog', defaultBlogData)
-  const { data: blogData } = usePageSection<BlogPostsSectionData>('blog', 'blog-posts', defaultBlogData)
-  const [selectedCategory, setSelectedCategory] = useState('Tümü')
+  const { bundle, loaded } = useBlogPosts()
+  const [searchParams] = useSearchParams()
+  const initialCategory = searchParams.get('category') || 'Tümü'
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory)
 
-  const heroTag = heroData?.tag || 'Blog'
+  useEffect(() => {
+    setSelectedCategory(searchParams.get('category') || 'Tümü')
+  }, [searchParams])
+
+  useEffect(() => {
+    document.title = 'Blog | Woontegra'
+    let meta = document.querySelector('meta[name="description"]')
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.setAttribute('name', 'description')
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute(
+      'content',
+      'Yazılım, e-ticaret, SaaS ve dijital büyüme hakkında Woontegra blog yazıları ve rehberler.',
+    )
+  }, [])
+
   const heroTitle = heroData?.title || 'Bilgi, Deneyim ve Dijital İçerikler'
   const heroSubtitle =
     heroData?.subtitle ||
     'Yazılım, e-ticaret ve dijital sistemler hakkında güncel içerikler ve rehberler.'
 
-  const categories = blogData?.categories ?? ['Tümü', 'Yazılım', 'E-Ticaret', 'SaaS', 'Marka & Patent', 'Dijital Büyüme']
-  const posts = blogData?.posts ?? []
-  const featuredPost = posts.find((post) => post.featured) ?? posts[0]
+  const publishedPosts = useMemo(() => getPublicBlogPosts(bundle), [bundle])
+  const categories = useMemo(() => getBlogListCategories(bundle), [bundle])
+  const featuredPost = publishedPosts.find((post) => post.featured) ?? publishedPosts[0]
 
   const filteredPosts =
-    selectedCategory === 'Tümü' ? posts : posts.filter((post) => post.category === selectedCategory)
+    selectedCategory === 'Tümü'
+      ? publishedPosts
+      : publishedPosts.filter((post) => post.category === selectedCategory)
+
+  const listPosts = filteredPosts.filter((post) => post.id !== featuredPost?.id || selectedCategory !== 'Tümü')
 
   return (
     <div className="bg-white">
-      {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(34,197,94,0.15),transparent_70%)]" />
-        <div className="container relative z-10 mx-auto max-w-5xl px-4 text-center">
-          <div className="mb-6 inline-block rounded-full bg-green-500/20 px-4 py-1.5">
-            <span className="text-sm font-medium text-green-400">{heroTag}</span>
-          </div>
-          <h1 className="mb-6 text-5xl font-bold leading-tight text-white md:text-6xl">
-            {heroTitle}
-          </h1>
-          <p className="text-xl leading-relaxed text-gray-300 md:text-2xl">{heroSubtitle}</p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Blog"
+        title={heroTitle}
+        description={heroSubtitle}
+        image={frontendImages.pages.blog}
+        imageAlt="Woontegra blog"
+        highlights={[{ title: 'Uzman içerikler' }, { title: 'Dijital büyüme rehberleri' }]}
+      />
 
-      {/* KATEGORİLER */}
-      <section className="border-b border-gray-200 bg-slate-50 py-16">
-        <div className="container mx-auto max-w-7xl px-4">
-          <h2 className="mb-8 text-center text-3xl font-bold text-slate-900">Kategoriler</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-xl px-6 py-3 font-semibold transition-all ${
-                  selectedCategory === category
-                    ? 'bg-slate-900 text-white shadow-lg'
-                    : 'border border-gray-200 bg-white text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* BLOG LİSTESİ */}
-      <section className="bg-white py-24">
-        <div className="container mx-auto max-w-7xl px-4">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPosts.map((post) => (
-              <Link
-                key={post.id}
-                to={`/blog/${post.slug}`}
-                className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
-              >
-                <BlogCoverImage
-                  src={getBlogCoverImage(post.slug)}
-                  alt={post.title}
-                  category={post.category}
-                  className="aspect-video"
-                />
-                <div className="p-6">
-                  <div className="mb-3 text-sm font-semibold text-green-600">{post.category}</div>
-                  <h3 className="mb-3 text-xl font-bold text-slate-900 transition-colors group-hover:text-green-600">
-                    {post.title}
-                  </h3>
-                  <p className="mb-4 line-clamp-2 text-slate-600">{post.excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-500">{post.date}</span>
-                    <span className="flex items-center font-semibold text-green-600 transition-all group-hover:gap-2">
-                      Devamını Oku
-                      <ArrowRight className="ml-1 h-4 w-4 transition-all group-hover:ml-2" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ÖNE ÇIKAN YAZI */}
-      {featuredPost ? (
-        <section className="bg-slate-50 py-24">
-          <div className="container mx-auto max-w-7xl px-4">
-            <h2 className="mb-12 text-center text-3xl font-bold text-slate-900">Öne Çıkan İçerik</h2>
+      {featuredPost && selectedCategory === 'Tümü' ? (
+        <section className={`${SURFACE_MUTED} py-20 md:py-24`}>
+          <div className={LAYOUT_CONTAINER_CLASS}>
+            <SectionHeader eyebrow="Öne Çıkan" title="Editörün Seçimi" centered />
             <Link
               to={`/blog/${featuredPost.slug}`}
-              className="group block overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl transition-all duration-300 hover:shadow-3xl"
+              className="group block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all hover:shadow-xl"
             >
-              <div className="grid gap-0 lg:grid-cols-2">
+              <div className="grid lg:grid-cols-2">
                 <BlogCoverImage
-                  src={getBlogCoverImage(featuredPost.slug)}
+                  src={resolveBlogCoverImage(featuredPost.imageKey, featuredPost.slug)}
                   alt={featuredPost.title}
                   category={featuredPost.category}
-                  className="aspect-video lg:aspect-auto lg:min-h-[320px]"
+                  className="aspect-video lg:min-h-[300px] lg:aspect-auto"
                 />
-                <div className="flex flex-col justify-center p-12">
-                  <div className="mb-4 text-sm font-semibold text-green-600">{featuredPost.category}</div>
-                  <h3 className="mb-6 text-4xl font-bold text-slate-900 transition-colors group-hover:text-green-600">
+                <div className="flex flex-col justify-center p-8 md:p-12">
+                  <p className="text-sm font-semibold text-emerald-600">{featuredPost.category}</p>
+                  <h3 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 transition-colors group-hover:text-emerald-700 md:text-3xl">
                     {featuredPost.title}
                   </h3>
-                  <p className="mb-6 text-xl leading-relaxed text-slate-600">{featuredPost.excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500">{featuredPost.date}</span>
-                    <span className="flex items-center text-lg font-bold text-green-600 transition-all group-hover:gap-3">
+                  <p className="body-text mt-4">{featuredPost.excerpt}</p>
+                  <div className="mt-6 flex items-center justify-between">
+                    <span className="text-sm text-slate-500">{formatBlogDate(featuredPost.publishedAt)}</span>
+                    <span className="flex items-center text-sm font-semibold text-emerald-700">
                       Devamını Oku
-                      <ArrowRight className="ml-2 h-5 w-5 transition-all group-hover:ml-3" />
+                      <ArrowRight className="ml-1 h-4 w-4" />
                     </span>
                   </div>
                 </div>
@@ -137,21 +101,80 @@ export function BlogPage() {
         </section>
       ) : null}
 
-      {/* CTA */}
-      <section className="bg-gradient-to-br from-slate-800 via-gray-800 to-slate-900 py-24">
-        <div className="container mx-auto max-w-4xl px-4 text-center">
-          <h2 className="mb-6 text-5xl font-bold text-white">Daha Fazla İçerik İçin Takipte Kalın</h2>
-          <p className="mb-10 text-xl text-gray-300">Yeni içerikler ve güncellemeler için bizi takip edin.</p>
-          <Button
-            variant="outline"
-            to="/iletisim"
-            className="border-white/30 px-12 py-4 text-lg text-white transition-all hover:bg-white hover:text-slate-900"
-          >
-            İletişime Geç
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+      <section className="border-b border-slate-200 py-10">
+        <div className={LAYOUT_CONTAINER_CLASS}>
+          <div className="flex flex-wrap justify-center gap-3">
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => setSelectedCategory(category)}
+                className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-all ${
+                  selectedCategory === category
+                    ? 'bg-slate-900 text-white shadow-md'
+                    : 'border border-slate-200 bg-white text-slate-600 hover:border-emerald-200'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
+
+      <section className="py-20 md:py-24">
+        <div className={LAYOUT_CONTAINER_CLASS}>
+          {!loaded ? (
+            <p className="text-center text-slate-500">Blog yazıları yükleniyor…</p>
+          ) : listPosts.length === 0 ? (
+            <div className="mx-auto max-w-lg rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-8 py-16 text-center">
+              <BookOpen className="mx-auto mb-4 h-12 w-12 text-slate-400" />
+              <h3 className="text-xl font-bold text-slate-900">
+                {publishedPosts.length === 0 ? 'Henüz yayınlanmış yazı yok' : 'Bu kategoride yazı bulunamadı'}
+              </h3>
+              <p className="body-text mt-3">
+                {publishedPosts.length === 0
+                  ? 'Yeni blog yazıları çok yakında burada olacak.'
+                  : 'Başka bir kategori seçerek devam edebilirsiniz.'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {listPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  to={`/blog/${post.slug}`}
+                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg"
+                >
+                  <BlogCoverImage
+                    src={resolveBlogCoverImage(post.imageKey, post.slug)}
+                    alt={post.title}
+                    category={post.category}
+                    className="aspect-video"
+                  />
+                  <div className="p-6">
+                    <p className="text-sm font-semibold text-emerald-600">{post.category}</p>
+                    <h3 className="mt-2 text-lg font-bold text-slate-900 transition-colors group-hover:text-emerald-700">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">{post.excerpt}</p>
+                    <div className="mt-4 flex items-center justify-between text-sm">
+                      <span className="text-slate-500">{formatBlogDate(post.publishedAt)}</span>
+                      <span className="font-semibold text-emerald-700">Oku →</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <CTASection
+        title="Daha fazla içerik için takipte kalın"
+        description="Yeni yazılar ve güncellemeler için bizimle iletişime geçebilirsiniz."
+        buttonText="İletişime Geç"
+      />
     </div>
   )
 }
