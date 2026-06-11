@@ -69,6 +69,91 @@ const FEATURES = [
   'Kurulumlu ve portable Windows sürümü',
 ]
 
+const SHA256_SETUP = '4458bd3fcd81dbe59756c153b6ddc49c6071edaaec985f1e49543d8d626d8d48'
+const SHA256_PORTABLE = '1ee0235702960c2df766241258319799c0fbfc791fa38fd1b9e33b62d2b15db9'
+
+function SmartScreenModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open, onClose])
+
+  if (!open) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+      role="presentation"
+      onClick={onClose}
+    >
+      <div
+        className="mx-4 max-h-[min(90vh,880px)] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="smartscreen-modal-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="relative sticky top-0 z-[1] border-b border-slate-100 bg-white px-5 py-4 pr-14 md:px-6 md:pr-16">
+          <h2 id="smartscreen-modal-title" className="text-lg font-semibold text-heading md:text-xl">
+            Windows Güvenlik Uyarısı Hakkında
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg border border-slate-200 p-2 text-slate-600 transition-colors hover:bg-slate-50 md:right-4"
+            aria-label="Kapat"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="space-y-4 px-5 py-5 text-sm leading-relaxed text-surface-700 md:px-6 md:text-[15px]">
+          <p>
+            Woontegra Şifre Kasası yeni yayınlanan ücretsiz bir masaüstü uygulamasıdır. Uygulama henüz kod imzalama
+            sertifikasıyla imzalanmadığı için bazı Windows bilgisayarlarda &quot;Bilinmeyen yayıncı&quot; veya
+            &quot;Windows kişisel bilgisayarınızı korudu&quot; uyarısı görünebilir.
+          </p>
+          <p>
+            Uygulamayı yalnızca resmi Woontegra web sitesi veya GitHub Release bağlantısı üzerinden indirmeniz önerilir.
+            Kurulum sırasında uyarı görürseniz &quot;Daha fazla bilgi&quot; seçeneğine tıklayarak &quot;Yine de
+            çalıştır&quot; adımıyla devam edebilirsiniz.
+          </p>
+          <p>Dosya bütünlüğünü kontrol etmek isteyen kullanıcılar için SHA256 doğrulama değerleri:</p>
+          <dl className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+            <div>
+              <dt className="text-xs font-semibold text-heading">Kurulumlu</dt>
+              <dd className="mt-1 break-all font-mono text-[11px] text-surface-600 md:text-xs">{SHA256_SETUP}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold text-heading">Portable</dt>
+              <dd className="mt-1 break-all font-mono text-[11px] text-surface-600 md:text-xs">{SHA256_PORTABLE}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="border-t border-slate-100 bg-slate-50/80 px-5 py-4 md:px-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 md:w-auto md:min-w-[140px]"
+          >
+            Anladım
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const FAQ_ITEMS = [
   {
     question: 'Program ücretli mi?',
@@ -317,6 +402,8 @@ export function SifreKasasiPage() {
   const [stats, setStats] = useState<SifreKasasiDownloadStats | null>(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [statsFailed, setStatsFailed] = useState(false)
+  const [smartScreenModalOpen, setSmartScreenModalOpen] = useState(false)
+  const closeSmartScreenModal = useCallback(() => setSmartScreenModalOpen(false), [])
 
   const heroScreenshot = DEFAULT_SIFRE_KASASI_SCREENSHOT
 
@@ -390,6 +477,19 @@ export function SifreKasasiPage() {
                   <Download className="mr-2 h-5 w-5" />
                   {page.portableButtonText}
                 </Button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p className="text-xs leading-relaxed text-slate-400 md:text-sm">
+                  <span>Windows SmartScreen uyarısı görebilirsiniz.</span>{' '}
+                  <button
+                    type="button"
+                    onClick={() => setSmartScreenModalOpen(true)}
+                    className="font-medium text-sky-300 underline decoration-sky-400/50 underline-offset-2 transition-colors hover:text-sky-200"
+                  >
+                    Detayları göster
+                  </button>
+                </p>
               </div>
 
               <div className="flex flex-col gap-3">
@@ -519,6 +619,16 @@ export function SifreKasasiPage() {
               </Button>
             </Card>
           </div>
+
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setSmartScreenModalOpen(true)}
+              className="text-sm font-medium text-accent-blue underline decoration-accent-blue/30 underline-offset-2 hover:text-accent-blue/90"
+            >
+              Windows uyarısı hakkında
+            </button>
+          </div>
         </div>
       </section>
 
@@ -570,6 +680,8 @@ export function SifreKasasiPage() {
         buttonText="Kurulum Sürümünü İndir"
         buttonHref={SETUP_DOWNLOAD_URL}
       />
+
+      <SmartScreenModal open={smartScreenModalOpen} onClose={closeSmartScreenModal} />
     </div>
   )
 }
