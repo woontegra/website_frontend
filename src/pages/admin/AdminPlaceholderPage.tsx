@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
 
 const titles: Record<string, string> = {
@@ -10,17 +10,26 @@ const titles: Record<string, string> = {
   'iletisim-formlari': 'İletişim Formları',
   'mail-bildirimleri': 'Mail Bildirimleri',
   ayarlar: 'Ayarlar',
+  markalar: 'Markalar',
+  ozellikler: 'Özellikler',
+  stok: 'Stok',
+  sayfalar: 'Sayfalar',
+  seo: 'SEO',
 }
 
 export function AdminPlaceholderPage() {
-  const { section } = useParams<{ section: string }>()
-  const title = section ? titles[section] ?? 'Sayfa' : 'Sayfa'
+  const location = useLocation()
+  const segment = location.pathname.replace(/^\/admin\/?/, '').split('/').filter(Boolean)[0] ?? ''
+  const title = titles[segment] ?? 'Sayfa'
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-heading mb-6">{title}</h1>
+      <h1 className="page-title mb-2">{title}</h1>
       <Card className="p-6">
-        <p className="text-surface-500">Bu bölüm backend ve yetkilendirme bağlandığında doldurulacak.</p>
+        <p className="text-slate-600">
+          Bu modül bir sonraki fazda tamamlanacak. Mağaza için asıl işlevler Ürünler, Kategoriler, Medya ve Menü
+          Yönetimi altında.
+        </p>
       </Card>
     </div>
   )

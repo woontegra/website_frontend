@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { ScrollToTop } from '../components/ScrollToTop'
 import { Navbar } from '../components/layout/Navbar'
+import { PublicBreadcrumbs } from '../components/layout/PublicBreadcrumbs'
 import { Footer } from '../components/layout/Footer'
 import { MaintenancePage } from '../pages/MaintenancePage'
 import { CookieConsentBanner } from '../components/cookie/CookieConsentBanner'
@@ -33,7 +34,10 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex min-h-screen flex-col bg-white">
         <SiteTracking />
         <Navbar />
-        <main className={`w-full flex-1 ${SURFACE_PAGE_ROOT}`}>{children ?? <Outlet />}</main>
+        <main className={`w-full flex-1 ${SURFACE_PAGE_ROOT}`}>
+          <PublicBreadcrumbs />
+          {children ?? <Outlet />}
+        </main>
         <Footer />
         <CookieConsentBanner />
       </div>

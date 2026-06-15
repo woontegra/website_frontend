@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/uploads/branding/:path*",
-      "destination": "https://websitebackend-production-ab6e.up.railway.app/uploads/branding/:path*"
+      "source": "/api/:path*",
+      "destination": "https://websitebackend-production-ab6e.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://websitebackend-production-ab6e.up.railway.app/uploads/:path*"
     },
     {
       "source": "/((?!images/|assets/|uploads/|sitemap\\.xml|robots\\.txt|.*\\..*).*)",

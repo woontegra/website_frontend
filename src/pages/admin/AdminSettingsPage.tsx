@@ -513,7 +513,7 @@ export function AdminSettingsPage() {
           <div>
             <label className="label">Para Birimi</label>
             <select value={settings.currency} onChange={(e) => setSettings({ ...settings, currency: e.target.value })} className="input w-full">
-              <option value="TRY">₺ (TRY)</option>
+              <option value="TRY">TRY — Türk lirası</option>
               <option value="USD">$ (USD)</option>
               <option value="EUR">€ (EUR)</option>
             </select>

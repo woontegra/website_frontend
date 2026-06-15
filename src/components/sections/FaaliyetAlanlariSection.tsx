@@ -110,7 +110,7 @@ function VisualSaaS() {
             </div>
             <div className="rounded-xl bg-white shadow-sm border border-slate-200/80 p-2 flex-1">
               <div className="text-[9px] text-slate-400">Gelir</div>
-              <div className="text-sm font-bold text-blue-600 tabular-nums">₺842k</div>
+              <div className="text-sm font-bold text-blue-600 tabular-nums">842.000,00 ₺</div>
             </div>
           </div>
         </div>
@@ -157,10 +157,10 @@ function VisualEcommerce() {
         </div>
         <div className="p-2.5 grid grid-cols-2 gap-2 flex-1 content-start">
           {[
-            { bg: 'from-amber-100 to-orange-200', price: '₺449' },
-            { bg: 'from-emerald-100 to-teal-200', price: '₺1.290' },
-            { bg: 'from-rose-100 to-pink-200', price: '₺89' },
-            { bg: 'from-sky-100 to-blue-200', price: '₺2.100' },
+            { bg: 'from-amber-100 to-orange-200', price: '449,00 ₺' },
+            { bg: 'from-emerald-100 to-teal-200', price: '1.290,00 ₺' },
+            { bg: 'from-rose-100 to-pink-200', price: '89,00 ₺' },
+            { bg: 'from-sky-100 to-blue-200', price: '2.100,00 ₺' },
           ].map((p, i) => (
             <div key={i} className="rounded-lg border border-slate-100 overflow-hidden shadow-sm bg-white">
               <div className={`aspect-[4/3] bg-gradient-to-br ${p.bg}`} />
@@ -238,7 +238,7 @@ function VisualDigital() {
             <div className="aspect-video bg-slate-800/50 flex items-center justify-center text-lg">🎮</div>
             <div className="p-1.5">
               <div className="h-1.5 w-3/4 bg-white/20 rounded mb-1" />
-              <div className="text-[8px] text-emerald-400 font-bold">₺199</div>
+              <div className="text-[8px] text-emerald-400 font-bold">199,00 ₺</div>
             </div>
           </div>
         ))}
@@ -277,7 +277,7 @@ export function FaaliyetAlanlariSection({ surfaceBg }: { surfaceBg?: string }) {
             Faaliyet Alanlarımız
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-slate-600">
-            Yazılım, e-ticaret, SaaS ve dijital ürün üretiminde aktif olarak sistemler kuruyor ve uzun vadede
+            Yazılım, e-ticaret, web tabanlı ürünler ve dijital ürün üretiminde aktif olarak sistemler kuruyor ve uzun vadede
             sürdürülebilir şekilde yönetiyoruz.
           </p>
         </header>

@@ -77,7 +77,7 @@ export function SiteLogo({
         cacheVersion={logoUpdatedAt}
         alt={HEADER_LOGO_ALT}
         width={width}
-        className={`block w-auto max-w-[200px] object-contain object-left min-[1200px]:max-w-[280px] h-[var(--logo-h-mobile)] min-[1200px]:h-[var(--logo-h-desktop)] ${className ?? ''}`}
+        className={`block h-[var(--logo-h-mobile)] max-h-9 w-auto max-w-[min(11rem,42vw)] object-contain object-left min-[1200px]:h-[var(--logo-h-desktop)] min-[1200px]:max-h-10 min-[1200px]:max-w-[11.5rem] ${className ?? ''}`}
         textClassName={textClassName}
         wrapperMinHeight={mobileH}
         wrapperStyle={cssVars}

@@ -1,11 +1,9 @@
 import type { FetchPageResult, PageApiResponse } from '../types/page-api'
-import { getApiUrl } from '../config/api'
-
-const base = () => getApiUrl()
+import { buildApiUrl } from '../config/api'
 
 export async function fetchPublicPage(slug: string): Promise<FetchPageResult> {
   try {
-    const res = await fetch(`${base()}/api/pages/${encodeURIComponent(slug)}`)
+    const res = await fetch(buildApiUrl(`/pages/${encodeURIComponent(slug)}`))
     const json = await res.json().catch(() => ({}))
     if (res.status === 404) return { status: 'not_found' }
     if (!res.ok) {

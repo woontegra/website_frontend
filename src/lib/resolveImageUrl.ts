@@ -1,4 +1,4 @@
-import { getApiBase } from '../config/api'
+import { resolveAssetUrl } from './resolveAssetUrl'
 
 /**
  * Eski panel/veritabanı kayıtlarındaki bilinen path hatalarını düzeltir.
@@ -61,15 +61,8 @@ export function resolveImageUrl(url?: string | null): string {
     return normalized
   }
 
-  if (normalized.startsWith('/uploads/branding/')) {
-    if (typeof window !== 'undefined') {
-      return normalized
-    }
-    return `${getApiBase()}${normalized}`
-  }
-
   if (normalized.startsWith('/uploads/')) {
-    return ''
+    return resolveAssetUrl(normalized)
   }
 
   if (normalized.startsWith('/')) {

@@ -14,9 +14,9 @@ const projectTypes = [
 ]
 
 const budgetOptions = [
-  { value: '10-50K', label: '10-50K TL' },
-  { value: '50-100K', label: '50-100K TL' },
-  { value: '100K+', label: '100K+ TL' },
+  { value: '10-50K', label: '10–50 bin ₺' },
+  { value: '50-100K', label: '50–100 bin ₺' },
+  { value: '100K+', label: '100 bin ₺ ve üzeri' },
 ]
 
 const timelineOptions = [

@@ -19,7 +19,6 @@ export const mainNav: NavLink[] = [
   { label: 'Çözümler', href: '/cozumler' },
   { label: 'Ücretsiz Araçlar', href: '/ucretsiz-araclar' },
   { label: 'Blog', href: '/blog' },
-  { label: 'SSS', href: '/sss' },
   { label: 'İletişim', href: '/iletisim' },
 ]
 

@@ -32,6 +32,15 @@ import { AdminFreeToolCardsPage } from '../pages/admin/AdminFreeToolCardsPage'
 import { AdminLegalPagesPage } from '../pages/admin/AdminLegalPagesPage'
 import { AdminCompanyInfoPage } from '../pages/admin/AdminCompanyInfoPage'
 import { AdminBlogPostsPage } from '../pages/admin/AdminBlogPostsPage'
+import { AdminProductsPage } from '../pages/admin/AdminProductsPage'
+import { AdminProductFormPage } from '../pages/admin/AdminProductFormPage'
+import { AdminMediaLibraryPage } from '../pages/admin/AdminMediaLibraryPage'
+import { AdminProductCategoriesPage } from '../pages/admin/AdminProductCategoriesPage'
+import { AdminNavigationMenuPage } from '../pages/admin/AdminNavigationMenuPage'
+import { AdminOrdersPage } from '../pages/admin/AdminOrdersPage'
+import { AdminOrderDetailPage } from '../pages/admin/AdminOrderDetailPage'
+import { AdminPaymentSettingsPage } from '../pages/admin/AdminPaymentSettingsPage'
+import { AdminLegalDocumentsPage } from '../pages/admin/AdminLegalDocumentsPage'
 import { SoftwareDevelopmentPage } from '../pages/SoftwareDevelopmentPage'
 import { WebDesignPage } from '../pages/WebDesignPage'
 import { EcommercePage } from '../pages/EcommercePage'
@@ -53,6 +62,28 @@ import { KvkkAydinlatmaPage } from '../pages/legal/KvkkAydinlatmaPage'
 import { GizlilikPolitikasiPage } from '../pages/legal/GizlilikPolitikasiPage'
 import { AcikRizaMetniPage } from '../pages/legal/AcikRizaMetniPage'
 import { KullanimSartlariPage } from '../pages/legal/KullanimSartlariPage'
+import { LegalCheckoutDocumentPage } from '../pages/legal/LegalCheckoutDocumentPage'
+import { UrunlerPage } from '../pages/UrunlerPage'
+import { UrunDetailPage } from '../pages/UrunDetailPage'
+import { CartPage } from '../pages/CartPage'
+import { CheckoutPage } from '../pages/CheckoutPage'
+import { CheckoutSlugRedirect } from '../pages/CheckoutSlugRedirect'
+import { CustomerLoginPage } from '../pages/CustomerLoginPage'
+import { CustomerRegisterPage } from '../pages/CustomerRegisterPage'
+import { SiparisSorgulaPage } from '../pages/SiparisSorgulaPage'
+import { HesabimLayout } from '../layouts/HesabimLayout'
+import { RequireCustomer } from '../components/store/RequireCustomer'
+import { HesabimDashboardPage } from '../pages/HesabimDashboardPage'
+import { HesabimOrdersPage } from '../pages/HesabimOrdersPage'
+import { HesabimCustomerOrderPage } from '../pages/HesabimCustomerOrderPage'
+import { HesabimAddressesPage } from '../pages/HesabimAddressesPage'
+import { HesabimAccountDetailsPage } from '../pages/HesabimAccountDetailsPage'
+import { HesabimFavoritesPage } from '../pages/HesabimFavoritesPage'
+import { SiparislerimPage } from '../pages/SiparislerimPage'
+import { SiparisDetayPage } from '../pages/SiparisDetayPage'
+import { OrderSuccessPage } from '../pages/OrderSuccessPage'
+import { OrderFailPage } from '../pages/OrderFailPage'
+import { KategoriPage } from '../pages/KategoriPage'
 import { RequireAdmin } from '../components/admin/RequireAdmin'
 
 function CmsSlugRoute() {
@@ -87,11 +118,44 @@ export const router = createBrowserRouter([
       { path: 'cozumler/:slug', element: <CozumDetailRoute /> },
       { path: 'ucretsiz-araclar/sifre-kasasi', element: <SifreKasasiPage /> },
       { path: 'ucretsiz-araclar', element: <UcretsizAraclarPage /> },
+      { path: 'urunler', element: <UrunlerPage /> },
+      { path: 'sepet', element: <CartPage /> },
+      { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'checkout/:slug', element: <CheckoutSlugRedirect /> },
+      { path: 'giris', element: <CustomerLoginPage /> },
+      { path: 'kayit', element: <CustomerRegisterPage /> },
+      { path: 'siparis-sorgula', element: <SiparisSorgulaPage /> },
+      {
+        path: 'hesabim',
+        element: <RequireCustomer />,
+        children: [
+          {
+            element: <HesabimLayout />,
+            children: [
+              { index: true, element: <HesabimDashboardPage /> },
+              { path: 'siparisler', element: <HesabimOrdersPage /> },
+              { path: 'siparisler/:orderNo', element: <HesabimCustomerOrderPage /> },
+              { path: 'adresler', element: <HesabimAddressesPage /> },
+              { path: 'hesap-detaylari', element: <HesabimAccountDetailsPage /> },
+              { path: 'favoriler', element: <HesabimFavoritesPage /> },
+            ],
+          },
+        ],
+      },
+      { path: 'siparislerim', element: <SiparislerimPage /> },
+      { path: 'siparis/:orderNo', element: <SiparisDetayPage /> },
+      { path: 'siparis-basarili', element: <OrderSuccessPage /> },
+      { path: 'siparis-basarili/:orderNo', element: <OrderSuccessPage /> },
+      { path: 'siparis-basarisiz/:orderNo', element: <OrderFailPage /> },
+      { path: 'siparis-basarisiz', element: <OrderFailPage /> },
+      { path: 'urun/:slug', element: <UrunDetailPage /> },
+      { path: 'kategori/:slug', element: <KategoriPage /> },
       { path: 'kvkk-aydinlatma-metni', element: <KvkkAydinlatmaPage /> },
       { path: 'gizlilik-politikasi', element: <GizlilikPolitikasiPage /> },
       { path: 'cerez-politikasi', element: <CookiePolicyPage /> },
       { path: 'acik-riza-metni', element: <AcikRizaMetniPage /> },
       { path: 'kullanim-sartlari', element: <KullanimSartlariPage /> },
+      { path: 'yasal/:docSlug', element: <LegalCheckoutDocumentPage /> },
       { path: 'kvkk', element: <Navigate to="/kvkk-aydinlatma-metni" replace /> },
       { path: 'gizlilik', element: <Navigate to="/gizlilik-politikasi" replace /> },
       { path: ':slug', element: <CmsSlugRoute /> },
@@ -133,23 +197,33 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboardPage /> },
-              { path: 'sayfalar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'sayfalar/:pageId', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'sayfalar', element: <AdminPlaceholderPage /> },
               { path: 'yazilar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'yazilar/:postId', element: <Navigate to="/admin/icerik-duzenle" replace /> },
-              { path: 'kategoriler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
+              { path: 'kategoriler', element: <AdminProductCategoriesPage /> },
+              { path: 'medya', element: <AdminMediaLibraryPage /> },
+              { path: 'menu-yonetimi', element: <AdminNavigationMenuPage /> },
+              { path: 'markalar', element: <AdminPlaceholderPage /> },
+              { path: 'ozellikler', element: <AdminPlaceholderPage /> },
+              { path: 'stok', element: <AdminPlaceholderPage /> },
+              { path: 'seo', element: <AdminPlaceholderPage /> },
               { path: 'menuler', element: <AdminMenuPage /> },
               { path: 'footer', element: <AdminFooterPage /> },
               { path: 'hizmet-kartlari', element: <AdminServiceCardsPage /> },
               { path: 'cozum-kartlari', element: <AdminSolutionCardsPage /> },
               { path: 'ucretsiz-arac-kartlari', element: <AdminFreeToolCardsPage /> },
-              { path: 'medya', element: <Navigate to="/admin/icerik-duzenle" replace /> },
-              { path: 'hizmetler', element: <Navigate to="/admin/icerik-duzenle" replace /> },
-              { path: 'markalar', element: <Navigate to="/admin/icerik-duzenle" replace /> },
               { path: 'mesajlar', element: <AdminMessagesPage /> },
               { path: 'teklifler', element: <AdminQuotesPage /> },
               { path: 'icerik-duzenle', element: <AdminContentEditPage /> },
               { path: 'blog-yazilari', element: <AdminBlogPostsPage /> },
+              { path: 'urunler', element: <AdminProductsPage /> },
+              { path: 'urunler/yeni', element: <AdminProductFormPage /> },
+              { path: 'urunler/:id', element: <AdminProductFormPage /> },
+              { path: 'siparisler', element: <AdminOrdersPage /> },
+              { path: 'siparisler/:id', element: <AdminOrderDetailPage /> },
+              { path: 'odeme-ayarlari', element: <AdminPaymentSettingsPage /> },
+              { path: 'yasal-metinler', element: <AdminLegalDocumentsPage /> },
               { path: 'yasal-sayfalar', element: <AdminLegalPagesPage /> },
               { path: 'firma-bilgileri', element: <AdminCompanyInfoPage /> },
               { path: 'ayarlar', element: <AdminSettingsPage /> },

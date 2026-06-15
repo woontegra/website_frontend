@@ -1,50 +1,164 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { ShoppingCart, UserRound } from 'lucide-react'
 import { useMenuItems, type MenuItemConfig } from '../../hooks/useMenuItems'
-import { Button } from '../ui/Button'
+import { useCart } from '../../hooks/useCart'
+import { getCustomerProfile, getCustomerToken, isCustomerToken, isJwtExpired } from '../../lib/customerAuth'
 import { SiteLogo } from '../ui/SiteLogo'
+import { LAYOUT_CONTAINER_CLASS } from '../../lib/layoutConstants'
+import { menuPathForNav } from '../../lib/menuPathForNav'
 
-const NAV_CONTAINER_CLASS = 'mx-auto max-w-[1280px] px-4 sm:px-5 min-[1200px]:px-6'
+/** Taşma olursa önce bu path'lerdeki öğeler "Diğer"e alınır (sırayla). */
+const FOLD_PATHS_IN_ORDER = ['/blog', '/ucretsiz-araclar', '/cozumler', '/urunler', '/iletisim']
 
-function NavLinkItem({
-  item,
-  active,
-  onClick,
-}: {
-  item: MenuItemConfig
-  active: boolean
-  onClick?: () => void
-}) {
-  const cls = `whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
-    active ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
-  }`
-  if (item.href.startsWith('http')) {
+function idsFromPaths(items: MenuItemConfig[], paths: string[]): string[] {
+  const ids: string[] = []
+  for (const p of paths) {
+    const it = items.find((i) => menuPathForNav(i.href) === p)
+    if (it) ids.push(it.id)
+  }
+  return ids
+}
+
+/**
+ * ResizeObserver + ölçüm döngüsü yok: viewport genişliğine göre "Diğer"e alınacak id'ler.
+ * Yatay scroll yok; dar masaüstünde Blog/Ücretsiz Araçlar/Çözümler (ve gerekirse katalog linkleri) katlanır.
+ */
+function computeFoldIdsForViewport(w: number, items: MenuItemConfig[]): string[] {
+  if (w < 1200) return []
+  if (w >= 1500) return []
+  if (w >= 1380) return idsFromPaths(items, ['/blog'])
+  if (w >= 1280) return idsFromPaths(items, ['/blog', '/ucretsiz-araclar'])
+  const base = idsFromPaths(items, FOLD_PATHS_IN_ORDER)
+  if (w < 1240) {
+    const catalogExtra = items.filter((i) => i.id.startsWith('catalog-nav-')).map((i) => i.id)
+    return [...new Set([...base, ...catalogExtra])]
+  }
+  return base
+}
+
+function foldedEntryActive(item: MenuItemConfig, isActive: (h: string) => boolean): boolean {
+  if (isActive(item.href)) return true
+  return !!item.children?.some((c) => isActive(c.href))
+}
+
+/** Aynı href birden fazla kaynaktan gelirse (CMS + katalog) tek satırda gösterilecek kazanan. */
+function pickPreferredMenuItemForPath(path: string, candidates: MenuItemConfig[]): MenuItemConfig {
+  if (candidates.length === 1) return candidates[0]!
+  if (path === '/urunler') {
+    const catalog = candidates.find((i) => i.id.startsWith('catalog-nav-'))
+    if (catalog) return catalog
     return (
-      <a
-        href={item.href}
-        className={cls}
-        onClick={onClick}
-        target={item.openInNewTab ? '_blank' : undefined}
-        rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
-      >
-        {item.label}
-      </a>
+      candidates.find((i) => i.id === 'desktop-store') ??
+      candidates.find((i) => !i.id.startsWith('catalog-nav-')) ??
+      candidates[0]!
     )
   }
-  return (
-    <Link to={item.href} className={cls} onClick={onClick}>
-      {item.label}
-    </Link>
-  )
+  if (path === '/iletisim') {
+    return (
+      candidates.find((i) => i.id === 'contact') ??
+      candidates.find((i) => !i.id.startsWith('catalog-nav-')) ??
+      candidates[0]!
+    )
+  }
+  const nonCat = candidates.find((i) => !i.id.startsWith('catalog-nav-'))
+  return nonCat ?? candidates[0]!
 }
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
-  const { items: navItems, headerButtons } = useMenuItems()
+  const { items: navItems } = useMenuItems()
+  const { count: cartCount } = useCart()
   const location = useLocation()
+
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1536,
+  )
+
+  const customerAuthed = (() => {
+    const t = getCustomerToken()
+    return !!(t && !isJwtExpired(t) && isCustomerToken(t))
+  })()
+  const hesapHref = customerAuthed ? '/hesabim' : '/giris'
+  const customerProfile = customerAuthed ? getCustomerProfile() : null
+  const hesapActive =
+    location.pathname.startsWith('/hesabim') ||
+    location.pathname === '/giris' ||
+    location.pathname === '/kayit' ||
+    location.pathname === '/siparis-sorgula' ||
+    location.pathname.startsWith('/siparislerim') ||
+    location.pathname.startsWith('/siparis/')
+
+  /** Aynı href birden fazla menü kaynağından geliyorsa (statik + navigation-menu) yalnızca birini göster. */
+  const navItemsFiltered = useMemo(() => {
+    const sorted = [...navItems].sort((a, b) => a.order - b.order)
+    const byPath = new Map<string, MenuItemConfig[]>()
+    for (const i of sorted) {
+      const p = menuPathForNav(i.href)
+      if (!p || p === '#') continue
+      if (!byPath.has(p)) byPath.set(p, [])
+      byPath.get(p)!.push(i)
+    }
+    const winnerByPath = new Map<string, MenuItemConfig>()
+    for (const [p, cands] of byPath) {
+      winnerByPath.set(p, pickPreferredMenuItemForPath(p, cands))
+    }
+    const seen = new Set<string>()
+    const out: MenuItemConfig[] = []
+    for (const i of sorted) {
+      const p = menuPathForNav(i.href)
+      if (!p || p === '#') continue
+      const winner = winnerByPath.get(p)
+      if (!winner || winner.id !== i.id) continue
+      if (seen.has(p)) continue
+      seen.add(p)
+      out.push(i)
+    }
+    const norm = (s: string) => s.trim().toLocaleLowerCase('tr-TR')
+    const masa = out.filter((i) => norm(i.label) === 'masaüstü araçlar')
+    if (masa.length <= 1) return out
+    const keep =
+      masa.find((i) => i.id === 'desktop-store') ??
+      masa.find((i) => menuPathForNav(i.href) === '/urunler') ??
+      masa[0]!
+    return out.filter((i) => norm(i.label) !== 'masaüstü araçlar' || i.id === keep.id)
+  }, [navItems])
+
+  const centerItemsAll = useMemo(() => navItemsFiltered, [navItemsFiltered])
+
+  const overflowFoldIds = useMemo(
+    () => computeFoldIdsForViewport(viewportWidth, centerItemsAll),
+    [viewportWidth, centerItemsAll],
+  )
+
+  const visibleCenterItems = useMemo(
+    () => centerItemsAll.filter((i) => !overflowFoldIds.includes(i.id)),
+    [centerItemsAll, overflowFoldIds],
+  )
+
+  const foldedItems = useMemo(
+    () => centerItemsAll.filter((i) => overflowFoldIds.includes(i.id)),
+    [centerItemsAll, overflowFoldIds],
+  )
+
+  useEffect(() => {
+    const update = () => setViewportWidth(window.innerWidth)
+    update()
+    let tid: ReturnType<typeof setTimeout> | undefined
+    const onResize = () => {
+      clearTimeout(tid)
+      tid = setTimeout(update, 100)
+    }
+    window.addEventListener('resize', onResize)
+    return () => {
+      window.removeEventListener('resize', onResize)
+      clearTimeout(tid)
+    }
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -64,7 +178,7 @@ export function Navbar() {
       return (
         <div
           key={item.id}
-          className="relative"
+          className="relative shrink-0"
           onMouseEnter={() => setMegaOpen(item.id)}
           onMouseLeave={() => setMegaOpen(null)}
         >
@@ -77,7 +191,7 @@ export function Navbar() {
             {item.label}
           </button>
           {megaOpen === item.id && (
-            <div className="absolute left-0 top-full pt-1">
+            <div className="absolute left-0 top-full z-50 pt-1">
               <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
                 {item.children!.map((child) => (
                   <Link
@@ -107,7 +221,7 @@ export function Navbar() {
         <a
           key={item.id}
           href={item.href}
-          className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
+          className={`shrink-0 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
             isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
           }`}
           target={item.openInNewTab ? '_blank' : undefined}
@@ -122,7 +236,7 @@ export function Navbar() {
       <Link
         key={item.id}
         to={item.href}
-        className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
+        className={`shrink-0 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
           isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
         }`}
       >
@@ -130,6 +244,60 @@ export function Navbar() {
       </Link>
     )
   }
+
+  const renderFoldedDropdownRow = (item: MenuItemConfig) => {
+    if (item.children && item.children.length > 0) {
+      return (
+        <div key={item.id} className="border-b border-slate-100 py-1 last:border-b-0">
+          <div className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</div>
+          {item.children.map((child) => (
+            <Link
+              key={child.id}
+              to={child.href}
+              className={`block px-4 py-2.5 text-sm transition-colors ${
+                isActive(child.href)
+                  ? 'bg-accent-blue-soft/50 text-accent-blue'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+              onClick={() => setMoreMenuOpen(false)}
+              target={child.openInNewTab ? '_blank' : undefined}
+              rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
+            >
+              {child.label}
+            </Link>
+          ))}
+        </div>
+      )
+    }
+    if (item.href.startsWith('http')) {
+      return (
+        <a
+          key={item.id}
+          href={item.href}
+          className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+          onClick={() => setMoreMenuOpen(false)}
+          target={item.openInNewTab ? '_blank' : undefined}
+          rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+        >
+          {item.label}
+        </a>
+      )
+    }
+    return (
+      <Link
+        key={item.id}
+        to={item.href}
+        className={`block px-4 py-2.5 text-sm transition-colors ${
+          isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+        }`}
+        onClick={() => setMoreMenuOpen(false)}
+      >
+        {item.label}
+      </Link>
+    )
+  }
+
+  const moreMenuActive = foldedItems.some((i) => foldedEntryActive(i, isActive))
 
   const renderMobileItem = (item: MenuItemConfig) => {
     const hasChildren = item.children && item.children.length > 0
@@ -202,43 +370,111 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'border-b border-gray-200 bg-white/80 shadow-header-scroll backdrop-blur-md'
-          : 'border-b border-gray-100 bg-white/95 backdrop-blur-sm'
+      className={`sticky top-0 z-50 w-full max-w-full overflow-x-hidden border-b bg-white transition-all duration-300 ${
+        scrolled ? 'border-gray-200 shadow-header-scroll' : 'border-gray-100'
       }`}
     >
-      <div className={NAV_CONTAINER_CLASS}>
-        <div className="flex items-center justify-between gap-2 py-2 min-[1200px]:gap-3">
+      <div className={`${LAYOUT_CONTAINER_CLASS} w-full`}>
+        <div className="flex min-h-[3rem] flex-nowrap items-center gap-2 py-2 min-[1200px]:grid min-[1200px]:min-h-[3.25rem] min-[1200px]:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] min-[1200px]:items-center min-[1200px]:gap-x-4 min-[1200px]:gap-y-0 min-[1200px]:py-2.5">
           <Link
             to="/"
-            className="flex shrink-0 items-center"
+            className="relative z-20 flex shrink-0 items-center self-center min-[1200px]:justify-start"
             aria-label="Woontegra Ana Sayfa"
           >
             <SiteLogo placement="navbar" />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-0 min-[1200px]:flex">
-            {navItems.map(renderDesktopItem)}
-          </nav>
-
-          <div className="hidden shrink-0 items-center gap-1.5 min-[1200px]:flex">
-            {headerButtons.map((btn, index) =>
-              btn.isButton ? (
-                <Button
-                  key={btn.id}
-                  variant={index === 0 ? 'ghost' : 'primary'}
-                  size="sm"
-                  to={btn.href.startsWith('http') ? undefined : btn.href}
-                  href={btn.href.startsWith('http') ? btn.href : undefined}
-                  className="whitespace-nowrap !px-3.5 !py-2 text-[14px]"
+          <div className="hidden min-h-0 min-w-0 min-[1200px]:col-start-2 min-[1200px]:flex min-[1200px]:min-w-0 min-[1200px]:items-center min-[1200px]:justify-center min-[1200px]:overflow-hidden min-[1200px]:px-1">
+            <nav
+              aria-label="Ana menü"
+              className="flex min-w-0 max-w-full flex-nowrap items-center justify-center gap-1"
+            >
+              {visibleCenterItems.map(renderDesktopItem)}
+              {foldedItems.length > 0 ? (
+                <div
+                  className="relative shrink-0"
+                  onMouseEnter={() => setMoreMenuOpen(true)}
+                  onMouseLeave={() => setMoreMenuOpen(false)}
                 >
-                  {btn.label}
-                </Button>
-              ) : (
-                <NavLinkItem key={btn.id} item={btn} active={isActive(btn.href)} />
-              ),
-            )}
+                  <button
+                    type="button"
+                    className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors ${
+                      moreMenuActive ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
+                    }`}
+                    aria-expanded={moreMenuOpen}
+                    aria-haspopup="true"
+                  >
+                    Diğer
+                    <span className="ml-0.5 text-slate-400" aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  {moreMenuOpen ? (
+                    <div className="absolute right-0 top-full z-50 pt-1">
+                      <div className="min-w-[220px] max-w-[min(100vw-2rem,280px)] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
+                        {foldedItems.map(renderFoldedDropdownRow)}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </nav>
+          </div>
+
+          <div className="hidden min-h-9 shrink-0 items-center justify-end gap-2 min-[1200px]:col-start-3 min-[1200px]:flex">
+            <Link
+              to="/sepet"
+              className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                isActive('/sepet') ? 'text-accent-blue' : 'text-slate-600 hover:text-slate-900'
+              }`}
+              aria-label="Sepet"
+            >
+              <ShoppingCart className="h-5 w-5" aria-hidden />
+              {cartCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+            <div className="flex h-9 max-w-[9rem] items-center gap-1 border-l border-slate-200/80 pl-2">
+              <Link
+                to={hesapHref}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                  hesapActive ? 'text-accent-blue' : 'text-slate-600 hover:text-slate-900'
+                }`}
+                aria-label="Hesabım"
+                title={customerProfile?.name ? customerProfile.name : 'Hesabım'}
+              >
+                <UserRound className="h-5 w-5" aria-hidden />
+              </Link>
+              {customerProfile?.name ? (
+                <span className="max-w-[6.5rem] truncate text-xs font-medium leading-tight text-slate-600" title={customerProfile.name}>
+                  {customerProfile.name}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="ml-auto flex shrink-0 items-center gap-0.5 min-[1200px]:hidden">
+            <Link
+              to="/sepet"
+              className={`relative rounded-lg p-2 ${isActive('/sepet') ? 'text-accent-blue' : 'text-slate-600'}`}
+              aria-label="Sepet"
+            >
+              <ShoppingCart className="h-6 w-6" aria-hidden />
+              {cartCount > 0 && (
+                <span className="absolute right-0 top-0 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              to={hesapHref}
+              className={`rounded-lg p-2 ${hesapActive ? 'text-accent-blue' : 'text-slate-600'}`}
+              aria-label="Hesabım"
+            >
+              <UserRound className="h-6 w-6" aria-hidden />
+            </Link>
           </div>
 
           <button
@@ -260,22 +496,26 @@ export function Navbar() {
         {mobileOpen && (
           <div className="animate-fade-in border-t border-gray-200 py-4 min-[1200px]:hidden">
             <nav className="flex flex-col gap-1">
-              {navItems.map(renderMobileItem)}
-              <div className="mt-4 flex gap-2 border-t border-gray-200 px-4 pt-4">
-                {headerButtons.map((btn, index) => (
-                  <Button
-                    key={btn.id}
-                    variant={index === 0 ? 'outline' : 'primary'}
-                    size="sm"
-                    to={btn.href.startsWith('http') ? undefined : btn.href}
-                    href={btn.href.startsWith('http') ? btn.href : undefined}
-                    className="flex-1"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {btn.label}
-                  </Button>
-                ))}
+              <div className="flex gap-2 px-4 pb-2">
+                <Link
+                  to="/sepet"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-semibold text-slate-800"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <ShoppingCart className="h-4 w-4" aria-hidden />
+                  Sepet
+                  {cartCount > 0 ? ` (${cartCount})` : ''}
+                </Link>
+                <Link
+                  to={hesapHref}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-semibold text-slate-800"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <UserRound className="h-4 w-4" aria-hidden />
+                  {customerAuthed ? 'Hesabım' : 'Giriş'}
+                </Link>
               </div>
+              {navItemsFiltered.map(renderMobileItem)}
             </nav>
           </div>
         )}
