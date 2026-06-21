@@ -39,6 +39,10 @@ export type AdminProduct = {
   isActive: boolean
   purchaseEnabled: boolean
   licenseMonths: number
+  licenseRequired: boolean
+  licenseAppCode: string | null
+  licenseDays: number | null
+  licenseMaxDevices: number | null
   featureBullets: string
   isFeatured: boolean
   sortOrder: number
@@ -72,6 +76,10 @@ export type AdminProductInput = {
   isActive: boolean
   purchaseEnabled: boolean
   licenseMonths: number
+  licenseRequired: boolean
+  licenseAppCode: string | null
+  licenseDays: number | null
+  licenseMaxDevices: number | null
   featureBullets: string
   isFeatured: boolean
   sortOrder: number

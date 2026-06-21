@@ -7,6 +7,7 @@ import {
   FileText,
   FolderTree,
   ImageIcon,
+  KeyRound,
   LayoutDashboard,
   Link2,
   Package,
@@ -50,6 +51,7 @@ export const adminNavigationGroups: AdminNavGroup[] = [
     items: [
       { label: 'Ürünler', href: '/admin/urunler', icon: Package },
       { label: 'Siparişler', href: '/admin/siparisler', icon: Receipt },
+      { label: 'Lisanslar', href: '/admin/lisanslar', icon: KeyRound },
       { label: 'Kategoriler', href: '/admin/kategoriler', icon: FolderTree },
       { label: 'Markalar', href: '/admin/markalar', icon: Tag, placeholder: true },
       { label: 'Özellikler', href: '/admin/ozellikler', icon: Percent, placeholder: true },

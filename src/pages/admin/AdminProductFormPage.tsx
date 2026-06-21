@@ -8,6 +8,7 @@ import type { CatalogMedia, CatalogMediaFileType } from '../../api/catalog-media
 import { MediaPickerModal } from '../../components/admin/MediaPickerModal'
 import { MediaThumb } from '../../components/ui/MediaThumb'
 import { resolveAssetUrl } from '../../lib/resolveAssetUrl'
+import { DESKTOP_LICENSE_PROGRAMS } from '../../constants/desktopLicensePrograms'
 
 const TR_MAP: Record<string, string> = {
   ç: 'c',
@@ -47,6 +48,10 @@ const emptyForm: AdminProductInput = {
   isActive: true,
   purchaseEnabled: true,
   licenseMonths: 12,
+  licenseRequired: false,
+  licenseAppCode: 'MUVEKKIL_KASA_DESKTOP',
+  licenseDays: 365,
+  licenseMaxDevices: 1,
   featureBullets: '',
   isFeatured: false,
   sortOrder: 0,
@@ -116,6 +121,11 @@ export function AdminProductFormPage() {
           isActive: p.isActive,
           purchaseEnabled: p.purchaseEnabled !== false,
           licenseMonths: typeof p.licenseMonths === 'number' && p.licenseMonths > 0 ? p.licenseMonths : 12,
+          licenseRequired: p.licenseRequired === true,
+          licenseAppCode: p.licenseAppCode ?? 'MUVEKKIL_KASA_DESKTOP',
+          licenseDays: typeof p.licenseDays === 'number' && p.licenseDays > 0 ? p.licenseDays : 365,
+          licenseMaxDevices:
+            typeof p.licenseMaxDevices === 'number' && p.licenseMaxDevices > 0 ? p.licenseMaxDevices : 1,
           featureBullets: p.featureBullets ?? '',
           isFeatured: p.isFeatured,
           sortOrder: p.sortOrder,
@@ -183,6 +193,15 @@ export function AdminProductFormPage() {
     ) {
       return 'Dijital ürünlerde indirme/teslimat bağlantısı zorunludur.'
     }
+    if (form.licenseRequired && !form.licenseAppCode?.trim()) {
+      return 'Lisanslı ürün için program seçin.'
+    }
+    if (form.licenseRequired && (!form.licenseDays || form.licenseDays < 1)) {
+      return 'Lisans süresi (gün) en az 1 olmalıdır.'
+    }
+    if (form.licenseRequired && (!form.licenseMaxDevices || form.licenseMaxDevices < 1)) {
+      return 'Cihaz hakkı en az 1 olmalıdır.'
+    }
     return null
   }
 
@@ -212,6 +231,10 @@ export function AdminProductFormPage() {
         coverImageMediaId: form.coverImageMediaId ?? null,
         downloadMediaId: form.downloadMediaId ?? null,
         galleryMediaIds: galleryRows.map((r) => r.mediaId),
+        licenseRequired: form.licenseRequired,
+        licenseAppCode: form.licenseRequired ? form.licenseAppCode : null,
+        licenseDays: form.licenseRequired ? form.licenseDays : null,
+        licenseMaxDevices: form.licenseRequired ? form.licenseMaxDevices : null,
       }
       if (advancedUrl) {
         payload.coverImage = (form.coverImage ?? '').trim()
@@ -364,6 +387,91 @@ export function AdminProductFormPage() {
                 }
               />
               <p className="mt-1 text-xs text-slate-500">SaaS için tipik: 12 ay (yıllık).</p>
+            </div>
+            <div className="md:col-span-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <h3 className="mb-3 text-sm font-semibold text-slate-800">Merkezi lisans (Woontegra-Lisans-Server)</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800">
+                    <input
+                      type="checkbox"
+                      checked={form.licenseRequired}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          licenseRequired: e.target.checked,
+                          licenseAppCode: e.target.checked
+                            ? form.licenseAppCode || 'MUVEKKIL_KASA_DESKTOP'
+                            : null,
+                        })
+                      }
+                      className="rounded border-slate-300"
+                    />
+                    Lisanslı ürün mü? (satış sonrası merkezi lisans sunucusu)
+                  </label>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Evet seçilirse website iç lisans üretmez; Woontegra-Lisans-Server lisans ve mail gönderir.
+                    Ücretsiz ürünler (ör. Şifre Kasası) için Hayır bırakın.
+                  </p>
+                </div>
+                {form.licenseRequired ? (
+                  <>
+                    <div>
+                      <label className="label" htmlFor="licenseAppCode">
+                        Lisans programı
+                      </label>
+                      <select
+                        id="licenseAppCode"
+                        className="input w-full"
+                        value={form.licenseAppCode ?? ''}
+                        onChange={(e) => setForm({ ...form, licenseAppCode: e.target.value })}
+                        required
+                      >
+                        {DESKTOP_LICENSE_PROGRAMS.map((prog) => (
+                          <option key={prog.appCode} value={prog.appCode}>
+                            {prog.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="label" htmlFor="licenseDays">
+                        Lisans süresi (gün)
+                      </label>
+                      <input
+                        id="licenseDays"
+                        type="number"
+                        min={1}
+                        max={3650}
+                        className="input w-full"
+                        value={form.licenseDays ?? 365}
+                        onChange={(e) =>
+                          setForm({ ...form, licenseDays: Number.parseInt(e.target.value, 10) || 365 })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="label" htmlFor="licenseMaxDevices">
+                        Cihaz hakkı
+                      </label>
+                      <input
+                        id="licenseMaxDevices"
+                        type="number"
+                        min={1}
+                        max={50}
+                        className="input w-full"
+                        value={form.licenseMaxDevices ?? 1}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            licenseMaxDevices: Number.parseInt(e.target.value, 10) || 1,
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                ) : null}
+              </div>
             </div>
             <div className="flex flex-col justify-end">
               <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800">

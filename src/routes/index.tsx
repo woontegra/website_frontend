@@ -39,6 +39,8 @@ import { AdminProductCategoriesPage } from '../pages/admin/AdminProductCategorie
 import { AdminNavigationMenuPage } from '../pages/admin/AdminNavigationMenuPage'
 import { AdminOrdersPage } from '../pages/admin/AdminOrdersPage'
 import { AdminOrderDetailPage } from '../pages/admin/AdminOrderDetailPage'
+import { AdminLicensesPage } from '../pages/admin/AdminLicensesPage'
+import { AdminLicenseDetailPage } from '../pages/admin/AdminLicenseDetailPage'
 import { AdminPaymentSettingsPage } from '../pages/admin/AdminPaymentSettingsPage'
 import { AdminLegalDocumentsPage } from '../pages/admin/AdminLegalDocumentsPage'
 import { SoftwareDevelopmentPage } from '../pages/SoftwareDevelopmentPage'
@@ -222,6 +224,8 @@ export const router = createBrowserRouter([
               { path: 'urunler/:id', element: <AdminProductFormPage /> },
               { path: 'siparisler', element: <AdminOrdersPage /> },
               { path: 'siparisler/:id', element: <AdminOrderDetailPage /> },
+              { path: 'lisanslar', element: <AdminLicensesPage /> },
+              { path: 'lisanslar/:id', element: <AdminLicenseDetailPage /> },
               { path: 'odeme-ayarlari', element: <AdminPaymentSettingsPage /> },
               { path: 'yasal-metinler', element: <AdminLegalDocumentsPage /> },
               { path: 'yasal-sayfalar', element: <AdminLegalPagesPage /> },
