@@ -358,3 +358,162 @@ export function CheckoutMarketingConsentBody() {
     </article>
   )
 }
+
+function SellerInfoList({ company }: { company: LegalCompanyInfo }) {
+  const sellerAddr = [company.address?.trim(), [company.district, company.city].filter(Boolean).join(' / ')].filter(Boolean).join(' — ')
+  return (
+    <ul className="mt-3 list-none space-y-2 text-slate-700">
+      <li>
+        <span className="font-semibold text-slate-900">Ticaret unvanı: </span>
+        {company.companyName}
+      </li>
+      <li>
+        <span className="font-semibold text-slate-900">Adres: </span>
+        {sellerAddr || company.address}
+      </li>
+      <li>
+        <span className="font-semibold text-slate-900">E-posta: </span>
+        <a href={`mailto:${company.email}`} className="text-emerald-700 underline">
+          {company.email}
+        </a>
+      </li>
+      <li>
+        <span className="font-semibold text-slate-900">Telefon: </span>
+        {company.phone}
+      </li>
+      {company.taxOffice ? (
+        <li>
+          <span className="font-semibold text-slate-900">Vergi dairesi: </span>
+          {company.taxOffice}
+        </li>
+      ) : null}
+      {company.taxNumber ? (
+        <li>
+          <span className="font-semibold text-slate-900">Vergi no: </span>
+          {company.taxNumber}
+        </li>
+      ) : null}
+      {company.mersisNumber ? (
+        <li>
+          <span className="font-semibold text-slate-900">MERSİS no: </span>
+          {company.mersisNumber}
+        </li>
+      ) : null}
+      <li>
+        <span className="font-semibold text-slate-900">Web: </span>
+        {displayWebsite(company.website || 'https://woontegra.com')}
+      </li>
+    </ul>
+  )
+}
+
+export function CheckoutSoftwareLicenseBody({
+  company,
+  form,
+  merged,
+}: {
+  company: LegalCompanyInfo
+  form: CheckoutLegalFormFields
+  merged: MergedCartRow[]
+}) {
+  const desktopRows = merged.filter((m) => m.productType === 'DOWNLOAD')
+  return (
+    <article className="text-sm leading-relaxed text-slate-800">
+      <p className="rounded-lg border border-slate-100 bg-slate-50/90 px-3 py-2 text-slate-600">
+        Masaüstü yazılım ürünlerinin lisanslanması ve kullanımına ilişkin temel hükümler aşağıdadır.
+      </p>
+      <SectionTitle>Satıcı</SectionTitle>
+      <SellerInfoList company={company} />
+      <SectionTitle>Alıcı</SectionTitle>
+      <MutedP>
+        {form.customerName.trim() || 'Ödeme formunda belirtilen alıcı'} — {form.customerEmail.trim() || 'e-posta siparişte kayıtlı olacaktır'}
+      </MutedP>
+      <SectionTitle>Lisans kapsamındaki ürünler</SectionTitle>
+      <ProductTable rows={desktopRows.length > 0 ? desktopRows : merged} />
+      <SectionTitle>Kullanım koşulları</SectionTitle>
+      <ul className="mt-3 list-disc space-y-2 pl-5 text-slate-700">
+        <li>Yazılım yalnızca satın alma kapsamında belirtilen cihaz/adet sınırları içinde kullanılabilir.</li>
+        <li>Kaynak koduna erişim verilmez; kopyalama, alt lisanslama veya yetkisiz paylaşım yasaktır.</li>
+        <li>Kurulum dosyası ve lisans bilgileri ödeme onayından sonra e-posta ile iletilir.</li>
+      </ul>
+    </article>
+  )
+}
+
+export function CheckoutSaasSubscriptionBody({
+  company,
+  form,
+  merged,
+  grand,
+  currency,
+}: {
+  company: LegalCompanyInfo
+  form: CheckoutLegalFormFields
+  merged: MergedCartRow[]
+  grand: number
+  currency: string
+}) {
+  const saasRows = merged.filter((m) => m.productType === 'SAAS')
+  return (
+    <article className="text-sm leading-relaxed text-slate-800">
+      <p className="rounded-lg border border-slate-100 bg-slate-50/90 px-3 py-2 text-slate-600">
+        Web tabanlı yazılım hizmeti (SaaS) aboneliğine ilişkin temel hükümler aşağıdadır.
+      </p>
+      <SectionTitle>Hizmet sağlayıcı</SectionTitle>
+      <SellerInfoList company={company} />
+      <SectionTitle>Abone</SectionTitle>
+      <MutedP>
+        {form.customerName.trim() || 'Ödeme formunda belirtilen alıcı'} — {form.customerEmail.trim() || 'e-posta siparişte kayıtlı olacaktır'}
+      </MutedP>
+      <SectionTitle>Abonelik kapsamı</SectionTitle>
+      <ProductTable rows={saasRows.length > 0 ? saasRows : merged} />
+      <p className="mt-4 text-sm font-semibold text-slate-900">
+        Toplam bedel: <span className="tabular-nums">{formatMoneyAmount(grand, currency)}</span>
+      </p>
+      <SectionTitle>Erişim ve süre</SectionTitle>
+      <MutedP>
+        Abonelik, siparişte belirtilen kullanım süresi boyunca geçerlidir. Ödeme onayından sonra hizmet aktif edilir; giriş bilgileri e-posta ile paylaşılır.
+      </MutedP>
+    </article>
+  )
+}
+
+export function CheckoutDigitalProductWaiverBody({ company, form }: { company: LegalCompanyInfo; form: CheckoutLegalFormFields }) {
+  return (
+    <article className="text-sm leading-relaxed text-slate-800">
+      <p className="rounded-lg border border-amber-50 bg-amber-50/80 px-3 py-2 text-amber-950">
+        6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca, dijital içerikte ifaya başlanması hâlinde cayma hakkı istisnaları uygulanabilir.
+      </p>
+      <SectionTitle>Satıcı</SectionTitle>
+      <SellerInfoList company={company} />
+      <SectionTitle>Onay kapsamı</SectionTitle>
+      <MutedP>
+        Ödeme sonrasında dijital ürünün/kurulum dosyasının tarafınıza sunulmasını talep ettiğinizi; bu kapsamda ifaya başlanmasını kabul ettiğinizi ve cayma hakkı
+        istisnası hakkında bilgilendirildiğinizi beyan edersiniz.
+      </MutedP>
+      <MutedP>
+        Alıcı: {form.customerName.trim() || 'Ödeme formunda belirtilen alıcı'} — {form.customerEmail.trim() || 'kayıtlı e-posta'}
+      </MutedP>
+    </article>
+  )
+}
+
+export function CheckoutDigitalServiceWaiverBody({ company, form }: { company: LegalCompanyInfo; form: CheckoutLegalFormFields }) {
+  return (
+    <article className="text-sm leading-relaxed text-slate-800">
+      <p className="rounded-lg border border-amber-50 bg-amber-50/80 px-3 py-2 text-amber-950">
+        6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca, dijital hizmette ifaya başlanması hâlinde cayma hakkı istisnaları uygulanabilir.
+      </p>
+      <SectionTitle>Hizmet sağlayıcı</SectionTitle>
+      <SellerInfoList company={company} />
+      <SectionTitle>Onay kapsamı</SectionTitle>
+      <MutedP>
+        Aboneliğinizin ödeme sonrası hemen aktif edilmesini, dijital hizmetin ifasına başlanmasını talep ettiğinizi ve bu kapsamda cayma hakkı istisnası hakkında
+        bilgilendirildiğinizi kabul edersiniz.
+      </MutedP>
+      <MutedP>
+        Abone: {form.customerName.trim() || 'Ödeme formunda belirtilen alıcı'} — {form.customerEmail.trim() || 'kayıtlı e-posta'}
+      </MutedP>
+    </article>
+  )
+}

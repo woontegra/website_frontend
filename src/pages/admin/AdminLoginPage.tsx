@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Card } from '../../components/ui/Card'
-import { getApiUrl } from '../../config/api'
+import { buildApiUrl } from '../../config/api'
 import { saveAdminSession } from '../../lib/adminAuth'
-
-const apiBase = () => getApiUrl()
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('')
@@ -20,7 +18,7 @@ export function AdminLoginPage() {
     setErr('')
     setLoading(true)
     try {
-      const res = await fetch(`${apiBase()}/api/auth/login`, {
+      const res = await fetch(buildApiUrl('/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

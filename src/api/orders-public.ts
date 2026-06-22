@@ -21,9 +21,16 @@ export type CreateOrderBody = {
   taxOffice?: string
   taxNumber?: string
   companyName?: string
+  deliveryCity?: string
+  deliveryDistrict?: string
+  deliveryLine?: string
   acceptPreInfo: boolean
   acceptDistanceSales: boolean
   acceptKvkk: boolean
+  acceptSoftwareLicense?: boolean
+  acceptSaasSubscription?: boolean
+  acceptDigitalProductWaiver?: boolean
+  acceptDigitalServiceWaiver?: boolean
   marketingConsent?: boolean
   explicitConsent?: boolean
   paymentMethod?: 'PAYTR' | 'BANK_TRANSFER'

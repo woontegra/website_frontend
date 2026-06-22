@@ -2,14 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Lock, ShieldCheck } from 'lucide-react'
 import { CheckoutLegalModal } from '../components/checkout/CheckoutLegalModal'
-import { CheckoutKvkkModalBody } from '../components/checkout/CheckoutKvkkModalBody'
-import {
-  CheckoutDistanceSalesBody,
-  CheckoutElectronicMessageBody,
-  CheckoutMarketingConsentBody,
-  CheckoutPreInformationBody,
-} from '../components/checkout/CheckoutLegalDocumentBodies'
-import { useLegalCompanyInfo } from '../hooks/useLegalCompanyInfo'
+import { CheckoutLegalPreviewBody } from '../components/checkout/CheckoutLegalPreviewBody'
+import { CheckoutElectronicMessageBody, CheckoutMarketingConsentBody } from '../components/checkout/CheckoutLegalDocumentBodies'
+import type { LegalDocType } from '../api/legal-documents-public'
+import { buildCheckoutLegalPreviewVariables } from '../lib/buildCheckoutLegalPreviewVars'
+import { checkoutLegalConsentsOk, resolveOrderLegalConsentFlags } from '../lib/orderLegalRequirements'
 import { isWebBasedCheckoutProduct } from '../lib/checkoutProductLabels'
 import { productsPublicApi, type CartPreviewRow } from '../api/products-public'
 import { ordersPublicApi } from '../api/orders-public'
@@ -56,6 +53,10 @@ export function CheckoutPage() {
   const [acceptPre, setAcceptPre] = useState(false)
   const [acceptDistance, setAcceptDistance] = useState(false)
   const [acceptKvkk, setAcceptKvkk] = useState(false)
+  const [acceptSoftwareLicense, setAcceptSoftwareLicense] = useState(false)
+  const [acceptSaasSubscription, setAcceptSaasSubscription] = useState(false)
+  const [acceptDigitalProductWaiver, setAcceptDigitalProductWaiver] = useState(false)
+  const [acceptDigitalServiceWaiver, setAcceptDigitalServiceWaiver] = useState(false)
   const [marketing, setMarketing] = useState(false)
   const [explicit, setExplicit] = useState(false)
 
@@ -81,9 +82,17 @@ export function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>('CARD')
   const [bankDisplay, setBankDisplay] = useState<BankTransferDisplayDto | null>(null)
 
-  type CheckoutLegalModalId = 'PRE_INFO' | 'DISTANCE' | 'KVKK' | 'COMMERCIAL' | 'MARKETING'
+  type CheckoutLegalModalId =
+    | 'PRE_INFO'
+    | 'DISTANCE'
+    | 'KVKK'
+    | 'SOFTWARE_LICENSE'
+    | 'SAAS_SUBSCRIPTION'
+    | 'DIGITAL_PRODUCT_WAIVER'
+    | 'DIGITAL_SERVICE_WAIVER'
+    | 'COMMERCIAL'
+    | 'MARKETING'
   const [legalModal, setLegalModal] = useState<CheckoutLegalModalId | null>(null)
-  const companyInfo = useLegalCompanyInfo()
 
   const districtOptions = useMemo(() => districtsForProvince(form.deliveryCity), [form.deliveryCity])
   const cityInList = !form.deliveryCity || TURKEY_PROVINCES.includes(form.deliveryCity)
@@ -192,9 +201,22 @@ export function CheckoutPage() {
 
   const merged = useMemo(() => mergeCartWithPreview(lines, preview), [lines, preview])
 
+  const legalFlags = useMemo(
+    () => resolveOrderLegalConsentFlags(merged.map((m) => m.productType)),
+    [merged],
+  )
+
   const grand = merged.reduce((s, m) => s + m.lineTotal, 0)
   const currency = merged[0]?.currency || lines[0]?.snapshot?.currency || 'TRY'
-  const legalOk = acceptPre && acceptDistance && acceptKvkk
+  const legalOk = checkoutLegalConsentsOk(legalFlags, {
+    pre: acceptPre,
+    distance: acceptDistance,
+    kvkk: acceptKvkk,
+    softwareLicense: acceptSoftwareLicense,
+    saasSubscription: acceptSaasSubscription,
+    digitalProductWaiver: acceptDigitalProductWaiver,
+    digitalServiceWaiver: acceptDigitalServiceWaiver,
+  })
 
   const openLegalModal = (e: React.MouseEvent, id: CheckoutLegalModalId) => {
     e.preventDefault()
@@ -202,34 +224,65 @@ export function CheckoutPage() {
     setLegalModal(id)
   }
 
-  const legalFormFields = {
-    customerName: form.customerName,
-    customerEmail: form.customerEmail,
-    customerPhone: form.customerPhone,
-    deliveryCity: form.deliveryCity,
-    deliveryDistrict: form.deliveryDistrict,
-    deliveryLine: form.deliveryLine,
-  }
-
   const legalModalTitle: Record<CheckoutLegalModalId, string> = {
     PRE_INFO: 'Ön Bilgilendirme Formu',
     DISTANCE: 'Mesafeli Satış Sözleşmesi',
     KVKK: 'KVKK Aydınlatma Metni',
+    SOFTWARE_LICENSE: 'Yazılım Lisans ve Kullanım Sözleşmesi',
+    SAAS_SUBSCRIPTION: 'Woontegra SaaS Abonelik ve Kullanım Sözleşmesi',
+    DIGITAL_PRODUCT_WAIVER: 'Dijital Ürün Teslim ve Cayma Hakkı İstisnası',
+    DIGITAL_SERVICE_WAIVER: 'Dijital Hizmet Aktivasyon ve Cayma Hakkı İstisnası',
     COMMERCIAL: 'Elektronik Ticari İleti Bilgilendirmesi',
     MARKETING: 'Pazarlama Amaçlı Açık Rıza Metni',
   }
 
-  const legalPaymentMethodLabel = paymentMethod === 'CARD' ? 'PayTR ile güvenli ödeme' : 'Havale/EFT'
-  const legalPrePaymentNote =
-    paymentMethod === 'CARD'
-      ? 'Ödeme onayınız alındıktan sonra siparişiniz işleme alınır; sipariş özeti ve teslimata ilişkin bilgilendirmeler kayıtlı e-posta adresinize iletilir.'
-      : 'Havale/EFT ödemeniz tarafımızdan teyit edildikten sonra siparişiniz işleme alınır; sipariş özeti ve teslimata ilişkin bilgilendirmeler kayıtlı e-posta adresinize iletilir.'
-  const legalDistanceProviderLine =
-    paymentMethod === 'CARD' ? 'PayTR güvenli ödeme altyapısı (kart ile ödeme).' : 'Banka hesabına Havale veya EFT.'
-  const legalDistanceProcessNote =
-    paymentMethod === 'CARD'
-      ? 'Kart ödemenizin onaylanmasını müteakip siparişiniz işleme alınır; sipariş özeti ve teslimata/erişime ilişkin bilgilendirmeler kayıtlı e-posta adresinize gönderilir.'
-      : 'Ödemeniz hesabımıza ulaştığında siparişiniz onaylanır ve işleme alınır; sipariş özeti ve teslimata/erişime ilişkin bilgilendirmeler kayıtlı e-posta adresinize gönderilir.'
+  const legalPreviewVariables = useMemo(
+    () =>
+      buildCheckoutLegalPreviewVariables({
+        form: {
+          customerName: form.customerName,
+          customerEmail: form.customerEmail,
+          customerPhone: form.customerPhone,
+          billingType: form.billingType,
+          companyName: form.companyName,
+          taxOffice: form.taxOffice,
+          taxNumber: form.taxNumber,
+          deliveryCity: form.deliveryCity,
+          deliveryDistrict: form.deliveryDistrict,
+          deliveryLine: form.deliveryLine,
+        },
+        merged,
+        grand,
+        currency,
+      }),
+    [
+      form.customerName,
+      form.customerEmail,
+      form.customerPhone,
+      form.billingType,
+      form.companyName,
+      form.taxOffice,
+      form.taxNumber,
+      form.deliveryCity,
+      form.deliveryDistrict,
+      form.deliveryLine,
+      merged,
+      grand,
+      currency,
+    ],
+  )
+
+  const legalModalPreviewConfig: Partial<
+    Record<CheckoutLegalModalId, { type: LegalDocType; variant?: 'DOWNLOAD' | 'SAAS' }>
+  > = {
+    PRE_INFO: { type: 'PRE_INFORMATION' },
+    DISTANCE: { type: 'DISTANCE_SALES' },
+    KVKK: { type: 'KVKK_CLARIFICATION' },
+    SOFTWARE_LICENSE: { type: 'SOFTWARE_LICENSE' },
+    SAAS_SUBSCRIPTION: { type: 'SAAS_SUBSCRIPTION' },
+    DIGITAL_PRODUCT_WAIVER: { type: 'DIGITAL_IMMEDIATE_DELIVERY_WAIVER', variant: 'DOWNLOAD' },
+    DIGITAL_SERVICE_WAIVER: { type: 'DIGITAL_IMMEDIATE_DELIVERY_WAIVER', variant: 'SAAS' },
+  }
 
   const setDeliveryCity = (city: string) => {
     setForm((f) => {
@@ -245,7 +298,7 @@ export function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (lines.length === 0) return
-    if (!acceptPre || !acceptDistance || !acceptKvkk) {
+    if (!legalOk) {
       setError('Yasal onayları tamamlamanız gerekir.')
       return
     }
@@ -265,9 +318,16 @@ export function CheckoutPage() {
         companyName: form.companyName.trim() || undefined,
         taxOffice: form.taxOffice.trim() || undefined,
         taxNumber: form.taxNumber.trim() || undefined,
+        deliveryCity: form.deliveryCity.trim() || undefined,
+        deliveryDistrict: form.deliveryDistrict.trim() || undefined,
+        deliveryLine: form.deliveryLine.trim() || undefined,
         acceptPreInfo: acceptPre,
         acceptDistanceSales: acceptDistance,
         acceptKvkk: acceptKvkk,
+        acceptSoftwareLicense: legalFlags.needsSoftwareLicense ? acceptSoftwareLicense : undefined,
+        acceptSaasSubscription: legalFlags.needsSaasSubscription ? acceptSaasSubscription : undefined,
+        acceptDigitalProductWaiver: legalFlags.needsDigitalProductWaiver ? acceptDigitalProductWaiver : undefined,
+        acceptDigitalServiceWaiver: legalFlags.needsDigitalServiceWaiver ? acceptDigitalServiceWaiver : undefined,
         marketingConsent: marketing,
         explicitConsent: explicit,
         paymentMethod: paymentMethod === 'BANK_TRANSFER' ? 'BANK_TRANSFER' : 'PAYTR',
@@ -790,6 +850,98 @@ export function CheckoutPage() {
                     </label>
                   </div>
                 </li>
+                {legalFlags.needsSoftwareLicense ? (
+                  <li className="flex gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
+                    <input
+                      id="a-sw"
+                      type="checkbox"
+                      checked={acceptSoftwareLicense}
+                      onChange={(e) => setAcceptSoftwareLicense(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <div className="min-w-0 leading-snug">
+                      <button
+                        type="button"
+                        className="font-semibold text-accent-blue underline decoration-accent-blue/30 hover:text-accent-blue/90"
+                        onClick={(e) => openLegalModal(e, 'SOFTWARE_LICENSE')}
+                      >
+                        Yazılım Lisans ve Kullanım Sözleşmesi
+                      </button>
+                      <label htmlFor="a-sw" className="cursor-pointer">
+                        ’ni okudum ve onaylıyorum. <span className="text-red-600">*</span>
+                      </label>
+                    </div>
+                  </li>
+                ) : null}
+                {legalFlags.needsSaasSubscription ? (
+                  <li className="flex gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
+                    <input
+                      id="a-saas"
+                      type="checkbox"
+                      checked={acceptSaasSubscription}
+                      onChange={(e) => setAcceptSaasSubscription(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <div className="min-w-0 leading-snug">
+                      <button
+                        type="button"
+                        className="font-semibold text-accent-blue underline decoration-accent-blue/30 hover:text-accent-blue/90"
+                        onClick={(e) => openLegalModal(e, 'SAAS_SUBSCRIPTION')}
+                      >
+                        Woontegra SaaS Abonelik ve Kullanım Sözleşmesi
+                      </button>
+                      <label htmlFor="a-saas" className="cursor-pointer">
+                        ’ni okudum ve onaylıyorum. <span className="text-red-600">*</span>
+                      </label>
+                    </div>
+                  </li>
+                ) : null}
+                {legalFlags.needsDigitalProductWaiver ? (
+                  <li className="flex gap-3 rounded-xl border border-amber-100 bg-amber-50/50 p-3">
+                    <input
+                      id="a-dpw"
+                      type="checkbox"
+                      checked={acceptDigitalProductWaiver}
+                      onChange={(e) => setAcceptDigitalProductWaiver(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <label htmlFor="a-dpw" className="min-w-0 cursor-pointer leading-snug">
+                      Dijital ürünün/kurulum dosyasının ödeme sonrası tarafıma sunulmasını ve bu kapsamda cayma hakkı istisnası hakkında bilgilendirildiğimi kabul
+                      ediyorum. (
+                      <button
+                        type="button"
+                        className="font-semibold text-accent-blue underline decoration-accent-blue/30 hover:text-accent-blue/90"
+                        onClick={(e) => openLegalModal(e, 'DIGITAL_PRODUCT_WAIVER')}
+                      >
+                        metin
+                      </button>
+                      ) <span className="text-red-600">*</span>
+                    </label>
+                  </li>
+                ) : null}
+                {legalFlags.needsDigitalServiceWaiver ? (
+                  <li className="flex gap-3 rounded-xl border border-amber-100 bg-amber-50/50 p-3">
+                    <input
+                      id="a-dsw"
+                      type="checkbox"
+                      checked={acceptDigitalServiceWaiver}
+                      onChange={(e) => setAcceptDigitalServiceWaiver(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <label htmlFor="a-dsw" className="min-w-0 cursor-pointer leading-snug">
+                      Aboneliğimin ödeme sonrası hemen aktif edilmesini, dijital hizmetin ifasına başlanmasını ve bu kapsamda cayma hakkı istisnası hakkında
+                      bilgilendirildiğimi kabul ediyorum. (
+                      <button
+                        type="button"
+                        className="font-semibold text-accent-blue underline decoration-accent-blue/30 hover:text-accent-blue/90"
+                        onClick={(e) => openLegalModal(e, 'DIGITAL_SERVICE_WAIVER')}
+                      >
+                        metin
+                      </button>
+                      ) <span className="text-red-600">*</span>
+                    </label>
+                  </li>
+                ) : null}
                 <li className="flex gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
                   <input
                     id="a4"
@@ -945,33 +1097,24 @@ export function CheckoutPage() {
         <CheckoutLegalModal
           open
           title={legalModalTitle[legalModal]}
-          showReadAndClose={legalModal === 'PRE_INFO' || legalModal === 'DISTANCE' || legalModal === 'KVKK'}
+          showReadAndClose={
+            legalModal === 'PRE_INFO' ||
+            legalModal === 'DISTANCE' ||
+            legalModal === 'KVKK' ||
+            legalModal === 'SOFTWARE_LICENSE' ||
+            legalModal === 'SAAS_SUBSCRIPTION' ||
+            legalModal === 'DIGITAL_PRODUCT_WAIVER' ||
+            legalModal === 'DIGITAL_SERVICE_WAIVER'
+          }
           onClose={() => setLegalModal(null)}
         >
-          {legalModal === 'PRE_INFO' ? (
-            <CheckoutPreInformationBody
-              company={companyInfo}
-              form={legalFormFields}
-              merged={merged}
-              grand={grand}
-              currency={currency}
-              paymentMethodLabel={legalPaymentMethodLabel}
-              paymentProcessNote={legalPrePaymentNote}
+          {legalModalPreviewConfig[legalModal] ? (
+            <CheckoutLegalPreviewBody
+              type={legalModalPreviewConfig[legalModal]!.type}
+              variant={legalModalPreviewConfig[legalModal]!.variant}
+              variables={legalPreviewVariables}
             />
           ) : null}
-          {legalModal === 'DISTANCE' ? (
-            <CheckoutDistanceSalesBody
-              company={companyInfo}
-              form={legalFormFields}
-              merged={merged}
-              grand={grand}
-              currency={currency}
-              paymentMethodLabel={legalPaymentMethodLabel}
-              paymentProviderLine={legalDistanceProviderLine}
-              paymentProcessNote={legalDistanceProcessNote}
-            />
-          ) : null}
-          {legalModal === 'KVKK' ? <CheckoutKvkkModalBody /> : null}
           {legalModal === 'COMMERCIAL' ? <CheckoutElectronicMessageBody /> : null}
           {legalModal === 'MARKETING' ? <CheckoutMarketingConsentBody /> : null}
         </CheckoutLegalModal>

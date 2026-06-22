@@ -98,8 +98,8 @@ export const defaultContactData: PageData = {
       order: 2,
       data: {
         email: 'info@woontegra.com',
-        phone: '0531 586 17 55',
-        whatsapp: '905315861755',
+        phone: '+90 532 317 17 55',
+        whatsapp: '+90 532 317 17 55',
         address: 'İskele Mahallesi Bademli Caddesi 43/6 Datça-Muğla',
         mapEmbed: '',
       },

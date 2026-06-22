@@ -14,6 +14,9 @@ const TYPE_LABELS: Record<LegalDocumentType, string> = {
   COMMERCIAL_ELECTRONIC_MESSAGE: 'Ticari elektronik ileti',
   TERMS_OF_USE: 'Kullanım şartları',
   PRIVACY_POLICY: 'Gizlilik politikası',
+  SOFTWARE_LICENSE: 'Yazılım lisans sözleşmesi',
+  SAAS_SUBSCRIPTION: 'SaaS abonelik sözleşmesi',
+  DIGITAL_IMMEDIATE_DELIVERY_WAIVER: 'Dijital teslim / cayma istisnası',
 }
 
 const ALL_TYPES = Object.keys(TYPE_LABELS) as LegalDocumentType[]
@@ -27,7 +30,7 @@ const emptyForm = {
 }
 
 const placeholderHint =
-  'Metinde kullanılabilir: customerName, customerEmail, orderNo, orderTotal, productList, sellerTitle, sellerEmail, sellerAddress, sellerPhone (çift süslü parantez içinde).'
+  'Metinde kullanılabilir: customerName, customerEmail, orderNo, orderTotal, currency (₺), productList, sellerTitle, sellerEmail, sellerAddress, sellerPhone, sellerTaxOffice, sellerTaxNumber, sellerMersis, sellerWebsite (çift süslü parantez içinde).'
 
 export function AdminLegalDocumentsPage() {
   const [rows, setRows] = useState<LegalDocumentAdminRow[]>([])

@@ -26,15 +26,15 @@ export const defaultLegalCompanyInfo: LegalCompanyInfo = {
   companyName: 'Woontegra Teknoloji Yazılım ve Dijital Hizmetler Ltd. Şti.',
   brandName: 'Woontegra',
   email: 'info@woontegra.com',
-  phone: '0532 317 17 55',
-  whatsapp: '0532 317 17 55',
+  phone: '+90 532 317 17 55',
+  whatsapp: '+90 532 317 17 55',
   website: 'https://woontegra.com',
-  address: 'İskele Mahallesi Bademli Caddesi 43/6 Datça-Muğla',
+  address: 'İskele Mahallesi Bademli Caddesi Hanlılar 2 Sitesi 43/6 Datça / Muğla 48900',
   city: 'Muğla',
   district: 'Datça',
-  taxOffice: '',
-  taxNumber: '',
-  mersisNumber: '',
+  taxOffice: 'Datça Vergi Dairesi',
+  taxNumber: '8141122110',
+  mersisNumber: '0814112211000001',
   dataControllerRepresentative: '',
   instagram: '',
   facebook: '',
@@ -48,6 +48,16 @@ function pickString(value: string | undefined, fallback = ''): string {
   return value?.trim() || fallback
 }
 
+function resolveLegalPhone(partial?: string): string {
+  const p = (partial ?? '').trim()
+  const digits = p.replace(/\D/g, '')
+  if (!p) return defaultLegalCompanyInfo.phone
+  if (digits === '905315861755' || digits === '05315861755' || digits.endsWith('315861755')) {
+    return defaultLegalCompanyInfo.phone
+  }
+  return p
+}
+
 export function mergeLegalCompanyInfo(partial?: Partial<LegalCompanyInfo> | null): LegalCompanyInfo {
   if (!partial) return { ...defaultLegalCompanyInfo }
 
@@ -55,15 +65,15 @@ export function mergeLegalCompanyInfo(partial?: Partial<LegalCompanyInfo> | null
     companyName: pickString(partial.companyName, defaultLegalCompanyInfo.companyName),
     brandName: pickString(partial.brandName, defaultLegalCompanyInfo.brandName),
     email: pickString(partial.email, defaultLegalCompanyInfo.email),
-    phone: pickString(partial.phone, defaultLegalCompanyInfo.phone),
-    whatsapp: pickString(partial.whatsapp),
+    phone: resolveLegalPhone(partial.phone),
+    whatsapp: pickString(partial.whatsapp, resolveLegalPhone(partial.phone)),
     website: pickString(partial.website, defaultLegalCompanyInfo.website),
     address: pickString(partial.address, defaultLegalCompanyInfo.address),
-    city: pickString(partial.city),
-    district: pickString(partial.district),
-    taxOffice: pickString(partial.taxOffice),
-    taxNumber: pickString(partial.taxNumber),
-    mersisNumber: pickString(partial.mersisNumber),
+    city: pickString(partial.city, defaultLegalCompanyInfo.city),
+    district: pickString(partial.district, defaultLegalCompanyInfo.district),
+    taxOffice: pickString(partial.taxOffice, defaultLegalCompanyInfo.taxOffice),
+    taxNumber: pickString(partial.taxNumber, defaultLegalCompanyInfo.taxNumber),
+    mersisNumber: pickString(partial.mersisNumber, defaultLegalCompanyInfo.mersisNumber),
     dataControllerRepresentative: pickString(partial.dataControllerRepresentative),
     instagram: pickString(partial.instagram),
     facebook: pickString(partial.facebook),

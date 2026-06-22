@@ -12,6 +12,9 @@ export type LegalDocType =
   | 'COMMERCIAL_ELECTRONIC_MESSAGE'
   | 'TERMS_OF_USE'
   | 'PRIVACY_POLICY'
+  | 'SOFTWARE_LICENSE'
+  | 'SAAS_SUBSCRIPTION'
+  | 'DIGITAL_IMMEDIATE_DELIVERY_WAIVER'
 
 export const legalDocumentsPublicApi = {
   async getByType(type: LegalDocType): Promise<{ type: string; title: string; content: string; version: number }> {
@@ -21,10 +24,14 @@ export const legalDocumentsPublicApi = {
     return res.data.data
   },
 
-  async preview(type: LegalDocType, variables: Record<string, string>): Promise<{ type: string; title: string; content: string; version: number }> {
+  async preview(
+    type: LegalDocType,
+    variables: Record<string, string>,
+    variant?: 'DOWNLOAD' | 'SAAS',
+  ): Promise<{ type: string; title: string; content: string; version: number }> {
     const res = await pub.post<{ success: boolean; data: { type: string; title: string; content: string; version: number } }>(
       `/legal-documents/preview`,
-      { type, variables },
+      { type, variables, ...(variant ? { variant } : {}) },
     )
     return res.data.data
   },

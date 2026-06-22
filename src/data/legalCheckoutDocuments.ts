@@ -60,7 +60,7 @@ export function legalCheckoutPreviewVariables(): Record<string, string> {
     customerEmail: '—',
     orderNo: 'Ödeme onayından sonra sipariş numaranız oluşturulur ve size bildirilir.',
     orderTotal: '—',
-    currency: 'TRY',
+    currency: '₺',
     productList:
       '<p>Ödeme adımında sepetinizdeki ürünler ve güncel tutarlar sipariş özetinde gösterilir. Bu sayfada örnek liste yer almaz.</p>',
   }

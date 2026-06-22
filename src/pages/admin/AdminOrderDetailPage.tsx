@@ -771,6 +771,36 @@ export function AdminOrderDetailPage() {
                 <dt className="text-slate-500">KVKK</dt>
                 <dd>{fmt(row.kvkkReadAt)}</dd>
               </div>
+              {row.softwareLicenseAcceptedAt ? (
+                <div>
+                  <dt className="text-slate-500">Yazılım lisans sözleşmesi</dt>
+                  <dd>{fmt(row.softwareLicenseAcceptedAt)}</dd>
+                </div>
+              ) : null}
+              {row.saasSubscriptionAcceptedAt ? (
+                <div>
+                  <dt className="text-slate-500">SaaS abonelik sözleşmesi</dt>
+                  <dd>{fmt(row.saasSubscriptionAcceptedAt)}</dd>
+                </div>
+              ) : null}
+              {row.digitalProductWaiverAcceptedAt ? (
+                <div>
+                  <dt className="text-slate-500">Dijital ürün teslim / cayma istisnası</dt>
+                  <dd>{fmt(row.digitalProductWaiverAcceptedAt)}</dd>
+                </div>
+              ) : null}
+              {row.digitalServiceWaiverAcceptedAt ? (
+                <div>
+                  <dt className="text-slate-500">Dijital hizmet aktivasyon / cayma istisnası</dt>
+                  <dd>{fmt(row.digitalServiceWaiverAcceptedAt)}</dd>
+                </div>
+              ) : null}
+              {row.legalCartProductTypes ? (
+                <div className="sm:col-span-2">
+                  <dt className="text-slate-500">Sepet ürün tipleri</dt>
+                  <dd>{row.legalCartProductTypes}</dd>
+                </div>
+              ) : null}
               <div>
                 <dt className="text-slate-500">IP / User-Agent</dt>
                 <dd className="break-all text-xs">{dash(row.acceptedIp)} / {dash(row.acceptedUserAgent)}</dd>

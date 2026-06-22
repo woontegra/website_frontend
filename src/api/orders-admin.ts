@@ -73,6 +73,11 @@ export type AdminOrderDetail = {
   preInfoAcceptedAt: string | null
   distanceSalesAcceptedAt: string | null
   kvkkReadAt: string | null
+  softwareLicenseAcceptedAt?: string | null
+  saasSubscriptionAcceptedAt?: string | null
+  digitalProductWaiverAcceptedAt?: string | null
+  digitalServiceWaiverAcceptedAt?: string | null
+  legalCartProductTypes?: string | null
   marketingConsentAt: string | null
   explicitConsentAt: string | null
   acceptedIp: string | null

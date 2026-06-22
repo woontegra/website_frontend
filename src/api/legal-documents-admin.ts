@@ -8,6 +8,9 @@ export type LegalDocumentType =
   | 'COMMERCIAL_ELECTRONIC_MESSAGE'
   | 'TERMS_OF_USE'
   | 'PRIVACY_POLICY'
+  | 'SOFTWARE_LICENSE'
+  | 'SAAS_SUBSCRIPTION'
+  | 'DIGITAL_IMMEDIATE_DELIVERY_WAIVER'
 
 export type LegalDocumentAdminRow = {
   id: string
