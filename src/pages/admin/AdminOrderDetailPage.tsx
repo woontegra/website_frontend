@@ -8,6 +8,7 @@ import {
   PaymentStatusBadge,
   showHavaleConfirmPaymentButton,
 } from '../../components/admin/AdminOrderBadges'
+import { AdminLegalSnapshotContent } from '../../components/admin/AdminLegalSnapshotContent'
 import { AdminOrderEditModal, type AdminOrderEditableSnapshot } from '../../components/admin/AdminOrderEditModal'
 import { isBankTransferLikeProvider, shouldShowHavaleApprovedBanner } from '../../lib/adminOrderHavaleUi'
 import { formatMoneyAmount } from '../../lib/formatMoney'
@@ -814,10 +815,10 @@ export function AdminOrderDetailPage() {
                 {row.legalSnapshots.map((s) => (
                   <li key={s.id} className="rounded-lg border border-slate-100">
                     <details>
-                      <summary className="cursor-pointer px-3 py-2 text-sm font-medium">
+                      <summary className="cursor-pointer px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50">
                         {s.title} <span className="font-normal text-slate-500">(v{s.version})</span>
                       </summary>
-                      <pre className="max-h-48 overflow-auto whitespace-pre-wrap p-3 text-xs text-slate-800">{s.content}</pre>
+                      <AdminLegalSnapshotContent content={s.content} />
                     </details>
                   </li>
                 ))}
