@@ -9,7 +9,7 @@ import { LAYOUT_CONTAINER_CLASS } from '../../lib/layoutConstants'
 import { menuPathForNav } from '../../lib/menuPathForNav'
 
 /** Taşma olursa önce bu path'lerdeki öğeler "Diğer"e alınır (sırayla). */
-const FOLD_PATHS_IN_ORDER = ['/blog', '/ucretsiz-araclar', '/cozumler', '/urunler', '/iletisim']
+const FOLD_PATHS_IN_ORDER = ['/blog', '/cozumler', '/urunler', '/iletisim']
 
 function idsFromPaths(items: MenuItemConfig[], paths: string[]): string[] {
   const ids: string[] = []
@@ -22,13 +22,13 @@ function idsFromPaths(items: MenuItemConfig[], paths: string[]): string[] {
 
 /**
  * ResizeObserver + ölçüm döngüsü yok: viewport genişliğine göre "Diğer"e alınacak id'ler.
- * Yatay scroll yok; dar masaüstünde Blog/Ücretsiz Araçlar/Çözümler (ve gerekirse katalog linkleri) katlanır.
+ * Yatay scroll yok; dar masaüstünde Blog/Çözümler (ve gerekirse katalog linkleri) katlanır.
  */
 function computeFoldIdsForViewport(w: number, items: MenuItemConfig[]): string[] {
   if (w < 1200) return []
   if (w >= 1500) return []
   if (w >= 1380) return idsFromPaths(items, ['/blog'])
-  if (w >= 1280) return idsFromPaths(items, ['/blog', '/ucretsiz-araclar'])
+  if (w >= 1280) return idsFromPaths(items, ['/blog'])
   const base = idsFromPaths(items, FOLD_PATHS_IN_ORDER)
   if (w < 1240) {
     const catalogExtra = items.filter((i) => i.id.startsWith('catalog-nav-')).map((i) => i.id)
@@ -37,14 +37,59 @@ function computeFoldIdsForViewport(w: number, items: MenuItemConfig[]): string[]
   return base
 }
 
-function foldedEntryActive(item: MenuItemConfig, isActive: (h: string) => boolean): boolean {
+function menuItemActive(item: MenuItemConfig, isActive: (h: string) => boolean): boolean {
   if (isActive(item.href)) return true
-  return !!item.children?.some((c) => isActive(c.href))
+  return !!item.children?.some((c) => !c.groupHeader && isActive(c.href))
+}
+
+function renderNavChildLink(
+  child: MenuItemConfig,
+  onNavigate: () => void,
+  className: string,
+) {
+  if (child.groupHeader) {
+    return (
+      <div
+        key={child.id}
+        role="presentation"
+        className="px-4 pt-2.5 pb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500 first:pt-1.5"
+      >
+        {child.label}
+      </div>
+    )
+  }
+  if (child.href.startsWith('http')) {
+    return (
+      <a
+        key={child.id}
+        href={child.href}
+        className={className}
+        onClick={onNavigate}
+        target={child.openInNewTab ? '_blank' : undefined}
+        rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
+      >
+        {child.label}
+      </a>
+    )
+  }
+  return (
+    <Link key={child.id} to={child.href} className={className} onClick={onNavigate}>
+      {child.label}
+    </Link>
+  )
+}
+
+function foldedEntryActive(item: MenuItemConfig, isActive: (h: string) => boolean): boolean {
+  return menuItemActive(item, isActive)
 }
 
 /** Aynı href birden fazla kaynaktan gelirse (CMS + katalog) tek satırda gösterilecek kazanan. */
 function pickPreferredMenuItemForPath(path: string, candidates: MenuItemConfig[]): MenuItemConfig {
   if (candidates.length === 1) return candidates[0]!
+  if (path === '/hizmetler') {
+    const withChildren = candidates.find((i) => (i.children?.length ?? 0) > 0)
+    if (withChildren) return withChildren
+  }
   if (path === '/urunler') {
     const catalog = candidates.find((i) => i.id.startsWith('catalog-nav-'))
     if (catalog) return catalog
@@ -96,10 +141,15 @@ export function Navbar() {
   /** Aynı href birden fazla menü kaynağından geliyorsa (statik + navigation-menu) yalnızca birini göster. */
   const navItemsFiltered = useMemo(() => {
     const sorted = [...navItems].sort((a, b) => a.order - b.order)
+    const pathItems = sorted.filter((i) => menuPathForNav(i.href) !== '#')
+    const dropdownOnlyItems = sorted.filter(
+      (i) => menuPathForNav(i.href) === '#' && (i.children?.length ?? 0) > 0,
+    )
+
     const byPath = new Map<string, MenuItemConfig[]>()
-    for (const i of sorted) {
+    for (const i of pathItems) {
       const p = menuPathForNav(i.href)
-      if (!p || p === '#') continue
+      if (!p) continue
       if (!byPath.has(p)) byPath.set(p, [])
       byPath.get(p)!.push(i)
     }
@@ -109,23 +159,33 @@ export function Navbar() {
     }
     const seen = new Set<string>()
     const out: MenuItemConfig[] = []
-    for (const i of sorted) {
+    for (const i of pathItems) {
       const p = menuPathForNav(i.href)
-      if (!p || p === '#') continue
+      if (!p) continue
       const winner = winnerByPath.get(p)
       if (!winner || winner.id !== i.id) continue
       if (seen.has(p)) continue
       seen.add(p)
       out.push(i)
     }
+
+    const dropdownSeen = new Set<string>()
+    for (const i of dropdownOnlyItems) {
+      if (dropdownSeen.has(i.id)) continue
+      dropdownSeen.add(i.id)
+      out.push(i)
+    }
+
     const norm = (s: string) => s.trim().toLocaleLowerCase('tr-TR')
     const masa = out.filter((i) => norm(i.label) === 'masaüstü araçlar')
-    if (masa.length <= 1) return out
+    if (masa.length <= 1) return out.sort((a, b) => a.order - b.order)
     const keep =
       masa.find((i) => i.id === 'desktop-store') ??
       masa.find((i) => menuPathForNav(i.href) === '/urunler') ??
       masa[0]!
-    return out.filter((i) => norm(i.label) !== 'masaüstü araçlar' || i.id === keep.id)
+    return out
+      .filter((i) => norm(i.label) !== 'masaüstü araçlar' || i.id === keep.id)
+      .sort((a, b) => a.order - b.order)
   }, [navItems])
 
   const centerItemsAll = useMemo(() => navItemsFiltered, [navItemsFiltered])
@@ -174,6 +234,7 @@ export function Navbar() {
 
   const renderDesktopItem = (item: MenuItemConfig) => {
     const hasChildren = item.children && item.children.length > 0
+    const active = menuItemActive(item, isActive)
     if (hasChildren) {
       return (
         <div
@@ -185,30 +246,30 @@ export function Navbar() {
           <button
             type="button"
             className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[14px] font-medium transition-colors cursor-default ${
-              isActive(item.href) ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
+              active ? 'text-accent-blue' : 'text-slate-700 hover:text-slate-900'
             }`}
+            aria-expanded={megaOpen === item.id}
+            aria-haspopup="true"
           >
             {item.label}
+            <span className="ml-0.5 text-slate-400" aria-hidden>
+              ▾
+            </span>
           </button>
           {megaOpen === item.id && (
-            <div className="absolute left-0 top-full z-50 pt-1">
-              <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
-                {item.children!.map((child) => (
-                  <Link
-                    key={child.id}
-                    to={child.href}
-                    className={`block px-4 py-2.5 text-sm transition-colors ${
+            <div className="absolute left-0 top-full z-[110] pt-0.5">
+              <div className="min-w-[280px] rounded-xl border border-gray-200 bg-white py-2 shadow-lg">
+                {item.children!.map((child) =>
+                  renderNavChildLink(
+                    child,
+                    () => setMegaOpen(null),
+                    `block px-4 py-2.5 text-sm transition-colors ${
                       isActive(child.href)
                         ? 'bg-accent-blue-soft/50 text-accent-blue'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
-                    onClick={() => setMegaOpen(null)}
-                    target={child.openInNewTab ? '_blank' : undefined}
-                    rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
-                  >
-                    {child.label}
-                  </Link>
-                ))}
+                    }`,
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -250,22 +311,27 @@ export function Navbar() {
       return (
         <div key={item.id} className="border-b border-slate-100 py-1 last:border-b-0">
           <div className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</div>
-          {item.children.map((child) => (
-            <Link
-              key={child.id}
-              to={child.href}
-              className={`block px-4 py-2.5 text-sm transition-colors ${
-                isActive(child.href)
-                  ? 'bg-accent-blue-soft/50 text-accent-blue'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-              onClick={() => setMoreMenuOpen(false)}
-              target={child.openInNewTab ? '_blank' : undefined}
-              rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
-            >
-              {child.label}
-            </Link>
-          ))}
+          {item.children.map((child) =>
+            child.groupHeader ? (
+              <div
+                key={child.id}
+                role="presentation"
+                className="px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500"
+              >
+                {child.label}
+              </div>
+            ) : (
+              renderNavChildLink(
+                child,
+                () => setMoreMenuOpen(false),
+                `block px-4 py-2.5 text-sm transition-colors ${
+                  isActive(child.href)
+                    ? 'bg-accent-blue-soft/50 text-accent-blue'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`,
+              )
+            ),
+          )}
         </div>
       )
     }
@@ -301,6 +367,7 @@ export function Navbar() {
 
   const renderMobileItem = (item: MenuItemConfig) => {
     const hasChildren = item.children && item.children.length > 0
+    const active = menuItemActive(item, isActive)
     if (hasChildren) {
       return (
         <div key={item.id}>
@@ -308,7 +375,7 @@ export function Navbar() {
             type="button"
             onClick={() => setMobileSubmenuOpen(mobileSubmenuOpen === item.id ? null : item.id)}
             className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium ${
-              isActive(item.href) ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
+              active ? 'bg-accent-blue-soft/50 text-accent-blue' : 'text-slate-700'
             }`}
           >
             <span>{item.label}</span>
@@ -322,17 +389,29 @@ export function Navbar() {
             </svg>
           </button>
           {mobileSubmenuOpen === item.id && (
-            <div className="animate-fade-in">
-              {item.children!.map((child) => (
-                <Link
-                  key={child.id}
-                  to={child.href}
-                  className="block py-2 pl-8 pr-4 text-sm text-slate-600 hover:text-slate-900"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {child.label}
-                </Link>
-              ))}
+            <div className="animate-fade-in pb-1">
+              {item.children!.map((child) =>
+                child.groupHeader ? (
+                  <div
+                    key={child.id}
+                    role="presentation"
+                    className="px-4 pb-1 pt-3 text-[11px] font-bold uppercase tracking-wide text-slate-500"
+                  >
+                    {child.label}
+                  </div>
+                ) : (
+                  <Link
+                    key={child.id}
+                    to={child.href}
+                    className={`block py-2 pl-8 pr-4 text-sm ${
+                      isActive(child.href) ? 'font-semibold text-accent-blue' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {child.label}
+                  </Link>
+                ),
+              )}
             </div>
           )}
         </div>
@@ -370,12 +449,12 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full max-w-full overflow-x-hidden border-b bg-white transition-all duration-300 ${
+      className={`sticky top-0 z-[100] isolate w-full max-w-full overflow-visible border-b bg-white transition-all duration-300 ${
         scrolled ? 'border-gray-200 shadow-header-scroll' : 'border-gray-100'
       }`}
     >
-      <div className={`${LAYOUT_CONTAINER_CLASS} w-full`}>
-        <div className="flex min-h-[3rem] flex-nowrap items-center gap-2 py-2 min-[1200px]:grid min-[1200px]:min-h-[3.25rem] min-[1200px]:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] min-[1200px]:items-center min-[1200px]:gap-x-4 min-[1200px]:gap-y-0 min-[1200px]:py-2.5">
+      <div className={`${LAYOUT_CONTAINER_CLASS} w-full overflow-x-clip`}>
+        <div className="flex min-h-[3.25rem] flex-nowrap items-center gap-2 py-2 min-[1200px]:grid min-[1200px]:min-h-[4rem] min-[1200px]:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] min-[1200px]:items-center min-[1200px]:gap-x-4 min-[1200px]:gap-y-0 min-[1200px]:py-2.5">
           <Link
             to="/"
             className="relative z-20 flex shrink-0 items-center self-center min-[1200px]:justify-start"
@@ -384,7 +463,7 @@ export function Navbar() {
             <SiteLogo placement="navbar" />
           </Link>
 
-          <div className="hidden min-h-0 min-w-0 min-[1200px]:col-start-2 min-[1200px]:flex min-[1200px]:min-w-0 min-[1200px]:items-center min-[1200px]:justify-center min-[1200px]:overflow-hidden min-[1200px]:px-1">
+          <div className="hidden min-h-0 min-w-0 min-[1200px]:col-start-2 min-[1200px]:flex min-[1200px]:min-w-0 min-[1200px]:items-center min-[1200px]:justify-center min-[1200px]:overflow-visible min-[1200px]:px-1">
             <nav
               aria-label="Ana menü"
               className="flex min-w-0 max-w-full flex-nowrap items-center justify-center gap-1"
@@ -410,7 +489,7 @@ export function Navbar() {
                     </span>
                   </button>
                   {moreMenuOpen ? (
-                    <div className="absolute right-0 top-full z-50 pt-1">
+                    <div className="absolute right-0 top-full z-[110] pt-0.5">
                       <div className="min-w-[220px] max-w-[min(100vw-2rem,280px)] rounded-xl border border-gray-200 bg-white py-2 shadow-md">
                         {foldedItems.map(renderFoldedDropdownRow)}
                       </div>

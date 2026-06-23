@@ -8,9 +8,17 @@ type Props = {
   productName: string
   coverImage: string | null
   galleryImages: GalleryImageRef[]
+  sectionTitle?: string
 }
 
-export function ProductImageGallery({ productName, coverImage, galleryImages }: Props) {
+export function ProductImageGallery({
+  productName,
+  coverImage,
+  galleryImages,
+  sectionTitle = 'Ekran görüntüleri',
+}: Props) {
+  const [brokenSrcs, setBrokenSrcs] = useState<Set<string>>(() => new Set())
+
   const slides = useMemo(() => {
     const coverSrc = coverImage ? resolveAssetUrl(coverImage) : null
     const ordered: { key: string; src: string }[] = []
@@ -20,8 +28,8 @@ export function ProductImageGallery({ productName, coverImage, galleryImages }: 
       if (ordered.some((o) => o.src === src)) continue
       ordered.push({ key: g.id, src })
     }
-    return ordered
-  }, [coverImage, galleryImages])
+    return ordered.filter((s) => !brokenSrcs.has(s.src))
+  }, [coverImage, galleryImages, brokenSrcs])
 
   const [active, setActive] = useState(0)
   const [lightbox, setLightbox] = useState(false)
@@ -39,6 +47,15 @@ export function ProductImageGallery({ productName, coverImage, galleryImages }: 
       document.body.style.overflow = prev
     }
   }, [lightbox])
+
+  const handleImageError = useCallback((src: string) => {
+    setBrokenSrcs((prev) => {
+      if (prev.has(src)) return prev
+      const next = new Set(prev)
+      next.add(src)
+      return next
+    })
+  }, [])
 
   const safeIndex = slides.length ? Math.min(active, slides.length - 1) : 0
   const current = slides[safeIndex]
@@ -62,79 +79,77 @@ export function ProductImageGallery({ productName, coverImage, galleryImages }: 
     return () => window.removeEventListener('keydown', onKey)
   }, [lightbox, go])
 
-  if (!slides.length) {
-    return (
-      <figure className="group relative">
-        <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-b from-slate-100 to-slate-50 shadow-inner">
-          <div className="flex aspect-[5/4] w-full flex-col items-center justify-center gap-2 p-8 text-center sm:aspect-[16/10] lg:aspect-[2/1] lg:min-h-[22rem]">
-            <span className="text-sm font-medium text-slate-500">Görsel bulunmuyor</span>
-          </div>
-        </div>
-      </figure>
-    )
-  }
+  if (!slides.length) return null
 
   return (
     <>
-      <figure className="group relative">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-900/5 shadow-[0_28px_70px_-24px_rgba(15,23,42,0.35)] ring-1 ring-slate-900/5">
-          <button
-            type="button"
-            className="relative block w-full cursor-zoom-in text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-            onClick={() => setLightbox(true)}
-            aria-label="Görseli büyüt"
-          >
-            <img
-              src={current.src}
-              alt={productName}
-              className="aspect-[5/4] w-full object-cover sm:aspect-[16/10] lg:aspect-[2/1] lg:min-h-[min(28rem,52vh)] lg:max-h-[min(32rem,58vh)]"
-            />
-          </button>
-          {slides.length > 1 && (
-            <>
-              <button
-                type="button"
-                className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-slate-800 shadow-md backdrop-blur-sm transition hover:bg-white lg:left-4 lg:h-12 lg:w-12"
-                onClick={() => go(-1)}
-                aria-label="Önceki görsel"
-              >
-                <ChevronLeft className="h-6 w-6 lg:h-7 lg:w-7" />
-              </button>
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-slate-800 shadow-md backdrop-blur-sm transition hover:bg-white lg:right-4 lg:h-12 lg:w-12"
-                onClick={() => go(1)}
-                aria-label="Sonraki görsel"
-              >
-                <ChevronRight className="h-6 w-6 lg:h-7 lg:w-7" />
-              </button>
-            </>
-          )}
-        </div>
-
-        {slides.length > 1 && (
-          <div className="mt-4 flex snap-x snap-mandatory justify-start gap-3 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center [&::-webkit-scrollbar]:hidden">
-            {slides.map((s, i) => (
-              <button
-                key={s.key}
-                type="button"
-                onClick={() => setActive(i)}
-                className={`relative h-16 w-24 shrink-0 snap-start overflow-hidden rounded-xl border-2 transition sm:h-[4.5rem] sm:w-[6.75rem] lg:h-[4.75rem] lg:w-[7.25rem] ${
-                  i === safeIndex ? 'border-emerald-600 ring-2 ring-emerald-500/30' : 'border-slate-200/80 opacity-80 hover:border-slate-300 hover:opacity-100'
-                }`}
-                aria-label={`Görsel ${i + 1}`}
-              >
-                <img src={s.src} alt="" className="h-full w-full object-cover" />
-              </button>
-            ))}
+      <section aria-labelledby="product-gallery-heading" className="scroll-mt-24">
+        <h2 id="product-gallery-heading" className="text-2xl font-bold tracking-tight text-slate-900">
+          {sectionTitle}
+        </h2>
+        <figure className="group relative mt-7 lg:mt-8">
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-900/5 shadow-[0_28px_70px_-24px_rgba(15,23,42,0.35)] ring-1 ring-slate-900/5">
+            <button
+              type="button"
+              className="relative block w-full cursor-zoom-in text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              onClick={() => setLightbox(true)}
+              aria-label="Görseli büyüt"
+            >
+              <img
+                src={current.src}
+                alt={productName}
+                className="aspect-[5/4] w-full object-cover sm:aspect-[16/10] lg:aspect-[2/1] lg:min-h-[min(28rem,52vh)] lg:max-h-[min(32rem,58vh)]"
+                onError={() => handleImageError(current.src)}
+              />
+            </button>
+            {slides.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-slate-800 shadow-md backdrop-blur-sm transition hover:bg-white lg:left-4 lg:h-12 lg:w-12"
+                  onClick={() => go(-1)}
+                  aria-label="Önceki görsel"
+                >
+                  <ChevronLeft className="h-6 w-6 lg:h-7 lg:w-7" />
+                </button>
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-slate-800 shadow-md backdrop-blur-sm transition hover:bg-white lg:right-4 lg:h-12 lg:w-12"
+                  onClick={() => go(1)}
+                  aria-label="Sonraki görsel"
+                >
+                  <ChevronRight className="h-6 w-6 lg:h-7 lg:w-7" />
+                </button>
+              </>
+            )}
           </div>
-        )}
 
-        <figcaption className="mt-4 flex flex-wrap items-start gap-2 text-sm leading-relaxed text-slate-500 lg:text-base">
-          <span className="rounded-md bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Not</span>
-          Ekran görüntüsü temsilidir; özellikler ürün sürümüne göre değişebilir.
-        </figcaption>
-      </figure>
+          {slides.length > 1 && (
+            <div className="mt-4 flex snap-x snap-mandatory justify-start gap-3 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center [&::-webkit-scrollbar]:hidden">
+              {slides.map((s, i) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`relative h-16 w-24 shrink-0 snap-start overflow-hidden rounded-xl border-2 transition sm:h-[4.5rem] sm:w-[6.75rem] lg:h-[4.75rem] lg:w-[7.25rem] ${
+                    i === safeIndex
+                      ? 'border-emerald-600 ring-2 ring-emerald-500/30'
+                      : 'border-slate-200/80 opacity-80 hover:border-slate-300 hover:opacity-100'
+                  }`}
+                  aria-label={`Görsel ${i + 1}`}
+                >
+                  <img
+                    src={s.src}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    onError={() => handleImageError(s.src)}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </figure>
+      </section>
 
       {lightbox && current && (
         <div
@@ -170,6 +185,7 @@ export function ProductImageGallery({ productName, coverImage, galleryImages }: 
                 src={current.src}
                 alt={productName}
                 className="max-h-[min(85vh,900px)] max-w-full object-contain"
+                onError={() => handleImageError(current.src)}
               />
               {slides.length > 1 && (
                 <button
@@ -193,7 +209,12 @@ export function ProductImageGallery({ productName, coverImage, galleryImages }: 
                       i === safeIndex ? 'border-white' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={s.src} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={s.src}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      onError={() => handleImageError(s.src)}
+                    />
                   </button>
                 ))}
               </div>

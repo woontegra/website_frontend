@@ -1,121 +1,115 @@
-import { useEffect, useState, type CSSProperties } from 'react'
-import { DEFAULT_SITE_LOGO, fetchPublicSiteSettings } from '../../api/siteSettings'
+import { useState, type CSSProperties } from 'react'
 import { HEADER_LOGO_ALT, HEADER_LOGO_WIDTH } from '../../config/siteLogo'
 import { useSiteSettings } from '../../contexts/SiteSettingsContext'
 import {
   clampLogoHeight,
-  DEFAULT_FOOTER_LOGO_HEIGHT,
-  DEFAULT_MOBILE_LOGO_HEIGHT,
   DEFAULT_NAVBAR_LOGO_HEIGHT,
 } from '../../lib/logoSize'
-import { SafeLogo } from './SafeLogo'
+import woontegraLogo from '../../assets/logos/woontegra-logo.png'
 
 type SiteLogoPlacement = 'navbar' | 'footer' | 'inline'
 
 type SiteLogoProps = {
   placement?: SiteLogoPlacement
   className?: string
-  textClassName?: string
   width?: number
   heightPx?: number
 }
 
+const SITE_LOGO_SRC = woontegraLogo
+
+/** Geniş PNG (3.2:1) — genişlikten ölçeklenir (~52px mobil / ~62px masaüstü yükseklik). */
+const NAVBAR_LOGO_WIDTH_MOBILE = 168
+const FOOTER_LOGO_WIDTH = 180
+
+function LogoTextFallback({
+  className,
+  style,
+}: {
+  className?: string
+  style?: CSSProperties
+}) {
+  return (
+    <span
+      className={`inline-flex items-center text-xl font-bold tracking-tight text-slate-900 min-[1200px]:text-2xl ${className ?? ''}`}
+      style={style}
+      aria-label={HEADER_LOGO_ALT}
+    >
+      Woontegra
+    </span>
+  )
+}
+
+/** Kurumsal site logosu — src/assets/logos/woontegra-logo.png, yükleme hatasında metin fallback. */
 export function SiteLogo({
   placement = 'inline',
   className,
-  textClassName,
   width = HEADER_LOGO_WIDTH,
   heightPx,
 }: SiteLogoProps) {
-  const context = useSiteSettings()
-  const [fallback, setFallback] = useState({
-    logo: DEFAULT_SITE_LOGO,
-    logoUpdatedAt: '',
-    navbarLogoHeight: DEFAULT_NAVBAR_LOGO_HEIGHT,
-    footerLogoHeight: DEFAULT_FOOTER_LOGO_HEIGHT,
-    mobileLogoHeight: DEFAULT_MOBILE_LOGO_HEIGHT,
-    loaded: false,
-  })
+  const { navbarLogoHeight } = useSiteSettings()
+  const [imageError, setImageError] = useState(false)
 
-  useEffect(() => {
-    if (context.loaded) return
-    let cancelled = false
-    void fetchPublicSiteSettings().then((data) => {
-      if (cancelled) return
-      setFallback({
-        logo: data.logo?.trim() || DEFAULT_SITE_LOGO,
-        logoUpdatedAt: data.logoUpdatedAt?.trim() || '',
-        navbarLogoHeight: data.navbarLogoHeight,
-        footerLogoHeight: data.footerLogoHeight,
-        mobileLogoHeight: data.mobileLogoHeight,
-        loaded: true,
-      })
-    })
-    return () => {
-      cancelled = true
+  if (imageError) {
+    if (placement === 'navbar') {
+      return (
+        <LogoTextFallback
+          className={className}
+          style={{ minHeight: `${NAVBAR_LOGO_WIDTH_MOBILE / 3.2}px` }}
+        />
+      )
     }
-  }, [context.loaded])
-
-  const logo = context.loaded ? context.logo : fallback.logo
-  const logoUpdatedAt = context.loaded ? context.logoUpdatedAt : fallback.logoUpdatedAt
-  const navbarHeight = context.loaded ? context.navbarLogoHeight : fallback.navbarLogoHeight
-  const footerHeight = context.loaded ? context.footerLogoHeight : fallback.footerLogoHeight
-  const mobileHeight = context.loaded ? context.mobileLogoHeight : fallback.mobileLogoHeight
-  const loading = context.loaded ? false : !fallback.loaded
+    if (placement === 'footer') {
+      return (
+        <LogoTextFallback
+          className={className}
+          style={{ minHeight: `${FOOTER_LOGO_WIDTH / 3.2}px` }}
+        />
+      )
+    }
+    const inlineH = clampLogoHeight(heightPx ?? navbarLogoHeight, DEFAULT_NAVBAR_LOGO_HEIGHT)
+    return <LogoTextFallback className={className} style={{ minHeight: `${inlineH}px` }} />
+  }
 
   if (placement === 'navbar') {
-    const desktopH = clampLogoHeight(navbarHeight, DEFAULT_NAVBAR_LOGO_HEIGHT)
-    const mobileH = clampLogoHeight(mobileHeight, DEFAULT_MOBILE_LOGO_HEIGHT)
-    const cssVars = {
-      '--logo-h-mobile': `${mobileH}px`,
-      '--logo-h-desktop': `${desktopH}px`,
-    } as CSSProperties
-
     return (
-      <SafeLogo
-        src={logo || DEFAULT_SITE_LOGO}
-        cacheVersion={logoUpdatedAt}
+      <img
+        src={SITE_LOGO_SRC}
         alt={HEADER_LOGO_ALT}
         width={width}
-        className={`block h-[var(--logo-h-mobile)] max-h-9 w-auto max-w-[min(11rem,42vw)] object-contain object-left min-[1200px]:h-[var(--logo-h-desktop)] min-[1200px]:max-h-10 min-[1200px]:max-w-[11.5rem] ${className ?? ''}`}
-        textClassName={textClassName}
-        wrapperMinHeight={mobileH}
-        wrapperStyle={cssVars}
-        loading={loading}
+        loading="eager"
+        fetchPriority="high"
+        decoding="sync"
+        className={`block h-auto w-[min(168px,46vw)] object-contain object-left min-[1200px]:w-[200px] ${className ?? ''}`}
+        onError={() => setImageError(true)}
       />
     )
   }
 
   if (placement === 'footer') {
-    const footerH = clampLogoHeight(footerHeight, DEFAULT_FOOTER_LOGO_HEIGHT)
     return (
-      <SafeLogo
-        src={logo || DEFAULT_SITE_LOGO}
-        cacheVersion={logoUpdatedAt}
+      <img
+        src={SITE_LOGO_SRC}
         alt={HEADER_LOGO_ALT}
         width={width}
-        heightPx={footerH}
-        maxWidthPx={200}
-        className={`block w-auto object-contain object-left ${className ?? ''}`}
-        textClassName={textClassName}
-        wrapperMinHeight={footerH}
-        loading={loading}
+        loading="eager"
+        className={`block h-auto object-contain object-left ${className ?? ''}`}
+        style={{ width: `${FOOTER_LOGO_WIDTH}px`, maxWidth: '100%' }}
+        onError={() => setImageError(true)}
       />
     )
   }
 
-  const inlineH = clampLogoHeight(heightPx ?? navbarHeight, DEFAULT_NAVBAR_LOGO_HEIGHT)
+  const inlineH = clampLogoHeight(heightPx ?? navbarLogoHeight, DEFAULT_NAVBAR_LOGO_HEIGHT)
   return (
-    <SafeLogo
-      src={logo || DEFAULT_SITE_LOGO}
-      cacheVersion={logoUpdatedAt}
+    <img
+      src={SITE_LOGO_SRC}
       alt={HEADER_LOGO_ALT}
       width={width}
-      heightPx={inlineH}
+      loading="eager"
       className={className ?? 'block w-auto object-contain object-left'}
-      textClassName={textClassName}
-      wrapperMinHeight={inlineH}
-      loading={loading}
+      style={{ height: `${inlineH}px` }}
+      onError={() => setImageError(true)}
     />
   )
 }

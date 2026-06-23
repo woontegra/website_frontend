@@ -1,3 +1,5 @@
+import { softwareNavMenuItem } from './softwareNavMenu'
+
 export const MENU_ITEMS_KEY = 'menuItems'
 
 export type MenuItemConfig = {
@@ -8,6 +10,7 @@ export type MenuItemConfig = {
   enabled: boolean
   openInNewTab: boolean
   isButton: boolean
+  groupHeader?: boolean
   children?: MenuItemConfig[]
 }
 
@@ -25,6 +28,7 @@ function normalizeItem(item: MenuItemConfig, index: number): MenuItemConfig {
     enabled: item.enabled !== false,
     openInNewTab: !!item.openInNewTab,
     isButton: !!item.isButton,
+    groupHeader: item.groupHeader === true,
     children: item.children?.map((child, ci) => normalizeItem(child, ci)),
   }
 }
@@ -64,20 +68,10 @@ export const defaultMenuItemsBundle: MenuItemsBundle = {
       ],
     },
     { id: 'solutions', label: 'Çözümler', href: '/cozumler', order: 3, enabled: true, openInNewTab: false, isButton: false },
-    { id: 'tools', label: 'Ücretsiz Araçlar', href: '/ucretsiz-araclar', order: 4, enabled: true, openInNewTab: false, isButton: false },
+    softwareNavMenuItem,
     { id: 'blog', label: 'Blog', href: '/blog', order: 5, enabled: true, openInNewTab: false, isButton: false },
     { id: 'faq', label: 'SSS', href: '/sss', order: 6, enabled: false, openInNewTab: false, isButton: false },
     { id: 'contact', label: 'İletişim', href: '/iletisim', order: 7, enabled: true, openInNewTab: false, isButton: false },
-    {
-      id: 'desktop-store',
-      label: 'Masaüstü araçlar',
-      href: '/urunler',
-      order: 8,
-      /** Varsayılan kapalı: /urunler linki menü yönetiminden (katalog) yönetilsin; pasif katalog öğesi header'da görünmesin. */
-      enabled: false,
-      openInNewTab: false,
-      isButton: false,
-    },
   ],
   headerButtons: [
     { id: 'quote', label: 'Teklif Al', href: '/teklif-al', order: 0, enabled: true, openInNewTab: false, isButton: true },

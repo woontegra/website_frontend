@@ -1,9 +1,9 @@
-export const LOGO_HEIGHT_MIN = 24
-export const LOGO_HEIGHT_MAX = 90
+export const LOGO_HEIGHT_MIN = 28
+export const LOGO_HEIGHT_MAX = 96
 
-export const DEFAULT_NAVBAR_LOGO_HEIGHT = 42
-export const DEFAULT_FOOTER_LOGO_HEIGHT = 28
-export const DEFAULT_MOBILE_LOGO_HEIGHT = 34
+export const DEFAULT_NAVBAR_LOGO_HEIGHT = 48
+export const DEFAULT_FOOTER_LOGO_HEIGHT = 40
+export const DEFAULT_MOBILE_LOGO_HEIGHT = 44
 
 export function clampLogoHeight(value: unknown, fallback: number): number {
   const parsed =

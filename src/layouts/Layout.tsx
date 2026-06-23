@@ -34,7 +34,7 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex min-h-screen flex-col bg-white">
         <SiteTracking />
         <Navbar />
-        <main className={`w-full flex-1 ${SURFACE_PAGE_ROOT}`}>
+        <main className={`relative z-0 w-full flex-1 ${SURFACE_PAGE_ROOT}`}>
           <PublicBreadcrumbs />
           {children ?? <Outlet />}
         </main>

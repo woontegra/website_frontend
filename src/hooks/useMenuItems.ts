@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getApiUrl } from '../config/api'
 import { fetchPageContentBundle } from '../api/pageContentBundle'
 import {
@@ -10,6 +10,7 @@ import {
   type MenuItemConfig,
   type MenuItemsBundle,
 } from '../data/menuItemsContent'
+import { softwareNavMenuItem } from '../data/softwareNavMenu'
 import type { PublicNavMenuItem } from '../api/products-public'
 import { menuPathForNav } from '../lib/menuPathForNav'
 
@@ -34,6 +35,44 @@ function mapCatalogNavToMenuItems(tree: PublicNavMenuItem[], baseOrder: number):
       }
     })
   return walk(tree, 0)
+}
+
+function normLabel(label: string): string {
+  return label.trim().toLocaleLowerCase('tr-TR')
+}
+
+/** Header'dan kaldırılacak eski menü öğeleri (CMS/katalog kaynaklı dahil). */
+function isHiddenHeaderNavItem(item: MenuItemConfig): boolean {
+  if (item.id === 'tools' || item.id === 'desktop-store') return true
+  const label = normLabel(item.label)
+  if (label === 'ücretsiz araçlar' || label === 'masaüstü araçlar') return true
+  const path = menuPathForNav(item.href)
+  if (path === '/ucretsiz-araclar') return true
+  if (path === '/urunler' && label.includes('masaüstü')) return true
+  return false
+}
+
+function restoreDropdownChildren(items: MenuItemConfig[]): MenuItemConfig[] {
+  const defaultsById = new Map<string, MenuItemConfig>()
+  for (const item of defaultMenuItemsBundle.items) {
+    if ((item.children?.length ?? 0) > 0) defaultsById.set(item.id, item)
+  }
+  defaultsById.set('software', softwareNavMenuItem)
+
+  return items.map((item) => {
+    const def = defaultsById.get(item.id)
+    if (def?.children?.length && (!item.children || item.children.length === 0)) {
+      return { ...item, children: def.children }
+    }
+    return item
+  })
+}
+
+function applySoftwareNavMenu(items: MenuItemConfig[]): MenuItemConfig[] {
+  const filtered = items.filter((i) => !isHiddenHeaderNavItem(i))
+  const withChildren = restoreDropdownChildren(filtered)
+  const withoutOldSoftware = withChildren.filter((i) => i.id !== 'software')
+  return [...withoutOldSoftware, softwareNavMenuItem].sort((a, b) => a.order - b.order)
 }
 
 export function useMenuItems() {
@@ -70,14 +109,15 @@ export function useMenuItems() {
     }
   }, [])
 
-  const cmsRaw = getActiveMenuItems(bundle)
-  const hasCatalogUrunler = catalogNav.some((c) => menuPathForNav(c.href) === '/urunler')
-  /** Katalogda /urunler varsa CMS'deki desktop-store gizlenir (aynı path için tek kaynak: menü yönetimi). */
-  const cmsItems = hasCatalogUrunler ? cmsRaw.filter((i) => i.id !== 'desktop-store') : cmsRaw
-  /** Üst menüde SSS (/sss) gösterilmez; sayfa doğrudan URL ile açılabilir. */
-  const items = [...cmsItems, ...catalogNav]
-    .filter((i) => menuPathForNav(i.href) !== '/sss')
-    .sort((a, b) => a.order - b.order)
+  const items = useMemo(() => {
+    const cmsRaw = getActiveMenuItems(bundle)
+    const hasCatalogUrunler = catalogNav.some((c) => menuPathForNav(c.href) === '/urunler')
+    const cmsItems = hasCatalogUrunler ? cmsRaw.filter((i) => i.id !== 'desktop-store') : cmsRaw
+    const merged = [...cmsItems, ...catalogNav]
+      .filter((i) => menuPathForNav(i.href) !== '/sss')
+    return applySoftwareNavMenu(merged)
+  }, [bundle, catalogNav])
+
   const headerButtons = getActiveHeaderButtons(bundle)
 
   return { items, headerButtons, loaded }

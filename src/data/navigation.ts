@@ -1,4 +1,9 @@
 import type { NavLink } from '../types'
+import {
+  productDetailPath,
+  SIFRE_KASASI_PAGE_PATH,
+  SOFTWARE_PRODUCT_SLUGS,
+} from './softwareNavMenu'
 
 export const mainNav: NavLink[] = [
   { label: 'Ana sayfa', href: '/' },
@@ -17,7 +22,18 @@ export const mainNav: NavLink[] = [
     ],
   },
   { label: 'Çözümler', href: '/cozumler' },
-  { label: 'Ücretsiz Araçlar', href: '/ucretsiz-araclar' },
+  {
+    label: 'Yazılımlar',
+    href: '#',
+    children: [
+      { label: 'Hukuk Yazılımları', href: '#' },
+      { label: 'Müvekkil Kasa Defteri Masaüstü', href: productDetailPath(SOFTWARE_PRODUCT_SLUGS.mkDesktop) },
+      { label: 'Müvekkil Kasa Defteri Çoklu Kullanıcı', href: productDetailPath(SOFTWARE_PRODUCT_SLUGS.mkSaas) },
+      { label: 'İşletme Yazılımları', href: '#' },
+      { label: 'Woontegra İşletme Defteri', href: productDetailPath(SOFTWARE_PRODUCT_SLUGS.isletmeDefteri) },
+      { label: 'Woontegra Şifre Kasası', href: SIFRE_KASASI_PAGE_PATH },
+    ],
+  },
   { label: 'Blog', href: '/blog' },
   { label: 'İletişim', href: '/iletisim' },
 ]

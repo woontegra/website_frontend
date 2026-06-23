@@ -1,22 +1,14 @@
 import { Button } from '../components/ui/Button'
 import { StaticImage } from '../components/ui/StaticImage'
-import { frontendImages } from '../data/frontendImages'
-import { defaultHomeData } from '../data/defaultHomeData'
-import { useHeroSection } from '../hooks/useHeroSection'
+import { homePageBrands, homePageHero } from '../data/homePageContent'
 import { ArrowRight, Code, Palette, ShoppingCart, Cloud, Scale, Lightbulb, Award, Zap, TrendingUp, Target, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 export function HomePage() {
-  const { heroData } = useHeroSection('home', defaultHomeData)
   const brandsScrollRef = useRef<HTMLDivElement>(null)
+  const [heroImageVisible, setHeroImageVisible] = useState(true)
 
-  const heroTag = heroData?.tag || 'Teknoloji & Yazılım'
-  const heroTitle =
-    heroData?.title || 'Woontegra ile Yazılım, Dijital Hizmetler ve Ticaret Tek Yapıda'
-  const heroSubtitle =
-    heroData?.subtitle ||
-    'Woontegra, yazılım geliştirme, e-ticaret sistemleri ve SaaS ürünleri ile işletmeler için sürdürülebilir dijital altyapılar kurar.'
-  const heroImage = frontendImages.homeHero
+  const { tag: heroTag, title: heroTitle, subtitle: heroSubtitle, image: heroImage } = homePageHero
 
   const scrollBrands = (direction: 'left' | 'right') => {
     if (brandsScrollRef.current) {
@@ -34,7 +26,7 @@ export function HomePage() {
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 py-16 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(34,197,94,0.2),transparent_70%)]" />
         <div className="container mx-auto px-4 max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className={`grid items-center gap-12 ${heroImageVisible ? 'lg:grid-cols-2' : 'max-w-3xl'}`}>
             <div className="text-white">
               <div className="inline-block px-3 py-1.5 bg-green-500/20 rounded-full mb-4">
                 <span className="text-xs font-medium text-green-400">{heroTag}</span>
@@ -58,16 +50,24 @@ export function HomePage() {
                 </Button>
               </div>
             </div>
-            
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
-              <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <StaticImage
-                src={heroImage}
-                alt="Woontegra Teknoloji"
-                className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
-              />
-            </div>
+
+            {heroImageVisible ? (
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-blue-500/30 blur-3xl rounded-full animate-pulse" />
+                <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
+                <img
+                  src={heroImage}
+                  alt="Woontegra Teknoloji"
+                  width={640}
+                  height={400}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
+                  className="relative rounded-xl shadow-xl border border-white/10 w-full h-auto object-cover transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl"
+                  onError={() => setHeroImageVisible(false)}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
@@ -130,7 +130,6 @@ export function HomePage() {
             <p className="text-lg text-slate-600">Gerçek projelerle kanıtlanmış deneyim</p>
           </div>
           <div className="relative">
-            {/* Left Arrow */}
             <button
               onClick={() => scrollBrands('left')}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300 -ml-6"
@@ -139,41 +138,11 @@ export function HomePage() {
               <ChevronLeft className="w-6 h-6" />
             </button>
 
-            {/* Carousel */}
             <div 
               ref={brandsScrollRef}
               className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide px-2"
             >
-              {[
-                { 
-                  name: 'Bilirkişi', 
-                  image: frontendImages.brands.bilirkisi,
-                  desc: 'Hukuk ve aktüerya alanında kullanılan profesyonel hesaplama yazılımıdır.',
-                  gradient: 'from-blue-600 to-purple-600',
-                  url: 'https://www.bilirkisihesap.com/'
-                },
-                { 
-                  name: 'Optimoon', 
-                  image: frontendImages.brands.optimoon,
-                  desc: 'Doğal taş ve özel tasarım ürünlerin yer aldığı e-ticaret markamızdır.',
-                  gradient: 'from-purple-600 to-pink-600',
-                  url: 'https://optimoon.com/'
-                },
-                { 
-                  name: 'Datça Tropikal', 
-                  image: frontendImages.brands.datca,
-                  desc: 'Yerel üretim ve doğal ürünlerin satışını gerçekleştiren markamızdır.',
-                  gradient: 'from-green-600 to-teal-600',
-                  url: 'https://datcatropikal.com/'
-                },
-                { 
-                  name: 'Mercan Danışmanlık', 
-                  image: frontendImages.brands.mercan,
-                  desc: 'Marka tescil ve patent danışmanlık süreçlerini yöneten markamızdır.',
-                  gradient: 'from-orange-600 to-red-600',
-                  url: 'https://mercandanismanlik.com/'
-                },
-              ].map((brand, i) => (
+              {homePageBrands.map((brand, i) => (
                 <a
                   key={i}
                   href={brand.url}
@@ -197,7 +166,6 @@ export function HomePage() {
               ))}
             </div>
 
-            {/* Right Arrow */}
             <button
               onClick={() => scrollBrands('right')}
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300 -mr-6"

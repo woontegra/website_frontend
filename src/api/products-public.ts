@@ -32,6 +32,10 @@ export type PublicProductDetail = PublicProductListItem & {
   seoDescription: string | null
   galleryImages: PublicProductGalleryImage[]
   featureBullets: string
+  licenseRequired: boolean
+  licenseDays: number | null
+  licenseMaxDevices: number | null
+  hasDownload: boolean
 }
 
 export type CartPreviewRow = {
