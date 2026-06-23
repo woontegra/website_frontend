@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Trash2, Upload } from 'lucide-react'
 import { catalogMediaAdminApi, type CatalogMedia } from '../../api/catalog-media-admin'
 import { MediaThumb } from '../../components/ui/MediaThumb'
+import { resolveCatalogMediaPreviewUrl } from '../../lib/resolveCatalogMediaPreviewUrl'
 
 export function AdminMediaLibraryPage() {
   const [items, setItems] = useState<CatalogMedia[]>([])
@@ -103,7 +104,12 @@ export function AdminMediaLibraryPage() {
                   <tr key={m.id} className="border-b border-slate-100 last:border-0">
                     <td className="px-4 py-3">
                       {m.fileType === 'IMAGE' ? (
-                        <MediaThumb url={m.url} fileType={m.fileType} className="h-12 w-16" />
+                        <MediaThumb
+                          url={m.url}
+                          fileType={m.fileType}
+                          className="h-12 w-16"
+                          resolveUrl={resolveCatalogMediaPreviewUrl}
+                        />
                       ) : (
                         <span className="text-xs text-slate-500">—</span>
                       )}

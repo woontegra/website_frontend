@@ -6,10 +6,18 @@ type MediaThumbProps = {
   fileType: string
   className?: string
   alt?: string
+  /** Admin medya kütüphanesi gibi özel URL çözümü (varsayılan: resolveAssetUrl) */
+  resolveUrl?: (url: string | null | undefined) => string
 }
 
 /** Katalog medya: IMAGE için küçük önizleme; hata veya dosya tipinde placeholder */
-export function MediaThumb({ url, fileType, className = 'h-14 w-20', alt = '' }: MediaThumbProps) {
+export function MediaThumb({
+  url,
+  fileType,
+  className = 'h-14 w-20',
+  alt = '',
+  resolveUrl,
+}: MediaThumbProps) {
   const [broken, setBroken] = useState(false)
 
   useEffect(() => {
@@ -27,7 +35,8 @@ export function MediaThumb({ url, fileType, className = 'h-14 w-20', alt = '' }:
     )
   }
 
-  const src = resolveAssetUrl(url)
+  const resolve = resolveUrl ?? resolveAssetUrl
+  const src = resolve(url)
   if (!src || broken) {
     return (
       <div
@@ -45,7 +54,12 @@ export function MediaThumb({ url, fileType, className = 'h-14 w-20', alt = '' }:
       src={src}
       alt={alt}
       className={`shrink-0 rounded border border-slate-200 object-cover ${className}`}
-      onError={() => setBroken(true)}
+      onError={() => {
+        if (import.meta.env.DEV) {
+          console.warn('[MediaThumb] Görsel yüklenemedi', { url, src })
+        }
+        setBroken(true)
+      }}
     />
   )
 }

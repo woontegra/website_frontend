@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { catalogMediaAdminApi, type CatalogMedia, type CatalogMediaFileType } from '../../api/catalog-media-admin'
+import { resolveCatalogMediaPreviewUrl } from '../../lib/resolveCatalogMediaPreviewUrl'
 import { MediaThumb } from '../ui/MediaThumb'
 
 type Props = {
@@ -75,7 +76,12 @@ export function MediaPickerModal({ open, title, allowedTypes, onClose, onSelect 
                   className="flex w-full items-center gap-3 px-2 py-3 text-left hover:bg-slate-50"
                 >
                   {m.fileType === 'IMAGE' ? (
-                    <MediaThumb url={m.url} fileType={m.fileType} className="h-14 w-20" />
+                    <MediaThumb
+                      url={m.url}
+                      fileType={m.fileType}
+                      className="h-14 w-20"
+                      resolveUrl={resolveCatalogMediaPreviewUrl}
+                    />
                   ) : (
                     <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded border border-slate-200 bg-slate-100 text-xs font-medium text-slate-600">
                       {m.fileType}

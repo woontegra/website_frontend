@@ -1,9 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-/** Yerel Vite’ta /uploads için önceki sabit hedef — medya genelde bu sunucuda. */
-const RAILWAY_UPLOADS_DEFAULT = 'https://websitebackend-production-ab6e.up.railway.app'
-
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
@@ -13,10 +10,10 @@ export default defineConfig(({ mode }) => {
    */
   const apiProxyTarget = env.VITE_DEV_API_PROXY?.trim() || 'http://127.0.0.1:4000'
   /**
-   * /uploads ayrı hedef: API’yi local çalıştırırken dosyalar hâlâ Railway’de olabilir.
-   * Tamamen yerel medya için .env: VITE_DEV_UPLOADS_PROXY=http://127.0.0.1:4000
+   * /uploads — varsayılan olarak API ile aynı hedef (yerelde yüklenen dosyalar önizlenir).
+   * Production/Railway medyası için .env: VITE_DEV_UPLOADS_PROXY=https://websitebackend-production-ab6e.up.railway.app
    */
-  const uploadsProxyTarget = env.VITE_DEV_UPLOADS_PROXY?.trim() || RAILWAY_UPLOADS_DEFAULT
+  const uploadsProxyTarget = env.VITE_DEV_UPLOADS_PROXY?.trim() || apiProxyTarget
 
   return {
     plugins: [react()],
