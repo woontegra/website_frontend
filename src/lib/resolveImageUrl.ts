@@ -1,4 +1,4 @@
-import { resolveAssetUrl } from './resolveAssetUrl'
+import { resolveAssetUrl, normalizeStoredAssetPath } from './resolveAssetUrl'
 
 /**
  * Eski panel/veritabanı kayıtlarındaki bilinen path hatalarını düzeltir.
@@ -31,14 +31,13 @@ export function isValidImageSrc(url?: string | null): boolean {
 }
 
 /**
- * Tüm görsel URL'lerini tek noktadan çözümler.
- * Woontegra kurumsal site görselleri frontend/public/images altındadır.
- * /images/... pathleri aynen Vite/Vercel static asset olarak kullanılır.
+ * Kurumsal site /images/ alias düzeltmeleri. `/uploads/` dokunulmaz.
  */
 export function normalizePublicImagePath(url?: string | null): string {
   if (!url) return ''
   const trimmed = url.trim()
   if (!trimmed) return ''
+  if (trimmed.startsWith('/uploads/')) return trimmed
 
   const lower = trimmed.toLowerCase()
   if (IMAGE_PATH_ALIASES[lower]) return IMAGE_PATH_ALIASES[lower]
@@ -47,15 +46,29 @@ export function normalizePublicImagePath(url?: string | null): string {
   return trimmed
 }
 
+/**
+ * Tüm görsel URL'lerini tek noktadan çözümler.
+ * /uploads/ → resolveAssetUrl (backend kökü)
+ * /images/ → frontend static
+ */
 export function resolveImageUrl(url?: string | null): string {
-  const normalized = normalizePublicImagePath(url)
-  if (!normalized) return ''
+  if (url == null) return ''
+  const trimmed = url.trim()
+  if (!trimmed || INVALID_LITERALS.has(trimmed.toLowerCase())) return ''
 
-  if (INVALID_LITERALS.has(normalized.toLowerCase())) return ''
+  const stored = normalizeStoredAssetPath(trimmed)
+  if (!stored) return ''
 
-  if (/^https?:\/\//i.test(normalized)) {
-    return normalized
+  if (stored.startsWith('/uploads/')) {
+    return resolveAssetUrl(stored)
   }
+
+  if (/^https?:\/\//i.test(stored)) {
+    return stored
+  }
+
+  const normalized = normalizePublicImagePath(stored)
+  if (!normalized) return ''
 
   if (normalized.startsWith('/images/')) {
     return normalized
@@ -79,7 +92,12 @@ export function isPublicImagePath(url?: string | null): boolean {
 }
 
 export function isPersistentImageUrl(url?: string | null): boolean {
-  return isPublicImagePath(url) || /^https?:\/\//i.test(url?.trim() ?? '')
+  const trimmed = url?.trim() ?? ''
+  if (!trimmed) return false
+  if (trimmed.startsWith('/uploads/') || normalizeStoredAssetPath(trimmed).startsWith('/uploads/')) {
+    return true
+  }
+  return isPublicImagePath(url) || /^https?:\/\//i.test(trimmed)
 }
 
 /** API yüklenene kadar fallback basmamak için sayfa görselleri. */

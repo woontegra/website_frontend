@@ -5,7 +5,7 @@ import { findPublicImageByPath, getFilenameFromPath } from '../../data/publicIma
 import { PublicImagePickerModal } from './PublicImagePickerModal'
 
 const HELP_TEXT =
-  'Görseller frontend/public/images klasörüne eklenmeli ve /images/dosya-adi.png formatında kullanılmalıdır. Canlı panelden yapılan /uploads yüklemeleri deploy sonrası kalıcı değildir.'
+  'Kurumsal site sayfaları için görseller frontend/public/images altında olmalı ve /images/dosya.png formatında kullanılmalıdır. E-ticaret ürün/medya görselleri /uploads/... ile backend’den servis edilir.'
 
 type ManagedImageFieldProps = {
   label?: string
@@ -95,9 +95,9 @@ export function ManagedImageField({
           ) : null}
 
           {isUploadPath ? (
-            <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-amber-700">
               <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-              /uploads/ yolu deploy sonrası kaybolur. Galeriden /images/... seçin.
+              /uploads/ yolu backend’den servis edilir; Railway’de kalıcılık için volume gerekir. Kurumsal sayfa için /images/... tercih edin.
             </p>
           ) : null}
 

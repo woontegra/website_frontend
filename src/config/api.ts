@@ -30,8 +30,27 @@ export const getApiUrl = (): string => {
 /** Backend kökü — uploads ve public asset'ler için (/api son eki yok) */
 export const getApiBase = (): string => {
   const url = getApiUrl()
-  if (!url.endsWith('/api')) return url
+  if (!url.endsWith('/api')) return url.replace(/\/+$/, '')
   return url.length <= 4 ? '' : url.slice(0, -4)
+}
+
+/**
+ * `/uploads/...` görsellerinin yükleneceği kök URL.
+ * Öncelik: VITE_UPLOADS_BASE_URL → VITE_BACKEND_PUBLIC_URL → getApiBase() → tarayıcı origin (Vercel /uploads rewrite).
+ */
+export const getUploadsBase = (): string => {
+  const fromEnv =
+    import.meta.env.VITE_UPLOADS_BASE_URL?.trim() || import.meta.env.VITE_BACKEND_PUBLIC_URL?.trim()
+  if (fromEnv) return fromEnv.replace(/\/+$/, '')
+
+  const apiBase = getApiBase()
+  if (apiBase) return apiBase
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin
+  }
+
+  return ''
 }
 
 /**

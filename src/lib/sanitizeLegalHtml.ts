@@ -1,6 +1,6 @@
-import DOMPurify from 'dompurify'
+import DOMPurify, { type Config } from 'dompurify'
 
-const LEGAL_HTML_CONFIG: DOMPurify.Config = {
+const LEGAL_HTML_CONFIG: Config = {
   ALLOWED_TAGS: [
     'div',
     'section',
@@ -27,7 +27,7 @@ const LEGAL_HTML_CONFIG: DOMPurify.Config = {
 
 /** Admin/checkout yasal HTML içeriğini güvenli şekilde temizler. */
 export function sanitizeLegalHtml(html: string): string {
-  return DOMPurify.sanitize(html, LEGAL_HTML_CONFIG)
+  return DOMPurify.sanitize(html, LEGAL_HTML_CONFIG) as string
 }
 
 export function isProbablyHtml(content: string): boolean {
