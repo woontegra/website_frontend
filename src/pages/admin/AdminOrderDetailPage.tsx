@@ -69,6 +69,7 @@ export function AdminOrderDetailPage() {
 
   const [adminNoteLocal, setAdminNoteLocal] = useState('')
   const [adminNoteSaving, setAdminNoteSaving] = useState(false)
+  const [archiveGenerating, setArchiveGenerating] = useState(false)
 
   const reload = useCallback(async () => {
     if (!id) return
@@ -250,6 +251,38 @@ export function AdminOrderDetailPage() {
       setToast(ax?.data?.message || 'Kayıt başarısız.')
     } finally {
       setAdminNoteSaving(false)
+    }
+  }
+
+  const generateLegalArchive = async (force = false) => {
+    if (!id || !row) return
+    if (force && !window.confirm('Mevcut yasal arşiv dosyaları silinip yeniden oluşturulacak. Devam edilsin mi?')) {
+      return
+    }
+    setArchiveGenerating(true)
+    try {
+      await ordersAdminApi.generateLegalArchive(id, force)
+      setToast(force ? 'Yasal arşiv yeniden oluşturuldu.' : 'Yasal arşiv oluşturuldu.')
+      await reload()
+    } catch (e: unknown) {
+      const ax = e && typeof e === 'object' && 'response' in e ? (e as { response?: { data?: { message?: string; code?: string } } }).response : undefined
+      const msg = ax?.data?.message || 'Yasal arşiv oluşturulamadı.'
+      if (ax?.data?.code === 'ARCHIVE_ALREADY_EXISTS') {
+        setToast(`${msg} Yeniden oluşturmak için ilgili butonu kullanın.`)
+      } else {
+        setToast(msg)
+      }
+    } finally {
+      setArchiveGenerating(false)
+    }
+  }
+
+  const downloadArchiveFile = async (fileId: string, fileName: string) => {
+    if (!id) return
+    try {
+      await ordersAdminApi.downloadLegalArchiveFile(id, fileId, fileName)
+    } catch {
+      setToast('Dosya indirilemedi.')
     }
   }
 
@@ -825,6 +858,72 @@ export function AdminOrderDetailPage() {
               </ul>
             </section>
           ) : null}
+          <section>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h3 className="font-semibold text-slate-900">Yasal arşiv dosyaları</h3>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={archiveGenerating || row.legalSnapshots.length === 0}
+                  onClick={() => void generateLegalArchive(false)}
+                  className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {archiveGenerating ? 'Oluşturuluyor…' : 'Yasal arşivi oluştur'}
+                </button>
+                {(row.legalArchiveFiles?.length ?? 0) > 0 ? (
+                  <button
+                    type="button"
+                    disabled={archiveGenerating}
+                    onClick={() => void generateLegalArchive(true)}
+                    className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-50"
+                  >
+                    Yeniden oluştur
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            {row.legalSnapshots.length === 0 ? (
+              <p className="mt-2 text-xs text-amber-800">Yasal snapshot yok; arşiv üretilemez.</p>
+            ) : null}
+            {(row.legalArchiveFiles?.length ?? 0) > 0 ? (
+              <div className="mt-3 overflow-x-auto rounded-lg border border-slate-100">
+                <table className="min-w-[720px] w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-3 py-2 font-semibold">Belge</th>
+                      <th className="px-3 py-2 font-semibold">Dosya</th>
+                      <th className="px-3 py-2 font-semibold">SHA256</th>
+                      <th className="px-3 py-2 font-semibold">Oluşturulma</th>
+                      <th className="px-3 py-2 font-semibold" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {row.legalArchiveFiles!.map((f) => (
+                      <tr key={f.id} className="border-t border-slate-100">
+                        <td className="px-3 py-2 font-medium text-slate-900">{f.title}</td>
+                        <td className="px-3 py-2 font-mono text-slate-700">{f.fileName}</td>
+                        <td className="max-w-[200px] truncate px-3 py-2 font-mono text-slate-600" title={f.sha256}>
+                          {f.sha256}
+                        </td>
+                        <td className="px-3 py-2 text-slate-600">{fmt(f.generatedAt)}</td>
+                        <td className="px-3 py-2">
+                          <button
+                            type="button"
+                            onClick={() => void downloadArchiveFile(f.id, f.fileName)}
+                            className="font-semibold text-accent-blue hover:underline"
+                          >
+                            {f.fileCategory === 'acceptance_json' ? 'JSON indir' : 'PDF indir'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="mt-2 text-xs text-slate-500">Henüz arşiv dosyası yok. Oluştur butonuna basın.</p>
+            )}
+          </section>
           {row.paymentTransactions.length > 0 ? (
             <section>
               <h3 className="font-semibold text-slate-900">PayTR işlem kayıtları</h3>

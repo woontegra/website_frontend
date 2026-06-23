@@ -47,6 +47,21 @@ export type AdminOrderLegalSnapshot = {
   userAgent: string | null
 }
 
+export type AdminOrderLegalArchiveFile = {
+  id: string
+  packageNo: string
+  documentType: string | null
+  fileCategory: string
+  title: string
+  fileName: string
+  mimeType: string
+  size: number
+  sha256: string
+  acceptanceCode: string | null
+  version: number | null
+  generatedAt: string
+}
+
 export type AdminOrderDetail = {
   id: string
   orderNo: string
@@ -125,6 +140,7 @@ export type AdminOrderDetail = {
     updatedAt: string
   }[]
   legalSnapshots: AdminOrderLegalSnapshot[]
+  legalArchiveFiles?: AdminOrderLegalArchiveFile[]
   licenses?: AdminOrderLicenseRow[]
 }
 
@@ -223,5 +239,37 @@ export const ordersAdminApi = {
       throw new Error(out?.message || 'Lisans güncellenemedi')
     }
     return out.data
+  },
+
+  async generateLegalArchive(orderId: string, force = false): Promise<{ packageNo: string; files: AdminOrderLegalArchiveFile[] }> {
+    const res = await apiClient.post<unknown>(`/admin/orders/${encodeURIComponent(orderId)}/legal-archive/generate`, {
+      force,
+    })
+    const out = res.data as {
+      success?: boolean
+      data?: { packageNo: string; files: AdminOrderLegalArchiveFile[] }
+      message?: string
+      code?: string
+    }
+    if (!out?.data) {
+      throw new Error(out?.message || 'Yasal arşiv oluşturulamadı')
+    }
+    return out.data
+  },
+
+  async downloadLegalArchiveFile(orderId: string, fileId: string, fileName: string): Promise<void> {
+    const res = await apiClient.get<Blob>(
+      `/admin/orders/${encodeURIComponent(orderId)}/legal-archive/files/${encodeURIComponent(fileId)}/download`,
+      { responseType: 'blob' },
+    )
+    const blob = res.data instanceof Blob ? res.data : new Blob([res.data])
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
   },
 }
