@@ -99,7 +99,7 @@ function AddressFormFields({
       </Field>
       <Field id="addr-district" label="İlçe">
         {districtOptions ? (
-          <select id="addr-district" className={inputCls} value={form.district} onChange={(e) => setForm((f) => ({ ...f, district: e.target.value }))}>
+          <select id="addr-district" className={inputCls} value={form.district} onChange={(e) => setForm((f) => ({ ...f, district: e.target.value }))} disabled={!form.city}>
             <option value="">İlçe seçin (opsiyonel)</option>
             {districtOptions.map((d) => (
               <option key={d} value={d}>

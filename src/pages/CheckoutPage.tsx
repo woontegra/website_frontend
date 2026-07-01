@@ -35,6 +35,40 @@ const emptyForm = {
   deliveryLine: '',
 }
 
+type CheckoutAddr = {
+  id: string
+  title: string
+  fullName: string
+  phone: string | null
+  city: string
+  district: string | null
+  addressLine: string
+  postalCode: string | null
+  taxOffice: string | null
+  taxNumber: string | null
+  companyName: string | null
+  isDefault: boolean
+}
+
+function mergeAddressIntoCheckoutForm(
+  base: typeof emptyForm,
+  addr: CheckoutAddr,
+): typeof emptyForm {
+  const hasCompany = Boolean(addr.companyName?.trim())
+  return {
+    ...base,
+    customerName: addr.fullName.trim() || base.customerName,
+    customerPhone: addr.phone?.trim() || base.customerPhone,
+    companyName: addr.companyName?.trim() ?? '',
+    taxOffice: addr.taxOffice?.trim() ?? '',
+    taxNumber: addr.taxNumber?.trim() ?? '',
+    deliveryCity: addr.city,
+    deliveryDistrict: addr.district ?? '',
+    deliveryLine: addr.addressLine,
+    billingType: hasCompany ? 'Kurumsal' : base.billingType,
+  }
+}
+
 const inputCls =
   'h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20'
 const labelCls = 'block text-sm font-medium text-slate-700'
@@ -62,20 +96,7 @@ export function CheckoutPage() {
   const [explicit, setExplicit] = useState(false)
 
   const [loggedIn, setLoggedIn] = useState(false)
-  type Addr = {
-    id: string
-    title: string
-    fullName: string
-    phone: string | null
-    city: string
-    district: string | null
-    addressLine: string
-    postalCode: string | null
-    taxOffice: string | null
-    taxNumber: string | null
-    companyName: string | null
-  }
-  const [addresses, setAddresses] = useState<Addr[]>([])
+  const [addresses, setAddresses] = useState<CheckoutAddr[]>([])
   const [selectedAddressId, setSelectedAddressId] = useState('')
   const [saveAddressAfterOrder, setSaveAddressAfterOrder] = useState(false)
 
@@ -120,16 +141,23 @@ export function CheckoutPage() {
     void (async () => {
       try {
         const me = await customersApi.getMe()
-        const addr = (await customersApi.listAddresses()) as Addr[]
+        const addr = (await customersApi.listAddresses()) as CheckoutAddr[]
         if (cancelled) return
         setLoggedIn(true)
         setAddresses(addr)
-        setForm((f) => ({
-          ...f,
+        const profileBase = {
+          ...emptyForm,
           customerName: me.name,
           customerEmail: me.email,
-          customerPhone: me.phone ?? f.customerPhone,
-        }))
+          customerPhone: me.phone ?? '',
+        }
+        const preferred = addr.find((a) => a.isDefault) ?? addr[0]
+        if (preferred) {
+          setSelectedAddressId(preferred.id)
+          setForm(mergeAddressIntoCheckoutForm(profileBase, preferred))
+        } else {
+          setForm(profileBase)
+        }
       } catch {
         if (!cancelled) setLoggedIn(false)
       }
@@ -681,24 +709,14 @@ export function CheckoutPage() {
                       setSelectedAddressId(id)
                       const a = addresses.find((x) => x.id === id)
                       if (a) {
-                        setForm((f) => ({
-                          ...f,
-                          customerName: a.fullName,
-                          customerPhone: a.phone ?? f.customerPhone,
-                          companyName: a.companyName ?? '',
-                          taxOffice: a.taxOffice ?? '',
-                          taxNumber: a.taxNumber ?? '',
-                          deliveryCity: a.city,
-                          deliveryDistrict: a.district ?? '',
-                          deliveryLine: a.addressLine,
-                        }))
+                        setForm((f) => mergeAddressIntoCheckoutForm(f, a))
                       }
                     }}
                   >
                     <option value="">— Manuel doldur —</option>
                     {addresses.map((a) => (
                       <option key={a.id} value={a.id}>
-                        {a.title} — {a.city}
+                        {a.title}{a.isDefault ? ' (Varsayılan)' : ''} — {a.city}
                       </option>
                     ))}
                   </select>
@@ -759,6 +777,7 @@ export function CheckoutPage() {
                       className={`${inputCls} mt-1.5`}
                       value={districtOptions.includes(form.deliveryDistrict) ? form.deliveryDistrict : ''}
                       onChange={(e) => setForm((f) => ({ ...f, deliveryDistrict: e.target.value }))}
+                      disabled={!form.deliveryCity}
                     >
                       <option value="">Seçiniz</option>
                       {districtOptions.map((d) => (
