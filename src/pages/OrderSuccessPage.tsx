@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ordersPublicApi, type OrderSuccessData, type OrderSuccessPaid } from '../api/orders-public'
 import { BankTransferPaymentPanel } from '../components/payment/BankTransferPaymentPanel'
 import { isSaasOrderDeliveryUrl } from '../lib/orderDeliveryUrl'
@@ -85,6 +85,7 @@ function FooterLinks() {
 
 export function OrderSuccessPage() {
   const { orderNo } = useParams<{ orderNo?: string }>()
+  const navigate = useNavigate()
   const [data, setData] = useState<OrderSuccessData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [rateMessage, setRateMessage] = useState<string | null>(null)
@@ -180,6 +181,16 @@ export function OrderSuccessPage() {
       clearTimer()
     }
   }, [orderNo, emailToken, fetchOrder])
+
+  useEffect(() => {
+    if (!orderNo || !data) return
+    if (data.status !== 'PAID' && data.status !== 'PROCESSING') return
+    const renewOrder = sessionStorage.getItem('woontegra_saas_renew_order')
+    if (renewOrder && renewOrder === orderNo) {
+      sessionStorage.removeItem('woontegra_saas_renew_order')
+      navigate('/hesabim/uyelikler?renewSuccess=1', { replace: true })
+    }
+  }, [data, orderNo, navigate])
 
   const applyEmail = () => {
     const t = emailInput.trim()

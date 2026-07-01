@@ -17,16 +17,48 @@ import {
 } from '../api/products-public'
 import type { ProductType } from '../api/products-admin'
 import { buildApiUrl } from '../config/api'
-import { formatProductPrice, productPricePeriodSuffix } from '../lib/formatProductPrice'
+import { productPricePeriodSuffix, saasTotalForYears } from '../lib/formatProductPrice'
 import { formatMoneyAmount } from '../lib/formatMoney'
 import { addToCart, clearCart, type CartSnapshot } from '../lib/cartStorage'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { ProductImageGallery } from '../components/store/ProductImageGallery'
 import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 
-function formatComparePrice(p: PublicProductDetail) {
+function formatComparePrice(p: PublicProductDetail, years = 1, multiplyForWeb = false) {
   if (p.compareAtPrice == null || p.compareAtPrice <= p.price) return null
-  return formatMoneyAmount(p.compareAtPrice, p.currency)
+  const amount =
+    multiplyForWeb && (p.productType === 'SAAS' || p.productType === 'SERVICE')
+      ? saasTotalForYears(p.compareAtPrice, years)
+      : p.compareAtPrice
+  return formatMoneyAmount(amount, p.currency)
+}
+
+function purchaseDisplayPrice(
+  product: PublicProductDetail,
+  isWebProduct: boolean,
+  webUsageYears: number,
+): { amount: number; periodLabel: string; unitHint: string | null } {
+  if (isWebProduct) {
+    const years = Math.min(10, Math.max(1, webUsageYears))
+    const amount = saasTotalForYears(product.price, years)
+    if (years > 1) {
+      return {
+        amount,
+        periodLabel: `/ ${years} yıl`,
+        unitHint: `${formatMoneyAmount(product.price, product.currency)} / yıl × ${years} yıl`,
+      }
+    }
+    return {
+      amount,
+      periodLabel: productPricePeriodSuffix(product.productType),
+      unitHint: null,
+    }
+  }
+  return {
+    amount: product.price,
+    periodLabel: productPricePeriodSuffix(product.productType),
+    unitHint: null,
+  }
 }
 
 function ProductBodyText({ text }: { text: string }) {
@@ -145,8 +177,8 @@ function PurchasePanel({
   hasGallery: boolean
   favoriteButton?: ReactNode
 }) {
-  const compare = formatComparePrice(product)
-  const periodSuffix = productPricePeriodSuffix(product.productType)
+  const compare = formatComparePrice(product, webUsageYears, isWebProduct)
+  const { amount, periodLabel, unitHint } = purchaseDisplayPrice(product, isWebProduct, webUsageYears)
 
   return (
     <div className="w-full rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl ring-1 ring-slate-900/[0.06] sm:p-8 lg:min-w-0">
@@ -162,15 +194,18 @@ function PurchasePanel({
 
       <div className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className="inline-flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0">
-          <span className="text-3xl font-bold text-emerald-700 lg:text-4xl">{formatProductPrice(product)}</span>
-          {periodSuffix ? (
-            <span className="text-sm font-medium text-slate-500 lg:text-base">{periodSuffix}</span>
+          <span className="text-3xl font-bold text-emerald-700 lg:text-4xl">
+            {formatMoneyAmount(amount, product.currency)}
+          </span>
+          {periodLabel ? (
+            <span className="text-sm font-medium text-slate-500 lg:text-base">{periodLabel}</span>
           ) : null}
         </span>
         {compare ? (
           <span className="text-lg text-slate-400 line-through lg:text-xl">{compare}</span>
         ) : null}
       </div>
+      {unitHint ? <p className="mt-2 text-sm text-slate-500">{unitHint}</p> : null}
 
       {product.licenseRequired ? (
         <ul className="mt-4 space-y-2 text-sm text-slate-600">
@@ -422,6 +457,7 @@ export function UrunDetailPage() {
 
   const typeLabel = productTypeLabel(product.productType)
   const licenseLabel = licenseDisplayLabel(product)
+  const heroPrice = purchaseDisplayPrice(product, !!isWebProduct, webUsageYears)
 
   const favBusy = favoriteBusyId === product.id
   const isFavorite = favoriteIds.has(product.id)
@@ -523,14 +559,15 @@ export function UrunDetailPage() {
 
               <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2">
                 <span className="text-3xl font-bold text-emerald-400 sm:text-4xl">
-                  {formatProductPrice(product)}
+                  {formatMoneyAmount(heroPrice.amount, product.currency)}
                 </span>
-                {productPricePeriodSuffix(product.productType) ? (
-                  <span className="text-base font-medium text-slate-400">
-                    {productPricePeriodSuffix(product.productType)}
-                  </span>
+                {heroPrice.periodLabel ? (
+                  <span className="text-base font-medium text-slate-400">{heroPrice.periodLabel}</span>
                 ) : null}
               </div>
+              {heroPrice.unitHint ? (
+                <p className="mt-2 text-sm text-slate-400">{heroPrice.unitHint}</p>
+              ) : null}
 
               {product.licenseRequired ? (
                 <ul className="mt-5 flex flex-wrap gap-3 text-sm text-slate-300">

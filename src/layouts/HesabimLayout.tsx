@@ -68,6 +68,9 @@ export function HesabimLayout() {
               <NavLink to="/hesabim/hesap-detaylari" className={navLinkClass}>
                 Hesap Bilgilerim
               </NavLink>
+              <NavLink to="/hesabim/uyelikler" className={navLinkClass}>
+                Üyeliklerim
+              </NavLink>
               <NavLink to="/hesabim/favoriler" className={navLinkClass}>
                 Favorilerim
               </NavLink>

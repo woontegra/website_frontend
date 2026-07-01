@@ -81,6 +81,7 @@ import { HesabimCustomerOrderPage } from '../pages/HesabimCustomerOrderPage'
 import { HesabimAddressesPage } from '../pages/HesabimAddressesPage'
 import { HesabimAccountDetailsPage } from '../pages/HesabimAccountDetailsPage'
 import { HesabimFavoritesPage } from '../pages/HesabimFavoritesPage'
+import { HesabimUyeliklerPage } from '../pages/HesabimUyeliklerPage'
 import { SiparislerimPage } from '../pages/SiparislerimPage'
 import { SiparisDetayPage } from '../pages/SiparisDetayPage'
 import { OrderSuccessPage } from '../pages/OrderSuccessPage'
@@ -140,6 +141,7 @@ export const router = createBrowserRouter([
               { path: 'adresler', element: <HesabimAddressesPage /> },
               { path: 'hesap-detaylari', element: <HesabimAccountDetailsPage /> },
               { path: 'favoriler', element: <HesabimFavoritesPage /> },
+              { path: 'uyelikler', element: <HesabimUyeliklerPage /> },
             ],
           },
         ],

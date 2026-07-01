@@ -6,6 +6,43 @@ export type LoginRegisterResponse = {
   customer: CustomerProfile
 }
 
+export type CustomerSaasMembershipRow = {
+  id: string
+  productCode: string
+  productName: string
+  tenantSlug: string
+  licenseKey: string
+  status: string
+  licenseStartDate: string
+  licenseEndDate: string
+  kalanGun: number | null
+  ownerEmail: string
+}
+
+export type SaasRenewQuote = {
+  membershipId: string
+  renewalPeriod: string
+  renewalDays: number
+  renewalLabel: string
+  productName: string
+  lineLabel: string
+  total: number
+  currency: string
+}
+
+export type SaasRenewOrderResult = {
+  id: string
+  orderNo: string
+  total: number
+  currency: string
+  paymentProvider: string
+  renewalPeriod: string
+  renewalDays: number
+  renewalLabel: string
+  productName: string
+  membershipId: string
+}
+
 export const customersApi = {
   async register(body: { name: string; email: string; password: string; phone?: string }): Promise<LoginRegisterResponse> {
     const res = await fetch(buildApiUrl('/customers/register'), {
@@ -120,5 +157,43 @@ export const customersApi = {
   async removeFavorite(productId: string) {
     const res = await customerFetch(`/customers/me/favorites/${encodeURIComponent(productId)}`, { method: 'DELETE' })
     if (!res.ok) throw new Error('Kaldırılamadı')
+  },
+
+  async listSaasMemberships(): Promise<CustomerSaasMembershipRow[]> {
+    const res = await customerFetch('/customers/me/saas-memberships')
+    const json = (await res.json()) as { success?: boolean; data?: CustomerSaasMembershipRow[] }
+    if (!res.ok || !json.success || !json.data) throw new Error('Üyelikler yüklenemedi')
+    return json.data
+  },
+
+  async getSaasRenewQuote(membershipId: string, renewalPeriod: string): Promise<SaasRenewQuote> {
+    const q = new URLSearchParams({ renewalPeriod })
+    const res = await customerFetch(
+      `/customers/me/saas-memberships/${encodeURIComponent(membershipId)}/renew-quote?${q}`,
+    )
+    const json = (await res.json()) as { success?: boolean; data?: SaasRenewQuote; message?: string }
+    if (!res.ok || !json.success || !json.data) throw new Error(json.message || 'Fiyat alınamadı')
+    return json.data
+  },
+
+  async createSaasRenewOrder(
+    membershipId: string,
+    body: {
+      renewalPeriod: string
+      paymentProvider?: 'BANK_TRANSFER' | 'PAYTR'
+      acceptPreInfo: boolean
+      acceptDistanceSales: boolean
+      acceptKvkk: boolean
+      acceptSaasSubscription: boolean
+      acceptDigitalServiceWaiver: boolean
+    },
+  ): Promise<SaasRenewOrderResult> {
+    const res = await customerFetch(`/customers/me/saas-memberships/${encodeURIComponent(membershipId)}/renew-order`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+    const json = (await res.json()) as { success?: boolean; data?: SaasRenewOrderResult; message?: string }
+    if (!res.ok || !json.success || !json.data) throw new Error(json.message || 'Sipariş oluşturulamadı')
+    return json.data
   },
 }

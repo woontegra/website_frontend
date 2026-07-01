@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { LayoutGrid, Heart, MapPin, Package, UserRound, LogOut } from 'lucide-react'
+import { LayoutGrid, Heart, MapPin, Package, UserRound, LogOut, Cloud } from 'lucide-react'
 import { getCustomerProfile } from '../lib/customerAuth'
 import { customersApi } from '../api/customers-api'
 
 const cards = [
   { to: '/hesabim/siparisler', label: 'Siparişlerim', desc: 'Sipariş geçmişiniz ve durumlar', icon: Package },
+  { to: '/hesabim/uyelikler', label: 'Üyeliklerim', desc: 'SaaS lisans ve abonelik bilgileri', icon: Cloud },
   { to: '/hesabim/adresler', label: 'Adreslerim', desc: 'Teslimat ve fatura adresleri', icon: MapPin },
   { to: '/hesabim/hesap-detaylari', label: 'Hesap bilgilerim', desc: 'Profil ve şifre güvenliği', icon: UserRound },
   { to: '/hesabim/favoriler', label: 'Favorilerim', desc: 'Kaydettiğiniz ürünler', icon: Heart },

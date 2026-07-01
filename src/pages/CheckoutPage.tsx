@@ -18,6 +18,7 @@ import { mergeCartWithPreview } from '../lib/cartMerge'
 import { productPricePeriodSuffix } from '../lib/formatProductPrice'
 import { formatMoneyAmount } from '../lib/formatMoney'
 import { getCustomerToken, isCustomerToken } from '../lib/customerAuth'
+import { isMuvekkilKasaSaasProduct, SAAS_LOGIN_REQUIRED_MESSAGE } from '../lib/muvekkilKasaSaasProduct'
 import { MediaThumb } from '../components/ui/MediaThumb'
 import { TURKEY_PROVINCES, districtsForProvince } from '../data/turkeyLocation'
 
@@ -201,6 +202,12 @@ export function CheckoutPage() {
 
   const merged = useMemo(() => mergeCartWithPreview(lines, preview), [lines, preview])
 
+  const cartHasMkSaas = useMemo(
+    () => merged.some((m) => isMuvekkilKasaSaasProduct({ slug: m.slug })),
+    [merged],
+  )
+  const saasLoginRequired = cartHasMkSaas && !loggedIn
+
   const legalFlags = useMemo(
     () => resolveOrderLegalConsentFlags(merged.map((m) => m.productType)),
     [merged],
@@ -300,6 +307,10 @@ export function CheckoutPage() {
     if (lines.length === 0) return
     if (!legalOk) {
       setError('Yasal onayları tamamlamanız gerekir.')
+      return
+    }
+    if (saasLoginRequired) {
+      setError(SAAS_LOGIN_REQUIRED_MESSAGE)
       return
     }
     if (paymentMethod === 'BANK_TRANSFER' && !havaleConfigured) {
@@ -411,6 +422,15 @@ export function CheckoutPage() {
           {error}
         </div>
       )}
+
+      {saasLoginRequired ? (
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950" role="status">
+          {SAAS_LOGIN_REQUIRED_MESSAGE}{' '}
+          <Link to={`/giris?return=${encodeURIComponent('/checkout')}`} className="font-semibold text-accent-blue underline">
+            Giriş yapın
+          </Link>
+        </div>
+      ) : null}
 
       {!iframeToken ? (
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-start lg:gap-10">
@@ -1059,7 +1079,7 @@ export function CheckoutPage() {
                 <button
                   type="submit"
                   form="woo-checkout-form"
-                  disabled={submitting || !legalOk}
+                  disabled={submitting || !legalOk || saasLoginRequired}
                   className="flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {submitting ? 'İşleniyor…' : paymentMethod === 'CARD' ? 'Güvenli ödeme ile devam et' : 'Siparişi oluştur'}
